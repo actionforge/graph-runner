@@ -1,0 +1,27 @@
+yaml-version: 3.0
+
+id: string-fmt
+version: 1
+name: String Format
+description: String Format
+style:
+  header:
+    background: linear-gradient(90deg, rgb(148 148 148) 0%, rgb(85 61 88) 100%)
+  body:
+    background: '#404040'
+outputs:
+  result:
+    name: Result
+    type: string
+    description: Formatted String
+    index: 0
+inputs:
+  fmt:
+    name: Format String
+    type: string
+    index: 0
+  input:
+    type: string
+    group: true
+    group_initial: 1
+    index: 1

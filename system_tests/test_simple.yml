@@ -1,0 +1,56 @@
+entry: start
+executions:
+  - src:
+      node: start
+      port: exec
+    dst:
+      node: run-v1-koala-giraffe-cranberry
+      port: exec_success
+  - src:
+      node: run-v1-koala-giraffe-cranberry
+      port: exec_err
+    dst:
+      node: run-v1-brown-purple-giraffe
+      port: exec_success
+  - src:
+      node: run-v1-koala-giraffe-cranberry
+      port: exec_success
+    dst:
+      node: run-v1-purple-dog-koala
+      port: exec_success
+connections: []
+nodes:
+  - id: start
+    type: start@v1
+    position:
+      x: 280
+      y: 110
+    inputs: {}
+    settings: {}
+  - id: run-v1-koala-giraffe-cranberry
+    type: run@v1
+    position:
+      x: 820
+      y: 700
+    inputs:
+      shell: python
+      script: print("Hello World!")
+    settings: {}
+  - id: run-v1-purple-dog-koala
+    type: run@v1
+    position:
+      x: 1260
+      y: 400
+    inputs:
+      shell: python
+      script: print("Success")
+    settings: {}
+  - id: run-v1-brown-purple-giraffe
+    type: run@v1
+    position:
+      x: 1240
+      y: 790
+    inputs:
+      script: print("Error")
+    settings: {}
+description: Test for graph-runner

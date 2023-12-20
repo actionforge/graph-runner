@@ -1,0 +1,27 @@
+yaml-version: 3.0
+
+id: branch
+name: ""
+version: 1
+description: Conditional Branch
+compact: true
+style:
+  body:
+    background: linear-gradient(to right, rgb(117 53 145), rgb(125 18 157))
+outputs:
+  then:
+    exec: true
+    name: Then
+    index: 0
+  otherwise:
+    exec: true
+    name: Otherwise
+    index: 1
+inputs:
+  exec:
+    exec: true
+    index: 0
+  condition:
+    type: bool
+    description: Condition to execute either if or else.
+    index: 1

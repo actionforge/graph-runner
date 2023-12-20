@@ -1,0 +1,60 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "🟢 Run action graph",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "program": "${workspaceFolder}",
+      "args": [
+        "run"
+      ],
+      "buildFlags": "-tags=github_impl",
+      "hideSystemGoroutines": true,
+      "env": {
+        "LOAD_ENV_FILE": "true",
+        "GITHUB_EVENT_NAME": "push"
+      }
+    },
+    {
+      "name": "🧪 Run Current Test File",
+      "type": "go",
+      "request": "launch",
+      "mode": "test",
+      "program": "${file}",
+      "buildFlags": "-tags=github_impl,system_tests",
+      "env": {},
+      "args": [],
+      "showLog": true
+    },
+    {
+      "name": "⚙️ Generate node stubs",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "program": "${workspaceFolder}",
+      "buildFlags": "-tags=github_impl,generate_node_stubs",
+      "args": [
+        "generate"
+      ],
+      "env": {
+        "LOAD_ENV_FILE": "true",
+      },
+      "hideSystemGoroutines": true,
+    },
+    {
+      "name": "↗️ Update Registry",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "program": "${workspaceFolder}",
+      "buildFlags": "-tags=github_impl,update_registry",
+      "args": [
+        "update"
+      ],
+      "env": {},
+      "hideSystemGoroutines": true,
+    },
+  ]
+}

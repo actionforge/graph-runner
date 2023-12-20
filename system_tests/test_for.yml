@@ -1,0 +1,88 @@
+entry: start
+executions:
+  - src:
+      node: start
+      port: exec
+    dst:
+      node: for-v1-snake-strawberry-tiger
+      port: exec
+  - src:
+      node: for-v1-snake-strawberry-tiger
+      port: exec-body
+    dst:
+      node: run-v1-butterfly-gray-shark
+      port: exec_success
+  - src:
+      node: for-v1-snake-strawberry-tiger
+      port: exec-finish
+    dst:
+      node: run-v1-cherry-banana-brown
+      port: exec_success
+connections:
+  - src:
+      node: for-v1-snake-strawberry-tiger
+      port: index
+    dst:
+      node: string-fmt-v1-octopus-koala-green
+      port: input[0]
+  - src:
+      node: string-fmt-v1-octopus-koala-green
+      port: result
+    dst:
+      node: env-array-v1-parrot-lemon-blackberry
+      port: env[0]
+  - src:
+      node: env-array-v1-parrot-lemon-blackberry
+      port: env
+    dst:
+      node: run-v1-butterfly-gray-shark
+      port: env
+nodes:
+  - id: start
+    type: start@v1
+    position:
+      x: 410
+      y: 220
+    inputs: {}
+  - id: for-v1-snake-strawberry-tiger
+    type: for@v1
+    position:
+      x: 690
+      y: 150
+    inputs:
+      first_index: 3
+      last_index: 7
+  - id: run-v1-butterfly-gray-shark
+    type: run@v1
+    position:
+      x: 1840
+      y: 70
+    inputs:
+      shell: python
+      script: |-
+        import os
+        print(os.environ["COUNT"])
+  - id: env-array-v1-parrot-lemon-blackberry
+    type: env-array@v1
+    position:
+      x: 1570
+      y: 280
+    inputs:
+      env[0]: ''
+  - id: string-fmt-v1-octopus-koala-green
+    type: string-fmt@v1
+    position:
+      x: 1180
+      y: 260
+    inputs:
+      input[0]: {}
+      fmt: COUNT=%v
+  - id: run-v1-cherry-banana-brown
+    type: run@v1
+    position:
+      x: 1200
+      y: 470
+    inputs:
+      shell: python
+      script: print("Done")
+description: Test for graph-runner

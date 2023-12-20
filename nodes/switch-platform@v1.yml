@@ -1,0 +1,25 @@
+yaml-version: 3.0
+
+id: switch-platform
+name:
+version: 1
+description: Platform Switch
+compact: true
+outputs:
+  exec-win:
+    exec: true
+    name: Windows
+    index: 0
+  exec-macos:
+    exec: true
+    name: MacOS
+    index: 1
+  exec-linux:
+    exec: true
+    name: Linux
+    index: 2
+
+inputs:
+  exec:
+    exec: true
+    index: 0

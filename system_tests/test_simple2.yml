@@ -1,0 +1,102 @@
+entry: start
+executions:
+  - src:
+      node: start
+      port: exec
+    dst:
+      node: run-v1-yellow-squirrel-octopus
+      port: exec_success
+  - src:
+      node: run-v1-yellow-squirrel-octopus
+      port: exec_err
+    dst:
+      node: run-v1-blueberry-lion-giraffe
+      port: exec_success
+  - src:
+      node: run-v1-yellow-squirrel-octopus
+      port: exec_success
+    dst:
+      node: run-v1-orange-squirrel-koala
+      port: exec_success
+  - src:
+      node: run-v1-orange-squirrel-koala
+      port: exec_success
+    dst:
+      node: run-v1-koala-lemon-cranberry
+      port: exec_success
+connections:
+  - src:
+      node: string-fmt-v1-raspberry-coconut-shark
+      port: result
+    dst:
+      node: env-v1-tiger-kiwi-banana
+      port: env[0]
+  - src:
+      node: env-v1-tiger-kiwi-banana
+      port: env
+    dst:
+      node: run-v1-orange-squirrel-koala
+      port: env
+  - src:
+      node: run-v1-yellow-squirrel-octopus
+      port: output
+    dst:
+      node: string-fmt-v1-raspberry-coconut-shark
+      port: input[0]
+nodes:
+  - id: start
+    type: start@v1
+    position:
+      x: 560
+      y: 220
+    inputs: {}
+  - id: run-v1-yellow-squirrel-octopus
+    type: run@v1
+    position:
+      x: 770
+      y: 100
+    inputs:
+      shell: python
+      script: import sys; sys.stdout.write('World');
+  - id: run-v1-orange-squirrel-koala
+    type: run@v1
+    position:
+      x: 1970
+      y: 10
+    inputs:
+      shell: python
+      script: import os; print(f"Hello {os.environ['FOO']}!")
+  - id: run-v1-blueberry-lion-giraffe
+    type: run@v1
+    position:
+      x: 1150
+      y: 430
+    inputs:
+      shell: python
+      script: print("Failure")
+  - id: env-v1-tiger-kiwi-banana
+    type: env-array@v1
+    position:
+      x: 1640
+      y: 220
+    inputs:
+      env[0]: ''
+  - id: string-fmt-v1-raspberry-coconut-shark
+    type: string-fmt@v1
+    position:
+      x: 1230
+      y: 190
+    inputs:
+      fmt: FOO=%v
+      input[0]: {}
+  - id: run-v1-koala-lemon-cranberry
+    type: run@v1
+    position:
+      x: 2320
+      y: 120
+    inputs:
+      shell: python
+      script: import os; print(f"Hello {os.environ['BAR']}!")
+      env:
+        - BAR=1234
+description: Test for graph-runner

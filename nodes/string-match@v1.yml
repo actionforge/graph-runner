@@ -1,0 +1,43 @@
+yaml-version: 3.0
+
+id: string-match
+version: 1
+name: String Match
+description: Match a string against a certain operation.
+style:
+  header:
+    background: linear-gradient(90deg, rgb(148 148 148) 0%, rgb(85 61 88) 100%)
+  body:
+    background: '#404040'
+outputs:
+  result:
+    name: Result
+    type: bool
+    description: Current iteration
+    index: 0
+inputs:
+  str1:
+    name: String 1
+    type: string
+    index: 0
+  op:
+    type: option
+    default: contains
+    index: 1
+    options:
+      - name: Contains
+        value: contains
+      - name: Not Contains
+        value: notcontains
+      - name: Starts With
+        value: startswith
+      - name: Ends With
+        value: endswith
+      - name: Equals
+        value: equals
+      - name: Regex
+        value: regex
+  str2:
+    name: String 2
+    type: string
+    index: 2

@@ -1,0 +1,26 @@
+yaml-version: 3.0
+
+id: env-array
+version: 1
+name: Environment Variables Array
+description: List of environment variables.
+style:
+  header:
+    background: linear-gradient(90deg, rgb(148 148 148) 0%, rgb(85 61 88) 100%)
+  body:
+    background: '#404040'
+inputs:
+  env:
+    name: ''
+    type: string
+    group: true
+    group_initial: 1
+    default: ''
+    hint: "e.g: MY_VAR{i}=VALUE{i}"
+    index: 0
+  
+outputs:
+  env:
+    name: ''
+    type: "[]string"
+    index: 0

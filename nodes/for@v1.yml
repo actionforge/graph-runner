@@ -1,0 +1,40 @@
+yaml-version: 3.0
+
+id: for
+name: For
+version: 1
+description: For Loop
+outputs:
+  exec-body:
+    name: Body
+    exec: true
+    index: 0
+  index:
+    name: Index
+    type: number
+    index: 1
+    description: Current iteration
+  exec-finish:
+    name: Finish
+    exec: true
+    index: 2
+    description: Finish
+
+inputs:
+  exec:
+    exec: true
+    index: 0
+  first_index:
+    name: First Index
+    type: number
+    index: 1
+    default: 0
+    required: true
+    step: 1
+  last_index:
+    name: Last Index
+    type: number
+    index: 2
+    default: 10
+    required: true
+    step: 1

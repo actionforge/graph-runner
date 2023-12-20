@@ -1,0 +1,40 @@
+yaml-version: 3.0
+
+id: parallel-for
+name: Parallel For
+version: 1
+description: Parallel For Loop
+outputs:
+  exec-body:
+    name: Body
+    exec: true
+    index: 0
+  index:
+    name: Index
+    type: number
+    index: 1
+    description: Current iteration
+  exec-finish:
+    name: Finish
+    exec: true
+    description: Finish
+    index: 2
+
+inputs:
+  exec:
+    exec: true
+    index: 0
+  first_index:
+    name: First Index
+    type: number
+    index: 1
+    default: 0
+    required: true
+    step: 1
+  last_index:
+    name: Last Index
+    type: number
+    index: 2
+    default: 7
+    required: true
+    step: 1

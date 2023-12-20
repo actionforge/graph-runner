@@ -1,0 +1,20 @@
+yaml-version: 3.0
+
+id: bool-xor
+name: XOR
+version: 1
+description: Apply the XOR operator on two or more boolean values.
+compact: true
+style:
+  body:
+    background: linear-gradient(to right, rgb(90 52 34), rgb(106 41 13))
+inputs:
+  input:
+    type: bool
+    index: 1
+    group: true
+    group_initial: 2
+outputs:
+  result:
+    type: bool
+    index: 0

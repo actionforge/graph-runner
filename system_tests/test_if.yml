@@ -1,0 +1,78 @@
+entry: start
+executions:
+  - src:
+      node: start
+      port: exec
+    dst:
+      node: if-v1-koala-peach-gray
+      port: exec
+  - src:
+      node: if-v1-koala-peach-gray
+      port: then
+    dst:
+      node: run-v1-penguin-pineapple-pineapple
+      port: exec_success
+  - src:
+      node: if-v1-koala-peach-gray
+      port: otherwise
+    dst:
+      node: run-v1-mango-silver-silver
+      port: exec_success
+connections:
+  - src:
+      node: env-get-v1-kangaroo-zebra-orange
+      port: env
+    dst:
+      node: string-match-v1-strawberry-orange-dog
+      port: str1
+  - src:
+      node: string-match-v1-strawberry-orange-dog
+      port: result
+    dst:
+      node: if-v1-koala-peach-gray
+      port: condition
+nodes:
+  - id: start
+    type: start@v1
+    position:
+      x: 290
+      y: 70
+    inputs: {}
+  - id: if-v1-koala-peach-gray
+    type: branch@v1
+    position:
+      x: 1100
+      y: 130
+    inputs: {}
+  - id: run-v1-penguin-pineapple-pineapple
+    type: run@v1
+    position:
+      x: 1450
+      y: -60
+    inputs:
+      shell: python
+      script: print("Yes")
+  - id: run-v1-mango-silver-silver
+    type: run@v1
+    position:
+      x: 1440
+      y: 260
+    inputs:
+      shell: python
+      script: print("No")
+  - id: string-match-v1-strawberry-orange-dog
+    type: string-match@v1
+    position:
+      x: 740
+      y: 280
+    inputs:
+      op: equals
+      str2: Hello World!
+  - id: env-get-v1-kangaroo-zebra-orange
+    type: env-get@v1
+    position:
+      x: 440
+      y: 260
+    inputs:
+      env: FOO
+description: Test for graph-runner

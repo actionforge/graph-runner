@@ -1,0 +1,68 @@
+yaml-version: 3.0
+
+id: run
+name: Run
+version: 1
+description: Run code
+style:
+  header:
+    background: '#393836'
+  body:
+    background: '#292929'
+outputs:
+  exec_success:
+    name: Success
+    exec: true
+    index: 0
+  exec_err:
+    name: Error
+    exec: true
+    index: 1
+  output:
+    type: string
+    name: Output
+    index: 2
+  exit_code:
+    name: Exit Code
+    type: number
+    index: 3
+inputs:
+  exec: 
+    exec: true
+    index: 0
+  script:
+    type: string
+    name: Script
+    index: 1
+    multiline: true
+  shell:
+    name: Shell
+    type: option
+    index: 2
+    default: bash
+    options:
+      - name: Bash
+        value: bash
+      - name: Python
+        value: python
+      - name: PowerShell
+        value: pwsh
+      - name: Windows CMD
+        value: cmd
+  print:
+    name: Print
+    type: option
+    index: 3
+    default: both
+    options:
+      - name: Output
+        value: output
+      - name: Stdout
+        value: stdout
+      - name: Both
+        value: both
+  env:
+    name: Environment Vars
+    type: "[]string"
+    index: 4
+    hint: "e.g: MY_VAR=VALUE"

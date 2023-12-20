@@ -1,0 +1,24 @@
+yaml-version: 3.0
+
+id: env-get
+version: 1
+name: Get Environment Variable
+description: Get single environment variable.
+style:
+  header:
+    background: linear-gradient(90deg, rgb(148 148 148) 0%, rgb(85 61 88) 100%)
+  body:
+    background: '#404040'
+inputs:
+  env:
+    name: ''
+    type: string
+    default: ''
+    hint: "e.g: MY_VAR"
+    index: 0
+  
+outputs:
+  env:
+    name: ''
+    type: "string"
+    index: 1

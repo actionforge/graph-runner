@@ -1,0 +1,581 @@
+entry: gh-start
+executions:
+  - src:
+      node: gh-start
+      port: exec-on-branch_protection_rule
+    dst:
+      node: node-branch_protection_rule
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-branch_protection_rule
+    dst:
+      node: node-branch_protection_rule
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-check_run
+    dst:
+      node: node-check_run
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-check_suite
+    dst:
+      node: node-check_suite
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-create
+    dst:
+      node: node-create
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-delete
+    dst:
+      node: node-delete
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-deployment
+    dst:
+      node: node-deployment
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-deployment_status
+    dst:
+      node: node-deployment_status
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-discussion
+    dst:
+      node: node-discussion
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-discussion_comment
+    dst:
+      node: node-discussion_comment
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-fork
+    dst:
+      node: node-fork
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-gollum
+    dst:
+      node: node-gollum
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-issue_comment
+    dst:
+      node: node-issue_comment
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-issues
+    dst:
+      node: node-issues
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-label
+    dst:
+      node: node-label
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-merge_group
+    dst:
+      node: node-merge_group
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-milestone
+    dst:
+      node: node-milestone
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-page_build
+    dst:
+      node: node-page_build
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-project
+    dst:
+      node: node-project
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-project_card
+    dst:
+      node: node-project_card
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-project_column
+    dst:
+      node: node-project_column
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-public
+    dst:
+      node: node-public
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-pull_request
+    dst:
+      node: node-pull_request
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-pull_request_review
+    dst:
+      node: node-pull_request_review
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-pull_request_review_comment
+    dst:
+      node: node-pull_request_review_comment
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-pull_request_target
+    dst:
+      node: node-pull_request_target
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-push
+    dst:
+      node: node-push
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-registry_package
+    dst:
+      node: node-registry_package
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-release
+    dst:
+      node: node-release
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-repository_dispatch
+    dst:
+      node: node-repository_dispatch
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-schedule
+    dst:
+      node: node-schedule
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-status
+    dst:
+      node: node-status
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-watch
+    dst:
+      node: node-watch
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-workflow_call
+    dst:
+      node: node-workflow_call
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-workflow_dispatch
+    dst:
+      node: node-workflow_dispatch
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-workflow_run
+    dst:
+      node: node-workflow_run
+      port: exec
+connections: []
+nodes:
+  - id: gh-start
+    type: gh-start@v1
+    position:
+      x: -670
+      y: -200
+    inputs: {}
+    settings:
+      folded: false
+  - id: node-branch_protection_rule
+    type: run@v1
+    position:
+      x: 1570
+      y: -2820
+    inputs:
+      shell: python
+      script: print("Triggered by branch_protection_rule")
+    settings:
+      folded: false
+  - id: node-check_run
+    type: run@v1
+    position:
+      x: 1140
+      y: -2520
+    inputs:
+      shell: python
+      script: print("Triggered by check_run")
+    settings:
+      folded: false
+  - id: node-check_suite
+    type: run@v1
+    position:
+      x: 1570
+      y: -2480
+    inputs:
+      shell: python
+      script: print("Triggered by check_suite")
+    settings:
+      folded: false
+  - id: node-create
+    type: run@v1
+    position:
+      x: 1120
+      y: -2190
+    inputs:
+      shell: python
+      script: print("Triggered by create")
+    settings:
+      folded: false
+  - id: node-delete
+    type: run@v1
+    position:
+      x: 1540
+      y: -2150
+    inputs:
+      shell: python
+      script: print("Triggered by delete")
+    settings:
+      folded: false
+  - id: node-deployment
+    type: run@v1
+    position:
+      x: 1120
+      y: -1880
+    inputs:
+      shell: python
+      script: print("Triggered by deployment")
+    settings:
+      folded: false
+  - id: node-deployment_status
+    type: run@v1
+    position:
+      x: 1530
+      y: -1850
+    inputs:
+      shell: python
+      script: print("Triggered by deployment_status")
+    settings:
+      folded: false
+  - id: node-discussion
+    type: run@v1
+    position:
+      x: 1120
+      y: -1570
+    inputs:
+      shell: python
+      script: print("Triggered by discussion")
+    settings:
+      folded: false
+  - id: node-discussion_comment
+    type: run@v1
+    position:
+      x: 1510
+      y: -1540
+    inputs:
+      shell: python
+      script: print("Triggered by discussion_comment")
+    settings:
+      folded: false
+  - id: node-fork
+    type: run@v1
+    position:
+      x: 1100
+      y: -1260
+    inputs:
+      shell: python
+      script: print("Triggered by fork")
+    settings:
+      folded: false
+  - id: node-gollum
+    type: run@v1
+    position:
+      x: 1510
+      y: -1220
+    inputs:
+      shell: python
+      script: print("Triggered by gollum")
+    settings:
+      folded: false
+  - id: node-issue_comment
+    type: run@v1
+    position:
+      x: 1100
+      y: -940
+    inputs:
+      shell: python
+      script: print("Triggered by issue_comment")
+    settings:
+      folded: false
+  - id: node-issues
+    type: run@v1
+    position:
+      x: 1500
+      y: -910
+    inputs:
+      shell: python
+      script: print("Triggered by issues")
+    settings:
+      folded: false
+  - id: node-label
+    type: run@v1
+    position:
+      x: 1100
+      y: -620
+    inputs:
+      shell: python
+      script: print("Triggered by label")
+    settings:
+      folded: false
+  - id: node-merge_group
+    type: run@v1
+    position:
+      x: 1490
+      y: -590
+    inputs:
+      shell: python
+      script: print("Triggered by merge_group")
+    settings:
+      folded: false
+  - id: node-milestone
+    type: run@v1
+    position:
+      x: 1100
+      y: -310
+    inputs:
+      shell: python
+      script: print("Triggered by milestone")
+    settings:
+      folded: false
+  - id: node-page_build
+    type: run@v1
+    position:
+      x: 1470
+      y: 340
+    inputs:
+      shell: python
+      script: print("Triggered by page_build")
+    settings:
+      folded: false
+  - id: node-project
+    type: run@v1
+    position:
+      x: 1100
+      y: 620
+    inputs:
+      shell: python
+      script: print("Triggered by project")
+    settings:
+      folded: false
+  - id: node-project_card
+    type: run@v1
+    position:
+      x: 1480
+      y: -280
+    inputs:
+      shell: python
+      script: print("Triggered by project_card")
+    settings:
+      folded: false
+  - id: node-project_column
+    type: run@v1
+    position:
+      x: 1100
+      y: -0.0
+    inputs:
+      shell: python
+      script: print("Triggered by project_column")
+    settings:
+      folded: false
+  - id: node-public
+    type: run@v1
+    position:
+      x: 1470
+      y: 30
+    inputs:
+      shell: python
+      script: print("Triggered by public")
+    settings:
+      folded: false
+  - id: node-pull_request
+    type: run@v1
+    position:
+      x: 1100
+      y: 310
+    inputs:
+      shell: python
+      script: print("Triggered by pull_request")
+    settings:
+      folded: false
+  - id: node-pull_request_review
+    type: run@v1
+    position:
+      x: 1460
+      y: 650
+    inputs:
+      shell: python
+      script: print("Triggered by pull_request_review")
+    settings:
+      folded: false
+  - id: node-pull_request_review_comment
+    type: run@v1
+    position:
+      x: 1100
+      y: 940
+    inputs:
+      shell: python
+      script: print("Triggered by pull_request_review_comment")
+    settings:
+      folded: false
+  - id: node-pull_request_target
+    type: run@v1
+    position:
+      x: 1450
+      y: 960
+    inputs:
+      shell: python
+      script: print("Triggered by pull_request_target")
+    settings:
+      folded: false
+  - id: node-push
+    type: run@v1
+    position:
+      x: 1110
+      y: 1260
+    inputs:
+      shell: python
+      script: print("Triggered by push")
+    settings:
+      folded: false
+  - id: node-registry_package
+    type: run@v1
+    position:
+      x: 1450
+      y: 1270
+    inputs:
+      shell: python
+      script: print("Triggered by registry_package")
+    settings:
+      folded: false
+  - id: node-release
+    type: run@v1
+    position:
+      x: 1130
+      y: 1580
+    inputs:
+      shell: python
+      script: print("Triggered by release")
+    settings:
+      folded: false
+  - id: node-repository_dispatch
+    type: run@v1
+    position:
+      x: 1450
+      y: 1590
+    inputs:
+      shell: python
+      script: print("Triggered by repository_dispatch")
+    settings:
+      folded: false
+  - id: node-schedule
+    type: run@v1
+    position:
+      x: 1130
+      y: 1900
+    inputs:
+      shell: python
+      script: print("Triggered by schedule")
+    settings:
+      folded: false
+  - id: node-status
+    type: run@v1
+    position:
+      x: 1450
+      y: 1910
+    inputs:
+      shell: python
+      script: print("Triggered by status")
+    settings:
+      folded: false
+  - id: node-watch
+    type: run@v1
+    position:
+      x: 1130
+      y: 2220
+    inputs:
+      shell: python
+      script: print("Triggered by watch")
+    settings:
+      folded: false
+  - id: node-workflow_call
+    type: run@v1
+    position:
+      x: 1450
+      y: 2250
+    inputs:
+      shell: python
+      script: print("Triggered by workflow_call")
+    settings:
+      folded: false
+  - id: node-workflow_dispatch
+    type: run@v1
+    position:
+      x: 1130
+      y: 2570
+    inputs:
+      shell: python
+      script: print("Triggered by workflow_dispatch")
+    settings:
+      folded: false
+  - id: node-workflow_run
+    type: run@v1
+    position:
+      x: 1440
+      y: 2570
+    inputs:
+      shell: python
+      script: print("Triggered by workflow_run")
+    settings:
+      folded: false
+registries: []
+description: Dev
+

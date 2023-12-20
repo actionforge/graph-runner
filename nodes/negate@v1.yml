@@ -1,0 +1,15 @@
+yaml-version: 3.0
+
+id: negate
+name: "!"
+version: 1
+description: Negate the input.
+compact: true
+inputs:
+  input:
+    type: any
+    index: 1
+outputs:
+  result:
+    type: bool
+    index: 0

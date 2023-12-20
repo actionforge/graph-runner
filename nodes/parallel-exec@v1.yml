@@ -1,0 +1,17 @@
+yaml-version: 3.0
+
+id: parallel-exec
+name: Parallel Execution
+version: 1
+description: Parallel Execution
+outputs:
+  exec:
+    exec: true
+    group: true
+    group_initial: 2
+    index: 0
+
+inputs:
+  exec:
+    exec: true
+    index: 0

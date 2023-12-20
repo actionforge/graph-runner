@@ -1,0 +1,23 @@
+{
+    // Formatting
+    "editor.formatOnSave": true,
+    "editor.formatOnSaveMode": "file",
+    "[json]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    },
+    "[go]": {
+        "editor.defaultFormatter": "golang.go",
+    },
+    "go.buildTags": "generate_node_stubs,update_registry,unit_tests,github_impl,integration_tests,system_tests",
+    "go.vetOnSave": "package",
+    "go.lintTool": "golangci-lint",
+    // Theme Colors
+    "workbench.colorCustomizations": {
+        "titleBar.activeBackground": "#2863ed",
+        "titleBar.inactiveBackground": "#0d2868"
+    },
+    // Terminal
+    "terminal.integrated.defaultProfile.osx": "zsh",
+    "terminal.integrated.defaultProfile.windows": "Git Bash",
+    "terminal.integrated.defaultProfile.linux": "sh",
+}

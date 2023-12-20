@@ -1,0 +1,50 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/go
+{
+    "name": "Dev Container",
+    "image": "mcr.microsoft.com/devcontainers/base:jammy",
+    // Features to add to the dev container.
+    // More info: https://containers.dev/features.
+    "features": {
+        "ghcr.io/devcontainers/features/git-lfs:1": {
+            "version": "latest"
+        },
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {
+            "version": "latest"
+        },
+        "ghcr.io/devcontainers/features/python:1": {
+            "version": "3.9"
+        },
+        "ghcr.io/devcontainers/features/go:1": {
+            "version": "1.21"
+        }
+    },
+    "remoteUser": "vscode",
+    // Use 'postCreateCommand' to run commands after the container is created.
+    // Don't overwrite program.gpg here because `postCreateCommand` is executed
+    // before .gitconfig is copied over from the host system to the container.
+    // See https://github.com/microsoft/vscode-remote-release/issues/6810#issuecomment-1153597718
+    // and https://github.com/microsoft/vscode-remote-release/issues/6810#issuecomment-1159354677
+    // "postCreateCommand": "git config --global program.gpg $(which gpg)",
+    "postStartCommand": ".devcontainer/post-start.sh",
+    "postAttachCommand": ".devcontainer/post-attach.sh",
+    "postCreateCommand": ".devcontainer/post-create.sh",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                // Keep in sync with .vscode/extensions.json
+                "golang.go",
+                "GitHub.copilot",
+                "ms-python.python",
+                "github.vscode-github-actions",
+                "eamodio.gitlens",
+                "shd101wyy.markdown-preview-enhanced"
+            ]
+        }
+    },
+    "workspaceFolder": "/workspaces/graph-runner",
+    "mounts": [
+        "source=${localEnv:HOME}${localEnv:USERPROFILE}/Desktop,target=/home/vscode/Desktop,type=bind,consistency=consistent",
+        "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/root/.ssh,type=bind,consistency=consistent"
+    ]
+}

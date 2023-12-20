@@ -1,0 +1,72 @@
+yaml-version: 3.0
+
+id: test
+name: Test Node
+version: 1
+description: Test node for integration tests
+outputs:
+  output-bool:
+    name: Output Boolean
+    type: bool
+    index: 0
+  output-number:
+    name: Output Integer
+    type: number
+    index: 1
+  output-string:
+    name: Output String
+    type: string
+    index: 2
+  output-array-number:
+    name: Output Array Integer
+    type: "[]number"
+    index: 3
+  output-array-bool:
+    name: Output Array Boolean
+    type: "[]bool"
+    index: 4
+  output-array-string:
+    name: Output Array String
+    type: "[]string"
+    index: 5
+  output-any:
+    name: Output Any
+    type: any
+    index: 6
+  output-map-string-int32:
+    name: Output Map String String
+    type: "map[string]int32"
+    index: 7
+inputs:
+  input-bool:
+    name: Input Boolean
+    type: bool
+    index: 0
+  input-number:
+    name: Input Integer
+    type: number
+    index: 1
+  input-string:
+    name: Input String
+    type: string
+    index: 2
+  input-array-bool:
+    name: Input Array Boolean
+    type: "[]bool"
+    index: 3
+  input-array-number:
+    name: Input Array Integer
+    type: "[]number"
+    index: 4
+  input-array-string:
+    name: Input Array String
+    type: "[]string"
+    index: 5
+  input-any:
+    name: Input Any
+    type: any
+    index: 6
+  input-map-string-int32:
+    name: Input Map String String
+    type: "map[string]int32"
+    index: 7

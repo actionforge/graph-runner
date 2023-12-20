@@ -1,0 +1,186 @@
+entry: gh-start
+executions:
+  - src:
+      node: kiwi-gray-parrot
+      port: exec
+    dst:
+      node: gray-mango-cherry
+      port: exec
+  - src:
+      node: gray-mango-cherry
+      port: exec
+    dst:
+      node: penguin-dog-blueberry
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-push
+    dst:
+      node: kiwi-gray-parrot
+      port: exec
+  - src:
+      node: blue-monkey-tiger
+      port: exec
+    dst:
+      node: penguin-coconut-gray
+      port: exec
+  - src:
+      node: penguin-dog-blueberry
+      port: exec_success
+    dst:
+      node: blue-monkey-tiger
+      port: exec
+  - src:
+      node: blue-monkey-tiger
+      port: exec[0]
+    dst:
+      node: penguin-coconut-gray
+      port: exec
+  - src:
+      node: giraffe-monkey-plum
+      port: exec_success
+    dst:
+      node: orange-watermelon-lion
+      port: exec
+  - src:
+      node: yellow-kangaroo-pineapple
+      port: exec_success
+    dst:
+      node: blueberry-lemon-orange
+      port: exec
+  - src:
+      node: penguin-coconut-gray
+      port: exec_success
+    dst:
+      node: rabbit-dolphin-raspberry
+      port: exec
+  - src:
+      node: blue-monkey-tiger
+      port: exec[1]
+    dst:
+      node: yellow-kangaroo-pineapple
+      port: exec
+  - src:
+      node: blue-monkey-tiger
+      port: exec[2]
+    dst:
+      node: giraffe-monkey-plum
+      port: exec
+connections: []
+nodes:
+  - id: gh-start
+    type: gh-start@v1
+    position:
+      x: 230
+      y: 460
+    settings:
+      folded: true
+  - id: kiwi-gray-parrot
+    type: github.com/actions/checkout
+    position:
+      x: 480
+      y: 400
+    settings:
+      folded: false
+  - id: gray-mango-cherry
+    type: github.com/actions/setup-go
+    position:
+      x: 940
+      y: 320
+    inputs:
+      go-version: '1.21'
+    settings:
+      folded: false
+  - id: penguin-coconut-gray
+    type: run@v1
+    position:
+      x: 1870
+      y: 50
+    inputs:
+      script: |-
+        GOOS=linux GOARCH=amd64 go build -o dist-linux/graph-runner-linux-x64 .
+        tar -cvf graph-runner-linux.tar -C dist-linux .
+    settings:
+      folded: false
+  - id: rabbit-dolphin-raspberry
+    type: github.com/actions/upload-artifact@v3.1.3
+    position:
+      x: 2240
+      y: 50
+    inputs:
+      name: graph-runner-linux-x64
+      path: graph-runner-linux.tar
+    settings:
+      folded: false
+  - id: yellow-kangaroo-pineapple
+    type: run@v1
+    position:
+      x: 1870
+      y: 370
+    inputs:
+      script: >-
+        GOOS=windows GOARCH=amd64 go build -o
+        dist-windows/graph-runner-windows-x64.exe .
+    settings:
+      folded: false
+  - id: blueberry-lemon-orange
+    type: github.com/actions/upload-artifact@v3.1.3
+    position:
+      x: 2220
+      y: 370
+    inputs:
+      name: graph-runner-windows-x64
+      path: dist-windows/graph-runner-windows-x64.exe
+    settings:
+      folded: false
+  - id: penguin-dog-blueberry
+    type: run@v1
+    position:
+      x: 1350
+      y: 320
+    inputs:
+      script: >-
+        go mod tidy
+
+        go vet
+    settings:
+      folded: false
+  - id: giraffe-monkey-plum
+    type: run@v1
+    position:
+      x: 1870
+      y: 700
+    inputs:
+      script: >-
+        GOOS=darwin GOARCH=arm64 go build -o dist-macos/graph-runner-macos-arm64
+        .
+
+        GOOS=darwin GOARCH=amd64 go build -o dist-macos/graph-runner-macos-x64 .
+
+        tar -cvf graph-runner-macos.tar -C dist-macos .
+    settings:
+      folded: false
+  - id: orange-watermelon-lion
+    type: github.com/actions/upload-artifact@v3.1.3
+    position:
+      x: 2220
+      y: 710
+    inputs:
+      name: graph-runner-macos
+      path: graph-runner-macos.tar
+    settings:
+      folded: false
+  - id: blue-monkey-tiger
+    type: parallel-exec@v1
+    position:
+      x: 1660
+      y: 430
+    outputs:
+      exec[0]: ''
+      exec[1]: ''
+      exec[2]: ''
+    settings:
+      folded: false
+registries:
+  - github.com/actions/upload-artifact@v3.1.3
+description: Dev

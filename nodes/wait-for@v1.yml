@@ -1,0 +1,24 @@
+yaml-version: 3.0
+
+id: wait-for
+name: Wait For
+version: 1
+description: Wait For
+outputs:
+  exec:
+    exec: true
+
+inputs:
+  exec:
+    exec: true
+    group: true
+    index: 0
+  after:
+    type: number
+    name: Execute After
+    index: 1
+  loop:
+    type: bool
+    name: Loop
+    default: false
+    index: 2

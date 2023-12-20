@@ -1,0 +1,33 @@
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+graph-runner
+__debug_bin
+__debug_bin*
+build.sh
+
+# Coverage report
+cover.html
+
+# Configuration files
+.env
+
+# Temp files
+.DS_Store
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Go workspace file
+go.work
+
+# Binary output
+dist/*
+graph-*

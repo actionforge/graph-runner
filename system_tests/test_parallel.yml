@@ -1,0 +1,172 @@
+entry: gh-start
+executions:
+  - src:
+      node: run-v1-monkey-plum-panda
+      port: exec_success
+    dst:
+      node: wait-for-v1-tiger-coconut-silver
+      port: exec[0]
+  - src:
+      node: gh-start
+      port: exec
+    dst:
+      node: parallel-exec-v1-orange-gray-peach
+      port: exec
+  - src:
+      node: parallel-exec-v1-orange-gray-peach
+      port: exec[0]
+    dst:
+      node: run-v1-monkey-plum-panda
+      port: exec
+  - src:
+      node: parallel-exec-v1-orange-gray-peach
+      port: exec[1]
+    dst:
+      node: run-v1-shark-purple-brown
+      port: exec
+  - src:
+      node: parallel-exec-v1-orange-gray-peach
+      port: exec[2]
+    dst:
+      node: run-v1-dog-shark-panda
+      port: exec
+  - src:
+      node: run-v1-shark-purple-brown
+      port: exec_success
+    dst:
+      node: wait-for-v1-tiger-coconut-silver
+      port: exec[1]
+  - src:
+      node: run-v1-dog-shark-panda
+      port: exec_success
+    dst:
+      node: wait-for-v1-tiger-coconut-silver
+      port: exec[2]
+  - src:
+      node: wait-for-v1-tiger-coconut-silver
+      port: exec
+    dst:
+      node: run-v1-banana-octopus-pink
+      port: exec
+  - src:
+      node: parallel-exec-v1-orange-gray-peach
+      port: exec[3]
+    dst:
+      node: run-v1-squirrel-zebra-zebra
+      port: exec
+  - src:
+      node: run-v1-squirrel-zebra-zebra
+      port: exec_success
+    dst:
+      node: wait-for-v1-tiger-coconut-silver
+      port: exec[3]
+  - src:
+      node: run-v1-orange-dog-brown
+      port: exec_success
+    dst:
+      node: wait-for-v1-tiger-coconut-silver
+      port: exec[4]
+  - src:
+      node: parallel-exec-v1-orange-gray-peach
+      port: exec[4]
+    dst:
+      node: run-v1-orange-dog-brown
+      port: exec
+connections: []
+nodes:
+  - id: gh-start
+    type: start@v1
+    position:
+      x: 330
+      y: 210
+    settings:
+      folded: false
+  - id: parallel-exec-v1-orange-gray-peach
+    type: parallel-exec@v1
+    position:
+      x: 660
+      y: 150
+    outputs:
+      exec[0]: ''
+      exec[1]: ''
+      exec[2]: ''
+      exec[3]: ''
+      exec[4]: ''
+    settings:
+      folded: false
+  - id: wait-for-v1-tiger-coconut-silver
+    type: wait-for@v1
+    position:
+      x: 1340
+      y: 150
+    inputs:
+      after: 1
+      exec[0]: null
+      exec[1]: null
+      exec[2]: null
+      exec[3]: null
+      exec[4]: null
+    settings:
+      folded: false
+  - id: run-v1-monkey-plum-panda
+    type: run@v1
+    position:
+      x: 960
+      y: -430
+    inputs:
+      shell: python
+      script: print("Goroutine 1")
+    settings:
+      folded: false
+  - id: run-v1-banana-octopus-pink
+    type: run@v1
+    position:
+      x: 1820
+      y: 60
+    inputs:
+      shell: python
+      script: print("Goroutine Done")
+    settings:
+      folded: false
+  - id: run-v1-shark-purple-brown
+    type: run@v1
+    position:
+      x: 970
+      y: -90
+    inputs:
+      shell: python
+      script: print("Goroutine 2")
+    settings:
+      folded: false
+  - id: run-v1-dog-shark-panda
+    type: run@v1
+    position:
+      x: 970
+      y: 230
+    inputs:
+      shell: python
+      script: print("Goroutine 3")
+    settings:
+      folded: false
+  - id: run-v1-squirrel-zebra-zebra
+    type: run@v1
+    position:
+      x: 970
+      y: 550
+    inputs:
+      shell: python
+      script: print("Goroutine 4")
+    settings:
+      folded: false
+  - id: run-v1-orange-dog-brown
+    type: run@v1
+    position:
+      x: 970
+      y: 870
+    inputs:
+      shell: python
+      script: print("Goroutine 5")
+    settings:
+      folded: false
+registries: []
+description: Dev

@@ -1,0 +1,25 @@
+yaml-version: 3.0
+
+id: switch-arch
+name:
+version: 1
+description: Arch Switch
+compact: true
+outputs:
+  exec-x64:
+    exec: true
+    name: x64
+    index: 0
+  exec-arm64:
+    exec: true
+    name: arm64
+    index: 1
+  exec-arm32:
+    exec: true
+    name: arm32
+    index: 2
+
+inputs:
+  exec:
+    exec: true
+    index: 0

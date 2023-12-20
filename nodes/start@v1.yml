@@ -1,0 +1,16 @@
+yaml-version: 3.0
+
+id: start
+name: Start
+version: 1
+description: A node that is able to execute javascript code.
+entry: true
+style:
+  header:
+    background: "linear-gradient(90deg, #2b8b81 0%, rgb(248, 156, 42) 100%)"
+  body:
+    background: '#2b8b81'
+outputs:
+  exec:
+    exec: true
+    index: 0
