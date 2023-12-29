@@ -28,12 +28,12 @@ func (n *BranchNode) ExecuteImpl(c core.ExecutionContext) error {
 	}
 
 	if condition {
-		err = n.Execute(n.Executions[ni.Branch_v1_Output_then], c)
+		err = n.Execute(n.Executions[ni.Branch_v1_Output_exec_then], c)
 		if err != nil {
 			return u.Throw(err)
 		}
 	} else {
-		err = n.Execute(n.Executions[ni.Branch_v1_Output_otherwise], c)
+		err = n.Execute(n.Executions[ni.Branch_v1_Output_exec_otherwise], c)
 		if err != nil {
 			return u.Throw(err)
 		}

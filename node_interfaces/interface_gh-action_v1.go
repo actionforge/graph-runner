@@ -16,6 +16,6 @@ const Gh_action_v1_Input_env core.InputId = "env"
 // 
 const Gh_action_v1_Output_exec core.OutputId = "exec"
 // 
-const Gh_action_v1_Output_exec_err core.OutputId = "exec_err"
+const Gh_action_v1_Output_exec_err core.OutputId = "exec-err"
 
 

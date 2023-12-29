@@ -10,11 +10,11 @@ style:
   body:
     background: '#292929'
 outputs:
-  exec_success:
+  exec-success:
     name: Success
     exec: true
     index: 0
-  exec_err:
+  exec-err:
     name: Error
     exec: true
     index: 1

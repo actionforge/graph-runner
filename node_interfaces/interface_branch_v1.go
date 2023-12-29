@@ -16,8 +16,8 @@ const Branch_v1_Input_exec core.InputId = "exec"
 // Outputs (o) ==> 
 
 // 
-const Branch_v1_Output_otherwise core.OutputId = "otherwise"
+const Branch_v1_Output_exec_otherwise core.OutputId = "exec-otherwise"
 // 
-const Branch_v1_Output_then core.OutputId = "then"
+const Branch_v1_Output_exec_then core.OutputId = "exec-then"
 
 

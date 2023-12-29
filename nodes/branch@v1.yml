@@ -9,11 +9,11 @@ style:
   body:
     background: linear-gradient(to right, rgb(117 53 145), rgb(125 18 157))
 outputs:
-  then:
+  exec-then:
     exec: true
     name: Then
     index: 0
-  otherwise:
+  exec-otherwise:
     exec: true
     name: Otherwise
     index: 1
