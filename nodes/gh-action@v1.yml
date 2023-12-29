@@ -8,7 +8,7 @@ outputs:
   exec:
     exec: true
     index: 0
-  exec_err:
+  exec-err:
     exec: true
     index: 1
 inputs:

@@ -4,6 +4,8 @@ import (
 	"actionforge/graph-runner/utils"
 	"fmt"
 	"reflect"
+	"regexp"
+	"sync"
 
 	"gopkg.in/yaml.v3"
 )
@@ -12,6 +14,18 @@ type InputId string
 type OutputId string
 
 type NodeRef NodeBaseInterface
+
+var (
+	onceExecNameRegex sync.Once
+	execNameRegex     *regexp.Regexp
+)
+
+func getExecNameRegex() *regexp.Regexp {
+	onceExecNameRegex.Do(func() {
+		execNameRegex = regexp.MustCompile(`^exec(-.*)?$`)
+	})
+	return execNameRegex
+}
 
 // An interface for nodes that execute their logic.
 type NodeExecutionInterface interface {
@@ -188,6 +202,14 @@ func RegisterNodeFactory(nodeDefinition string, fn nodeFactoryFunc) error {
 		if exists {
 			return fmt.Errorf("duplicate input index in %v at '%v' / '%v'", def.Name, inputId, prev)
 		}
+
+		m := getExecNameRegex().Match([]byte(inputId))
+		if input.Exec && !m {
+			return fmt.Errorf("input '%v' is flagged as exec but does not start with 'exec-'", inputId)
+		} else if !input.Exec && m {
+			return fmt.Errorf("input '%v' starts with 'exec-' but is not flagged as exec", inputId)
+		}
+
 		inputIndexes[input.Index] = string(inputId)
 
 		tmp.Index = input.Index * 128 // 128 means there is space for 127 sub ports available
@@ -203,6 +225,13 @@ func RegisterNodeFactory(nodeDefinition string, fn nodeFactoryFunc) error {
 			return fmt.Errorf("duplicate output index in %v at '%v' / '%v'", def.Name, outputId, prev)
 		}
 		outputIndexes[output.Index] = string(outputId)
+
+		m := getExecNameRegex().Match([]byte(outputId))
+		if output.Exec && !m {
+			return fmt.Errorf("output '%v' is flagged as exec but does not start with 'exec-'", outputId)
+		} else if !output.Exec && m {
+			return fmt.Errorf("output '%v' starts with 'exec-' but is not flagged as exec", outputId)
+		}
 
 		tmp.Index = output.Index * 128 // 128 means there is space for 127 sub ports available
 		def.Outputs[outputId] = tmp
