@@ -6,6 +6,6 @@ jobs:
     name: Build and Publish
     steps:
       - name: Execute Action Graph
-        uses: actionforge/action@v0.4.35
+        uses: actionforge/action@v0.8.20
         with:
           graph_file: build-and-publish.yml
