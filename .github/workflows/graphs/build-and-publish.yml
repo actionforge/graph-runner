@@ -64,29 +64,53 @@ executions:
       node: penguin-dog-blueberry
       port: exec-success
     dst:
+      node: branch-v1-pink-purple-koala
+      port: exec
+  - src:
+      node: branch-v1-pink-purple-koala
+      port: exec-then
+    dst:
       node: blue-monkey-tiger
       port: exec
-connections: []
+  - src:
+      node: branch-v1-pink-purple-koala
+      port: exec-otherwise
+    dst:
+      node: run-v1-cherry-raspberry-pineapple
+      port: exec
+connections:
+  - src:
+      node: env-get-v1-rabbit-octopus-gold
+      port: env
+    dst:
+      node: string-match-v1-pomegranate-raspberry-silver
+      port: str1
+  - src:
+      node: string-match-v1-pomegranate-raspberry-silver
+      port: result
+    dst:
+      node: branch-v1-pink-purple-koala
+      port: condition
 nodes:
   - id: gh-start
     type: gh-start@v1
     position:
-      x: 230
-      y: 460
+      x: 10
+      y: 10
     settings:
       folded: true
   - id: kiwi-gray-parrot
     type: github.com/actions/checkout
     position:
-      x: 480
-      y: 400
+      x: 260
+      y: 990
     settings:
       folded: false
   - id: gray-mango-cherry
     type: github.com/actions/setup-go
     position:
-      x: 940
-      y: 320
+      x: 660
+      y: 950
     inputs:
       go-version: '1.21'
     settings:
@@ -94,8 +118,8 @@ nodes:
   - id: penguin-coconut-gray
     type: run@v1
     position:
-      x: 1870
-      y: 50
+      x: 2030
+      y: 740
     inputs:
       script: |-
         GOOS=linux GOARCH=amd64 go build -o dist-linux/graph-runner-linux-x64 .
@@ -105,8 +129,8 @@ nodes:
   - id: rabbit-dolphin-raspberry
     type: github.com/actions/upload-artifact@v3.1.3
     position:
-      x: 2240
-      y: 50
+      x: 2320
+      y: 740
     inputs:
       name: graph-runner-linux-x64
       path: graph-runner-linux.tar
@@ -115,8 +139,8 @@ nodes:
   - id: yellow-kangaroo-pineapple
     type: run@v1
     position:
-      x: 1870
-      y: 370
+      x: 2030
+      y: 1080
     inputs:
       script: >-
         GOOS=windows GOARCH=amd64 go build -tags=github_impl -o
@@ -126,8 +150,8 @@ nodes:
   - id: blueberry-lemon-orange
     type: github.com/actions/upload-artifact@v3.1.3
     position:
-      x: 2220
-      y: 370
+      x: 2320
+      y: 1080
     inputs:
       name: graph-runner-windows-x64
       path: dist-windows/graph-runner-windows-x64.exe
@@ -136,8 +160,8 @@ nodes:
   - id: penguin-dog-blueberry
     type: run@v1
     position:
-      x: 1350
-      y: 320
+      x: 1060
+      y: 860
     inputs:
       script: |-
         go mod tidy
@@ -147,8 +171,8 @@ nodes:
   - id: giraffe-monkey-plum
     type: run@v1
     position:
-      x: 1870
-      y: 700
+      x: 2030
+      y: 1420
     inputs:
       script: >-
         GOOS=darwin GOARCH=arm64 go build -tags=github_impl -o
@@ -163,8 +187,8 @@ nodes:
   - id: orange-watermelon-lion
     type: github.com/actions/upload-artifact@v3.1.3
     position:
-      x: 2220
-      y: 710
+      x: 2320
+      y: 1420
     inputs:
       name: graph-runner-macos
       path: graph-runner-macos.tar
@@ -173,12 +197,51 @@ nodes:
   - id: blue-monkey-tiger
     type: parallel-exec@v1
     position:
-      x: 1660
-      y: 430
+      x: 1720
+      y: 970
     outputs:
       exec[0]: ''
       exec[1]: ''
       exec[2]: ''
+    settings:
+      folded: false
+  - id: env-get-v1-rabbit-octopus-gold
+    type: env-get@v1
+    position:
+      x: 790
+      y: 1370
+    inputs:
+      env: GITHUB_REF_NAME
+    settings:
+      folded: false
+  - id: string-match-v1-pomegranate-raspberry-silver
+    type: string-match@v1
+    position:
+      x: 1050
+      y: 1380
+    inputs:
+      op: startswith
+      str2: refs/tags/
+    settings:
+      folded: false
+  - id: branch-v1-pink-purple-koala
+    type: branch@v1
+    position:
+      x: 1410
+      y: 1110
+    settings:
+      folded: false
+  - id: run-v1-cherry-raspberry-pineapple
+    type: run@v1
+    position:
+      x: 1650
+      y: 1140
+    inputs:
+      script: >-
+        go vet
+
+        go test ./... -v -race -coverpkg=./... -cover -coverprofile cover.out
+        --tags=unit_tests,integration_tests,system_tests,github_impl
     settings:
       folded: false
 registries:
