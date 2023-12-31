@@ -29,6 +29,7 @@ var githubContext = make(map[string]string)
 var secretsContext = map[string]string{}
 
 func githubContextInit() {
+	githubContext["github.job"] = os.Getenv("GITHUB_JOB")
 	githubContext["github.actor"] = os.Getenv("GITHUB_ACTOR")
 	githubContext["github.base_ref"] = os.Getenv("GITHUB_BASE_REF")
 	githubContext["github.event_name"] = os.Getenv("GITHUB_EVENT_NAME")
@@ -40,6 +41,9 @@ func githubContextInit() {
 	githubContext["github.workflow"] = os.Getenv("GITHUB_WORKFLOW")
 	githubContext["github.workspace"] = os.Getenv("GITHUB_WORKSPACE")
 	githubContext["github.token"] = os.Getenv("INPUT_TOKEN")
+
+	// TODO: (Seb) Add all remaining env vars
+	// See https://docs.github.com/en/actions/learn-github-actions/contexts
 }
 
 func getGithubVarsRe() *regexp.Regexp {
