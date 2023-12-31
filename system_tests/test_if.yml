@@ -8,16 +8,16 @@ executions:
       port: exec
   - src:
       node: if-v1-koala-peach-gray
-      port: then
+      port: exec-then
     dst:
       node: run-v1-penguin-pineapple-pineapple
-      port: exec_success
+      port: exec
   - src:
       node: if-v1-koala-peach-gray
-      port: otherwise
+      port: exec-otherwise
     dst:
       node: run-v1-mango-silver-silver
-      port: exec_success
+      port: exec
 connections:
   - src:
       node: env-get-v1-kangaroo-zebra-orange
@@ -37,21 +37,25 @@ nodes:
     position:
       x: 290
       y: 70
-    inputs: {}
+    settings:
+      folded: false
   - id: if-v1-koala-peach-gray
     type: branch@v1
     position:
       x: 1100
       y: 130
-    inputs: {}
+    settings:
+      folded: false
   - id: run-v1-penguin-pineapple-pineapple
     type: run@v1
     position:
-      x: 1450
-      y: -60
+      x: 1440
+      y: -90
     inputs:
       shell: python
       script: print("Yes")
+    settings:
+      folded: false
   - id: run-v1-mango-silver-silver
     type: run@v1
     position:
@@ -60,6 +64,8 @@ nodes:
     inputs:
       shell: python
       script: print("No")
+    settings:
+      folded: false
   - id: string-match-v1-strawberry-orange-dog
     type: string-match@v1
     position:
@@ -68,6 +74,8 @@ nodes:
     inputs:
       op: equals
       str2: Hello World!
+    settings:
+      folded: false
   - id: env-get-v1-kangaroo-zebra-orange
     type: env-get@v1
     position:
@@ -75,4 +83,7 @@ nodes:
       y: 260
     inputs:
       env: FOO
-description: Test for graph-runner
+    settings:
+      folded: false
+registries: []
+description: ''

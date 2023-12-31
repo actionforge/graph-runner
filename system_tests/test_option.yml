@@ -5,13 +5,13 @@ executions:
       port: exec
     dst:
       node: run-v1-cranberry-cranberry-grape
-      port: exec_success
+      port: exec-success
   - src:
       node: run-v1-cranberry-cranberry-grape
-      port: exec_success
+      port: exec-success
     dst:
       node: run-v1-parrot-kiwi-gold
-      port: exec_success
+      port: exec-success
 connections:
   - src:
       node: run-v1-cranberry-cranberry-grape
