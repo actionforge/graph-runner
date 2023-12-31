@@ -76,7 +76,19 @@ executions:
       node: run-v1-cherry-raspberry-pineapple
       port: exec-success
     dst:
+      node: parallel-exec-v1-cranberry-blueberry-orange
+      port: exec
+  - src:
+      node: parallel-exec-v1-cranberry-blueberry-orange
+      port: exec[1]
+    dst:
       node: branch-v1-pink-purple-koala
+      port: exec
+  - src:
+      node: parallel-exec-v1-cranberry-blueberry-orange
+      port: exec[0]
+    dst:
+      node: github-com-actions-upload-artifact-v3-1-3-purple-rabbit-brown
       port: exec
 connections:
   - src:
@@ -95,8 +107,8 @@ nodes:
   - id: gh-start
     type: gh-start@v1
     position:
-      x: -100
-      y: 1070
+      x: 10
+      y: 10
     settings:
       folded: true
   - id: kiwi-gray-parrot
@@ -118,8 +130,8 @@ nodes:
   - id: penguin-coconut-gray
     type: run@v1
     position:
-      x: 2300
-      y: 710
+      x: 2780
+      y: 870
     inputs:
       script: >-
         GOOS=linux GOARCH=amd64 go build -tags=github_impl -o
@@ -131,8 +143,8 @@ nodes:
   - id: rabbit-dolphin-raspberry
     type: github.com/actions/upload-artifact@v3.1.3
     position:
-      x: 2620
-      y: 710
+      x: 3090
+      y: 880
     inputs:
       name: graph-runner-linux-x64
       path: graph-runner-linux.tar
@@ -141,8 +153,8 @@ nodes:
   - id: yellow-kangaroo-pineapple
     type: run@v1
     position:
-      x: 2300
-      y: 1040
+      x: 2780
+      y: 1200
     inputs:
       script: >-
         GOOS=windows GOARCH=amd64 go build -tags=github_impl -o
@@ -152,8 +164,8 @@ nodes:
   - id: blueberry-lemon-orange
     type: github.com/actions/upload-artifact@v3.1.3
     position:
-      x: 2620
-      y: 1040
+      x: 3090
+      y: 1210
     inputs:
       name: graph-runner-windows-x64
       path: dist-windows/graph-runner-windows-x64.exe
@@ -173,8 +185,8 @@ nodes:
   - id: giraffe-monkey-plum
     type: run@v1
     position:
-      x: 2300
-      y: 1370
+      x: 2780
+      y: 1530
     inputs:
       script: >-
         GOOS=darwin GOARCH=arm64 go build -tags=github_impl -o
@@ -189,8 +201,8 @@ nodes:
   - id: orange-watermelon-lion
     type: github.com/actions/upload-artifact@v3.1.3
     position:
-      x: 2620
-      y: 1370
+      x: 3090
+      y: 1540
     inputs:
       name: graph-runner-macos
       path: graph-runner-macos.tar
@@ -199,8 +211,8 @@ nodes:
   - id: blue-monkey-tiger
     type: parallel-exec@v1
     position:
-      x: 2010
-      y: 940
+      x: 2480
+      y: 1100
     outputs:
       exec[0]: ''
       exec[1]: ''
@@ -210,8 +222,8 @@ nodes:
   - id: env-get-v1-rabbit-octopus-gold
     type: env-get@v1
     position:
-      x: 1150
-      y: 1220
+      x: 1470
+      y: 1130
     inputs:
       env: GITHUB_REF
     settings:
@@ -219,8 +231,8 @@ nodes:
   - id: string-match-v1-pomegranate-raspberry-silver
     type: string-match@v1
     position:
-      x: 1420
-      y: 1220
+      x: 1730
+      y: 1140
     inputs:
       op: startswith
       str2: refs/tags/
@@ -229,8 +241,8 @@ nodes:
   - id: branch-v1-pink-purple-koala
     type: branch@v1
     position:
-      x: 1790
-      y: 1000
+      x: 2160
+      y: 1160
     settings:
       folded: false
   - id: run-v1-cherry-raspberry-pineapple
@@ -244,6 +256,28 @@ nodes:
 
         go test ./... -v -race -coverpkg=./... -cover -coverprofile cover.out
         --tags=unit_tests,integration_tests,system_tests,github_impl
+
+        go tool cover -html cover.out -o cover.html
+    settings:
+      folded: false
+  - id: parallel-exec-v1-cranberry-blueberry-orange
+    type: parallel-exec@v1
+    position:
+      x: 1800
+      y: 760
+    outputs:
+      exec[0]: ''
+      exec[1]: ''
+    settings:
+      folded: false
+  - id: github-com-actions-upload-artifact-v3-1-3-purple-rabbit-brown
+    type: github.com/actions/upload-artifact@v3.1.3
+    position:
+      x: 2110
+      y: 800
+    inputs:
+      name: cover
+      path: cover.html
     settings:
       folded: false
 registries:
