@@ -211,7 +211,7 @@ nodes:
       x: 790
       y: 1370
     inputs:
-      env: GITHUB_REF_NAME
+      env: GITHUB_REF
     settings:
       folded: false
   - id: string-match-v1-pomegranate-raspberry-silver
