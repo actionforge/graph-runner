@@ -151,10 +151,13 @@ nodes:
       y: 700
     inputs:
       script: >-
-        GOOS=linux GOARCH=amd64 go build -tags=github_impl -o
-        dist-linux/graph-runner-linux-x64 .
+        GOOS=darwin GOARCH=arm64 go build -tags=github_impl -o
+        dist-macos/graph-runner-macos-arm64 .
 
-        tar -cvf graph-runner-linux.tar -C dist-linux .
+        GOOS=darwin GOARCH=amd64 go build -tags=github_impl -o
+        dist-macos/graph-runner-macos-x64 .
+
+        tar -cvf graph-runner-macos.tar -C dist-macos .
     settings:
       folded: false
   - id: orange-watermelon-lion
