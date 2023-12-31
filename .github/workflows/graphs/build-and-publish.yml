@@ -61,22 +61,22 @@ executions:
       node: rabbit-dolphin-raspberry
       port: exec
   - src:
-      node: penguin-dog-blueberry
-      port: exec-success
-    dst:
-      node: branch-v1-pink-purple-koala
-      port: exec
-  - src:
       node: branch-v1-pink-purple-koala
       port: exec-then
     dst:
       node: blue-monkey-tiger
       port: exec
   - src:
-      node: branch-v1-pink-purple-koala
-      port: exec-otherwise
+      node: penguin-dog-blueberry
+      port: exec-success
     dst:
       node: run-v1-cherry-raspberry-pineapple
+      port: exec
+  - src:
+      node: run-v1-cherry-raspberry-pineapple
+      port: exec-success
+    dst:
+      node: branch-v1-pink-purple-koala
       port: exec
 connections:
   - src:
@@ -227,15 +227,15 @@ nodes:
   - id: branch-v1-pink-purple-koala
     type: branch@v1
     position:
-      x: 1410
-      y: 1110
+      x: 1790
+      y: 1150
     settings:
       folded: false
   - id: run-v1-cherry-raspberry-pineapple
     type: run@v1
     position:
-      x: 1650
-      y: 1140
+      x: 1390
+      y: 1090
     inputs:
       script: >-
         go vet
