@@ -103,6 +103,42 @@ connections:
     dst:
       node: branch-v1-pink-purple-koala
       port: condition
+  - src:
+      node: env-get-v1-strawberry-banana-cranberry
+      port: env
+    dst:
+      node: string-fmt-v1-giraffe-gray-plum
+      port: input[0]
+  - src:
+      node: env-get-v1-strawberry-banana-cranberry
+      port: env
+    dst:
+      node: string-fmt-v1-dolphin-monkey-grape
+      port: input[0]
+  - src:
+      node: env-get-v1-strawberry-banana-cranberry
+      port: env
+    dst:
+      node: string-fmt-v1-squirrel-strawberry-plum
+      port: input[0]
+  - src:
+      node: string-fmt-v1-dolphin-monkey-grape
+      port: result
+    dst:
+      node: orange-watermelon-lion
+      port: name
+  - src:
+      node: string-fmt-v1-giraffe-gray-plum
+      port: result
+    dst:
+      node: blueberry-lemon-orange
+      port: name
+  - src:
+      node: string-fmt-v1-squirrel-strawberry-plum
+      port: result
+    dst:
+      node: rabbit-dolphin-raspberry
+      port: name
 nodes:
   - id: gh-start
     type: gh-start@v1
@@ -130,8 +166,8 @@ nodes:
   - id: penguin-coconut-gray
     type: run@v1
     position:
-      x: 2780
-      y: 870
+      x: 2830
+      y: 730
     inputs:
       script: >-
         GOOS=linux GOARCH=amd64 go build -ldflags "-X
@@ -144,8 +180,8 @@ nodes:
   - id: rabbit-dolphin-raspberry
     type: github.com/actions/upload-artifact@v3.1.3
     position:
-      x: 3090
-      y: 880
+      x: 3250
+      y: 1180
     inputs:
       name: graph-runner-linux-x64
       path: graph-runner-linux.tar
@@ -154,8 +190,8 @@ nodes:
   - id: yellow-kangaroo-pineapple
     type: run@v1
     position:
-      x: 2780
-      y: 1200
+      x: 2830
+      y: 1060
     inputs:
       script: >-
         GOOS=windows GOARCH=amd64 go build -ldflags "-X
@@ -166,8 +202,8 @@ nodes:
   - id: blueberry-lemon-orange
     type: github.com/actions/upload-artifact@v3.1.3
     position:
-      x: 3090
-      y: 1210
+      x: 3250
+      y: 1480
     inputs:
       name: graph-runner-windows-x64
       path: dist-windows/graph-runner-windows-x64.exe
@@ -187,8 +223,8 @@ nodes:
   - id: giraffe-monkey-plum
     type: run@v1
     position:
-      x: 2780
-      y: 1530
+      x: 2830
+      y: 1390
     inputs:
       script: >-
         GOOS=darwin GOARCH=arm64 go build -ldflags "-X
@@ -205,8 +241,8 @@ nodes:
   - id: orange-watermelon-lion
     type: github.com/actions/upload-artifact@v3.1.3
     position:
-      x: 3090
-      y: 1540
+      x: 3250
+      y: 1790
     inputs:
       name: graph-runner-macos
       path: graph-runner-macos.tar
@@ -215,7 +251,7 @@ nodes:
   - id: blue-monkey-tiger
     type: parallel-exec@v1
     position:
-      x: 2480
+      x: 2530
       y: 1100
     outputs:
       exec[0]: ''
@@ -282,6 +318,45 @@ nodes:
     inputs:
       name: cover
       path: cover.html
+    settings:
+      folded: false
+  - id: string-fmt-v1-squirrel-strawberry-plum
+    type: string-fmt@v1
+    position:
+      x: 2810
+      y: 1730
+    inputs:
+      input[0]: null
+      fmt: graph-runner-linux-%v.tar
+    settings:
+      folded: false
+  - id: string-fmt-v1-giraffe-gray-plum
+    type: string-fmt@v1
+    position:
+      x: 2810
+      y: 1940
+    inputs:
+      input[0]: null
+      fmt: graph-runner-windows-x64-%v
+    settings:
+      folded: false
+  - id: string-fmt-v1-dolphin-monkey-grape
+    type: string-fmt@v1
+    position:
+      x: 2810
+      y: 2160
+    inputs:
+      input[0]: null
+      fmt: graph-runner-macos-%v.tar
+    settings:
+      folded: false
+  - id: env-get-v1-strawberry-banana-cranberry
+    type: env-get@v1
+    position:
+      x: 2480
+      y: 2050
+    inputs:
+      env: GITHUB_REF_NAME
     settings:
       folded: false
 registries:
