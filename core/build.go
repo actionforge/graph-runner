@@ -7,7 +7,7 @@ import (
 
 var (
 	// To set version number, build with:
-	// $ go build -ldflags "-X actionforge/graph-runner/core.Version=1.2.3"
+	// $ go build -ldflags "-X actionforge/graph-runner/core.Version=v1.2.3"
 	Version string
 )
 
