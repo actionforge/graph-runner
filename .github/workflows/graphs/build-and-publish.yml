@@ -134,8 +134,9 @@ nodes:
       y: 870
     inputs:
       script: >-
-        GOOS=linux GOARCH=amd64 go build -tags=github_impl -o
-        dist-linux/graph-runner-linux-x64 .
+        GOOS=linux GOARCH=amd64 go build -ldflags "-X
+        actionforge/graph-runner/core.Version=$GITHUB_REF_NAME"
+        -tags=github_impl -o dist-linux/graph-runner-linux-x64 .
 
         tar -cvf graph-runner-linux.tar -C dist-linux .
     settings:
@@ -157,8 +158,9 @@ nodes:
       y: 1200
     inputs:
       script: >-
-        GOOS=windows GOARCH=amd64 go build -tags=github_impl -o
-        dist-windows/graph-runner-windows-x64.exe .
+        GOOS=windows GOARCH=amd64 go build -ldflags "-X
+        actionforge/graph-runner/core.Version=$GITHUB_REF_NAME"
+        -tags=github_impl -o dist-windows/graph-runner-windows-x64.exe .
     settings:
       folded: false
   - id: blueberry-lemon-orange
@@ -189,11 +191,13 @@ nodes:
       y: 1530
     inputs:
       script: >-
-        GOOS=darwin GOARCH=arm64 go build -tags=github_impl -o
-        dist-macos/graph-runner-macos-arm64 .
+        GOOS=darwin GOARCH=arm64 go build -ldflags "-X
+        actionforge/graph-runner/core.Version=$GITHUB_REF_NAME"
+        -tags=github_impl -o dist-macos/graph-runner-macos-arm64 .
 
-        GOOS=darwin GOARCH=amd64 go build -tags=github_impl -o
-        dist-macos/graph-runner-macos-x64 .
+        GOOS=darwin GOARCH=amd64 go build -ldflags "-X
+        actionforge/graph-runner/core.Version=$GITHUB_REF_NAME"
+        -tags=github_impl -o dist-macos/graph-runner-macos-x64 .
 
         tar -cvf graph-runner-macos.tar -C dist-macos .
     settings:
