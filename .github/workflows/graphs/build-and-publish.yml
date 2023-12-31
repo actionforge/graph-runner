@@ -102,15 +102,15 @@ nodes:
   - id: kiwi-gray-parrot
     type: github.com/actions/checkout
     position:
-      x: 260
-      y: 990
+      x: 270
+      y: 1000
     settings:
       folded: false
   - id: gray-mango-cherry
     type: github.com/actions/setup-go
     position:
-      x: 660
-      y: 950
+      x: 700
+      y: 970
     inputs:
       go-version: '1.21'
     settings:
@@ -118,19 +118,21 @@ nodes:
   - id: penguin-coconut-gray
     type: run@v1
     position:
-      x: 2030
-      y: 740
+      x: 2300
+      y: 710
     inputs:
-      script: |-
-        GOOS=linux GOARCH=amd64 go build -o dist-linux/graph-runner-linux-x64 .
+      script: >-
+        GOOS=linux GOARCH=amd64 go build -tags=github_impl -o
+        dist-linux/graph-runner-linux-x64 .
+
         tar -cvf graph-runner-linux.tar -C dist-linux .
     settings:
       folded: false
   - id: rabbit-dolphin-raspberry
     type: github.com/actions/upload-artifact@v3.1.3
     position:
-      x: 2320
-      y: 740
+      x: 2620
+      y: 710
     inputs:
       name: graph-runner-linux-x64
       path: graph-runner-linux.tar
@@ -139,8 +141,8 @@ nodes:
   - id: yellow-kangaroo-pineapple
     type: run@v1
     position:
-      x: 2030
-      y: 1080
+      x: 2300
+      y: 1040
     inputs:
       script: >-
         GOOS=windows GOARCH=amd64 go build -tags=github_impl -o
@@ -150,8 +152,8 @@ nodes:
   - id: blueberry-lemon-orange
     type: github.com/actions/upload-artifact@v3.1.3
     position:
-      x: 2320
-      y: 1080
+      x: 2620
+      y: 1040
     inputs:
       name: graph-runner-windows-x64
       path: dist-windows/graph-runner-windows-x64.exe
@@ -160,8 +162,8 @@ nodes:
   - id: penguin-dog-blueberry
     type: run@v1
     position:
-      x: 1060
-      y: 860
+      x: 1110
+      y: 890
     inputs:
       script: |-
         go mod tidy
@@ -171,8 +173,8 @@ nodes:
   - id: giraffe-monkey-plum
     type: run@v1
     position:
-      x: 2030
-      y: 1420
+      x: 2300
+      y: 1370
     inputs:
       script: >-
         GOOS=darwin GOARCH=arm64 go build -tags=github_impl -o
@@ -187,8 +189,8 @@ nodes:
   - id: orange-watermelon-lion
     type: github.com/actions/upload-artifact@v3.1.3
     position:
-      x: 2320
-      y: 1420
+      x: 2620
+      y: 1370
     inputs:
       name: graph-runner-macos
       path: graph-runner-macos.tar
@@ -197,8 +199,8 @@ nodes:
   - id: blue-monkey-tiger
     type: parallel-exec@v1
     position:
-      x: 1720
-      y: 970
+      x: 2010
+      y: 940
     outputs:
       exec[0]: ''
       exec[1]: ''
@@ -208,8 +210,8 @@ nodes:
   - id: env-get-v1-rabbit-octopus-gold
     type: env-get@v1
     position:
-      x: 790
-      y: 1370
+      x: 1150
+      y: 1220
     inputs:
       env: GITHUB_REF
     settings:
@@ -217,8 +219,8 @@ nodes:
   - id: string-match-v1-pomegranate-raspberry-silver
     type: string-match@v1
     position:
-      x: 1050
-      y: 1380
+      x: 1420
+      y: 1220
     inputs:
       op: startswith
       str2: refs/tags/
@@ -228,14 +230,14 @@ nodes:
     type: branch@v1
     position:
       x: 1790
-      y: 1150
+      y: 1000
     settings:
       folded: false
   - id: run-v1-cherry-raspberry-pineapple
     type: run@v1
     position:
-      x: 1390
-      y: 1090
+      x: 1420
+      y: 800
     inputs:
       script: >-
         go vet
