@@ -1,12 +1,6 @@
 entry: gh-start
 executions:
   - src:
-      node: run-v1-monkey-plum-panda
-      port: exec_success
-    dst:
-      node: wait-for-v1-tiger-coconut-silver
-      port: exec[0]
-  - src:
       node: gh-start
       port: exec
     dst:
@@ -31,18 +25,6 @@ executions:
       node: run-v1-dog-shark-panda
       port: exec
   - src:
-      node: run-v1-shark-purple-brown
-      port: exec_success
-    dst:
-      node: wait-for-v1-tiger-coconut-silver
-      port: exec[1]
-  - src:
-      node: run-v1-dog-shark-panda
-      port: exec_success
-    dst:
-      node: wait-for-v1-tiger-coconut-silver
-      port: exec[2]
-  - src:
       node: wait-for-v1-tiger-coconut-silver
       port: exec
     dst:
@@ -55,23 +37,41 @@ executions:
       node: run-v1-squirrel-zebra-zebra
       port: exec
   - src:
-      node: run-v1-squirrel-zebra-zebra
-      port: exec_success
-    dst:
-      node: wait-for-v1-tiger-coconut-silver
-      port: exec[3]
-  - src:
-      node: run-v1-orange-dog-brown
-      port: exec_success
-    dst:
-      node: wait-for-v1-tiger-coconut-silver
-      port: exec[4]
-  - src:
       node: parallel-exec-v1-orange-gray-peach
       port: exec[4]
     dst:
       node: run-v1-orange-dog-brown
       port: exec
+  - src:
+      node: run-v1-monkey-plum-panda
+      port: exec-success
+    dst:
+      node: wait-for-v1-tiger-coconut-silver
+      port: exec[0]
+  - src:
+      node: run-v1-shark-purple-brown
+      port: exec-success
+    dst:
+      node: wait-for-v1-tiger-coconut-silver
+      port: exec[1]
+  - src:
+      node: run-v1-dog-shark-panda
+      port: exec-success
+    dst:
+      node: wait-for-v1-tiger-coconut-silver
+      port: exec[2]
+  - src:
+      node: run-v1-squirrel-zebra-zebra
+      port: exec-success
+    dst:
+      node: wait-for-v1-tiger-coconut-silver
+      port: exec[3]
+  - src:
+      node: run-v1-orange-dog-brown
+      port: exec-success
+    dst:
+      node: wait-for-v1-tiger-coconut-silver
+      port: exec[4]
 connections: []
 nodes:
   - id: gh-start
@@ -97,8 +97,8 @@ nodes:
   - id: wait-for-v1-tiger-coconut-silver
     type: wait-for@v1
     position:
-      x: 1340
-      y: 150
+      x: 1420
+      y: 160
     inputs:
       after: 1
       exec[0]: null
@@ -111,8 +111,8 @@ nodes:
   - id: run-v1-monkey-plum-panda
     type: run@v1
     position:
-      x: 960
-      y: -430
+      x: 1120
+      y: -420
     inputs:
       shell: python
       script: print("Goroutine 1")
@@ -131,7 +131,7 @@ nodes:
   - id: run-v1-shark-purple-brown
     type: run@v1
     position:
-      x: 970
+      x: 1120
       y: -90
     inputs:
       shell: python
@@ -169,4 +169,4 @@ nodes:
     settings:
       folded: false
 registries: []
-description: Dev
+description: ''

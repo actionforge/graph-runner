@@ -5,23 +5,25 @@ package nodes
 
 import (
 	"actionforge/graph-runner/core"
+	"os"
 	"testing"
 )
 
 func TestReplaceContextVariables(t *testing.T) {
 
 	// Fill github context variables with some dummy data
-	githubContext = map[string]string{
-		"github.workspace":  "/home/runner/work/my-repo/my-repo",
-		"github.repository": "my-user/my-repo",
-		"github.job":        "build",
-		"github.ref":        "refs/heads/main",
-		"github.sha":        "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0",
-		"github.event":      "push",
-		"github.workflow":   "CI Build",
 
-		"github.token": "ghp_1234567890abcdef1234567890abcdef12345678",
-	}
+	os.Setenv("GITHUB_ACTOR", "actioncat")
+	os.Setenv("GITHUB_BASE_REF", "main")
+	os.Setenv("GITHUB_EVENT_NAME", "push")
+	os.Setenv("GITHUB_JOB", "build")
+	os.Setenv("GITHUB_EVENT_PATH", "/home/runner/work/_temp/_github_workflow/event.json")
+	os.Setenv("GITHUB_HEAD_REF", "feature-branch")
+	os.Setenv("GITHUB_REF", "refs/heads/main")
+	os.Setenv("GITHUB_SHA", "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0")
+	os.Setenv("GITHUB_REPOSITORY", "my-user/my-repo")
+	os.Setenv("GITHUB_TOKEN", "ghp_1234567890abcdef1234567890abcdef12345678")
+	os.Setenv("GITHUB_WORKFLOW", "CI Build")
 
 	// Define test cases
 	testCases := []struct {
@@ -56,7 +58,7 @@ func TestReplaceContextVariables(t *testing.T) {
 		},
 		{
 			name:           "Check github.event",
-			input:          "Event name: ${{ github.event }}.",
+			input:          "Event name: ${{ github.event_name }}.",
 			inputValues:    map[core.InputId]interface{}{},
 			expectedOutput: "Event name: push.",
 		},

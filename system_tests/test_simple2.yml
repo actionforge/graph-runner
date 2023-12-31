@@ -5,25 +5,25 @@ executions:
       port: exec
     dst:
       node: run-v1-yellow-squirrel-octopus
-      port: exec_success
+      port: exec-success
   - src:
       node: run-v1-yellow-squirrel-octopus
-      port: exec_err
+      port: exec-err
     dst:
       node: run-v1-blueberry-lion-giraffe
-      port: exec_success
+      port: exec-success
   - src:
       node: run-v1-yellow-squirrel-octopus
-      port: exec_success
+      port: exec-success
     dst:
       node: run-v1-orange-squirrel-koala
-      port: exec_success
+      port: exec-success
   - src:
       node: run-v1-orange-squirrel-koala
-      port: exec_success
+      port: exec-success
     dst:
       node: run-v1-koala-lemon-cranberry
-      port: exec_success
+      port: exec-success
 connections:
   - src:
       node: string-fmt-v1-raspberry-coconut-shark

@@ -11,13 +11,13 @@ executions:
       port: exec-body
     dst:
       node: run-v1-butterfly-gray-shark
-      port: exec_success
+      port: exec-success
   - src:
       node: for-v1-snake-strawberry-tiger
       port: exec-finish
     dst:
       node: run-v1-cherry-banana-brown
-      port: exec_success
+      port: exec-success
 connections:
   - src:
       node: for-v1-snake-strawberry-tiger

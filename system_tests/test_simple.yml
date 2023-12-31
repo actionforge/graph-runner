@@ -5,19 +5,19 @@ executions:
       port: exec
     dst:
       node: run-v1-koala-giraffe-cranberry
-      port: exec_success
+      port: exec-success
   - src:
       node: run-v1-koala-giraffe-cranberry
-      port: exec_err
+      port: exec-err
     dst:
       node: run-v1-brown-purple-giraffe
-      port: exec_success
+      port: exec-success
   - src:
       node: run-v1-koala-giraffe-cranberry
-      port: exec_success
+      port: exec-success
     dst:
       node: run-v1-purple-dog-koala
-      port: exec_success
+      port: exec-success
 connections: []
 nodes:
   - id: start
