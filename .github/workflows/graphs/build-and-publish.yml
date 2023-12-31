@@ -95,8 +95,8 @@ nodes:
   - id: gh-start
     type: gh-start@v1
     position:
-      x: 10
-      y: 10
+      x: -100
+      y: 1070
     settings:
       folded: true
   - id: kiwi-gray-parrot
