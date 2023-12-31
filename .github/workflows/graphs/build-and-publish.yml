@@ -25,34 +25,10 @@ executions:
       node: penguin-coconut-gray
       port: exec
   - src:
-      node: penguin-dog-blueberry
-      port: exec_success
-    dst:
-      node: blue-monkey-tiger
-      port: exec
-  - src:
       node: blue-monkey-tiger
       port: exec[0]
     dst:
       node: penguin-coconut-gray
-      port: exec
-  - src:
-      node: giraffe-monkey-plum
-      port: exec_success
-    dst:
-      node: orange-watermelon-lion
-      port: exec
-  - src:
-      node: yellow-kangaroo-pineapple
-      port: exec_success
-    dst:
-      node: blueberry-lemon-orange
-      port: exec
-  - src:
-      node: penguin-coconut-gray
-      port: exec_success
-    dst:
-      node: rabbit-dolphin-raspberry
       port: exec
   - src:
       node: blue-monkey-tiger
@@ -65,6 +41,30 @@ executions:
       port: exec[2]
     dst:
       node: giraffe-monkey-plum
+      port: exec
+  - src:
+      node: giraffe-monkey-plum
+      port: exec-success
+    dst:
+      node: orange-watermelon-lion
+      port: exec
+  - src:
+      node: yellow-kangaroo-pineapple
+      port: exec-success
+    dst:
+      node: blueberry-lemon-orange
+      port: exec
+  - src:
+      node: penguin-coconut-gray
+      port: exec-success
+    dst:
+      node: rabbit-dolphin-raspberry
+      port: exec
+  - src:
+      node: penguin-dog-blueberry
+      port: exec-success
+    dst:
+      node: blue-monkey-tiger
       port: exec
 connections: []
 nodes:
@@ -119,7 +119,7 @@ nodes:
       y: 370
     inputs:
       script: >-
-        GOOS=windows GOARCH=amd64 go build -o
+        GOOS=windows GOARCH=amd64 go build -tags=github_impl -o
         dist-windows/graph-runner-windows-x64.exe .
     settings:
       folded: false
@@ -139,9 +139,8 @@ nodes:
       x: 1350
       y: 320
     inputs:
-      script: >-
+      script: |-
         go mod tidy
-
         go vet
     settings:
       folded: false
@@ -152,12 +151,10 @@ nodes:
       y: 700
     inputs:
       script: >-
-        GOOS=darwin GOARCH=arm64 go build -o dist-macos/graph-runner-macos-arm64
-        .
+        GOOS=linux GOARCH=amd64 go build -tags=github_impl -o
+        dist-linux/graph-runner-linux-x64 .
 
-        GOOS=darwin GOARCH=amd64 go build -o dist-macos/graph-runner-macos-x64 .
-
-        tar -cvf graph-runner-macos.tar -C dist-macos .
+        tar -cvf graph-runner-linux.tar -C dist-linux .
     settings:
       folded: false
   - id: orange-watermelon-lion
@@ -183,4 +180,4 @@ nodes:
       folded: false
 registries:
   - github.com/actions/upload-artifact@v3.1.3
-description: Dev
+description: ''
