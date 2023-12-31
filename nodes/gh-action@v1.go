@@ -57,7 +57,7 @@ func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
 		return fmt.Errorf("GITHUB_WORKSPACE not set")
 	}
 
-	fmt.Printf("✅ Executing GitHub action (%s)\n", n.actionName)
+	fmt.Printf("➡️ Execute GitHub action (%s)\n", n.actionName)
 
 	environ := make([]string, len(os.Environ()))
 	for _, env := range os.Environ() {
