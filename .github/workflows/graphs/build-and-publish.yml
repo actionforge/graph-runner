@@ -145,12 +145,6 @@ connections:
     dst:
       node: github-com-docker-build-push-action-v5-1-0-brown-orange-banana
       port: tags
-  - src:
-      node: env-get-v1-strawberry-banana-cranberry
-      port: env
-    dst:
-      node: string-fmt-v1-shark-orange-brown
-      port: input[0]
 nodes:
   - id: gh-start
     type: gh-start@v1
@@ -387,8 +381,8 @@ nodes:
       x: 1890
       y: 1870
     inputs:
-      input[0]: null
-      fmt: actionforge/graph-runner:latest,actionforge/graph-runner:v0.1-test
+      input[0]: ''
+      fmt: actionforge/graph-runner:latest,actionforge/graph-runner:v0.1-test%v
     settings:
       folded: false
 registries:
