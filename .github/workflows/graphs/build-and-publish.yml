@@ -369,8 +369,8 @@ nodes:
   - id: github-com-docker-build-push-action-v5-1-0-brown-orange-banana
     type: github.com/docker/build-push-action@v5.1.0
     position:
-      x: 2510
-      y: 1450
+      x: 3150
+      y: 1420
     inputs:
       push: 'true'
     settings:
@@ -378,11 +378,12 @@ nodes:
   - id: string-fmt-v1-shark-orange-brown
     type: string-fmt@v1
     position:
-      x: 1890
+      x: 1610
       y: 1870
     inputs:
       input[0]: ''
-      fmt: actionforge/graph-runner:latest,actionforge/graph-runner:v0.1-test%v
+      fmt: >-
+        ghcr.io/actionforge/graph-runner:latest,ghcr.io/actionforge/graph-runner:v0.1-test%v
     settings:
       folded: false
 registries:
