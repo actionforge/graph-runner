@@ -139,26 +139,38 @@ connections:
     dst:
       node: rabbit-dolphin-raspberry
       port: name
+  - src:
+      node: string-fmt-v1-shark-orange-brown
+      port: result
+    dst:
+      node: github-com-docker-build-push-action-v5-1-0-brown-orange-banana
+      port: tags
+  - src:
+      node: env-get-v1-strawberry-banana-cranberry
+      port: env
+    dst:
+      node: string-fmt-v1-shark-orange-brown
+      port: input[0]
 nodes:
   - id: gh-start
     type: gh-start@v1
     position:
       x: 30
-      y: 1240
+      y: 10
     settings:
       folded: true
   - id: kiwi-gray-parrot
     type: github.com/actions/checkout
     position:
-      x: 380
-      y: 2230
+      x: 370
+      y: 1000
     settings:
       folded: false
   - id: gray-mango-cherry
     type: github.com/actions/setup-go
     position:
-      x: 990
-      y: 2200
+      x: 890
+      y: 970
     inputs:
       go-version: '1.21'
     settings:
@@ -167,7 +179,7 @@ nodes:
     type: run@v1
     position:
       x: 430
-      y: 10
+      y: 1730
     inputs:
       script: >-
         GOOS=linux GOARCH=amd64 go build -ldflags "-X
@@ -180,8 +192,8 @@ nodes:
   - id: rabbit-dolphin-raspberry
     type: github.com/actions/upload-artifact@v3.1.3
     position:
-      x: 990
-      y: 90
+      x: 890
+      y: 2210
     inputs:
       name: graph-runner-linux-x64
       path: graph-runner-linux.tar
@@ -191,7 +203,7 @@ nodes:
     type: run@v1
     position:
       x: 430
-      y: 340
+      y: 2060
     inputs:
       script: >-
         GOOS=windows GOARCH=amd64 go build -ldflags "-X
@@ -202,8 +214,8 @@ nodes:
   - id: blueberry-lemon-orange
     type: github.com/actions/upload-artifact@v3.1.3
     position:
-      x: 990
-      y: 420
+      x: 890
+      y: 2510
     inputs:
       name: graph-runner-windows-x64
       path: dist-windows/graph-runner-windows-x64.exe
@@ -212,8 +224,8 @@ nodes:
   - id: penguin-dog-blueberry
     type: run@v1
     position:
-      x: 1400
-      y: 2110
+      x: 1300
+      y: 890
     inputs:
       script: |-
         go mod tidy
@@ -224,7 +236,7 @@ nodes:
     type: run@v1
     position:
       x: 430
-      y: 670
+      y: 2390
     inputs:
       script: >-
         GOOS=darwin GOARCH=arm64 go build -ldflags "-X
@@ -241,8 +253,8 @@ nodes:
   - id: orange-watermelon-lion
     type: github.com/actions/upload-artifact@v3.1.3
     position:
-      x: 990
-      y: 830
+      x: 890
+      y: 2820
     inputs:
       name: graph-runner-macos
       path: graph-runner-macos.tar
@@ -252,7 +264,7 @@ nodes:
     type: parallel-exec@v1
     position:
       x: 80
-      y: 230
+      y: 1980
     outputs:
       exec[0]: ''
       exec[1]: ''
@@ -262,8 +274,8 @@ nodes:
   - id: env-get-v1-rabbit-octopus-gold
     type: env-get@v1
     position:
-      x: 1760
-      y: 2360
+      x: 1660
+      y: 1130
     inputs:
       env: GITHUB_REF
     settings:
@@ -271,8 +283,8 @@ nodes:
   - id: string-match-v1-pomegranate-raspberry-silver
     type: string-match@v1
     position:
-      x: 2020
-      y: 2360
+      x: 1920
+      y: 1140
     inputs:
       op: startswith
       str2: refs/tags/
@@ -281,15 +293,15 @@ nodes:
   - id: branch-v1-pink-purple-koala
     type: branch@v1
     position:
-      x: 2450
-      y: 2390
+      x: 2290
+      y: 1020
     settings:
       folded: false
   - id: run-v1-cherry-raspberry-pineapple
     type: run@v1
     position:
-      x: 1710
-      y: 2030
+      x: 1610
+      y: 800
     inputs:
       script: >-
         go vet
@@ -303,8 +315,8 @@ nodes:
   - id: parallel-exec-v1-cranberry-blueberry-orange
     type: parallel-exec@v1
     position:
-      x: 2100
-      y: 1990
+      x: 2010
+      y: 760
     outputs:
       exec[0]: ''
       exec[1]: ''
@@ -314,8 +326,8 @@ nodes:
   - id: github-com-actions-upload-artifact-v3-1-3-purple-rabbit-brown
     type: github.com/actions/upload-artifact@v3.1.3
     position:
-      x: 2400
-      y: 2030
+      x: 2290
+      y: 720
     inputs:
       name: cover
       path: cover.html
@@ -325,7 +337,7 @@ nodes:
     type: string-fmt@v1
     position:
       x: 410
-      y: 1010
+      y: 2720
     inputs:
       input[0]: null
       fmt: graph-runner-linux-%v.tar
@@ -335,7 +347,7 @@ nodes:
     type: string-fmt@v1
     position:
       x: 410
-      y: 1400
+      y: 2940
     inputs:
       input[0]: null
       fmt: graph-runner-windows-x64-%v
@@ -345,7 +357,7 @@ nodes:
     type: string-fmt@v1
     position:
       x: 410
-      y: 1160
+      y: 3150
     inputs:
       input[0]: null
       fmt: graph-runner-macos-%v.tar
@@ -355,7 +367,7 @@ nodes:
     type: env-get@v1
     position:
       x: 30
-      y: 1130
+      y: 3010
     inputs:
       env: GITHUB_REF_NAME
     settings:
@@ -363,10 +375,20 @@ nodes:
   - id: github-com-docker-build-push-action-v5-1-0-brown-orange-banana
     type: github.com/docker/build-push-action@v5.1.0
     position:
-      x: 2780
-      y: 2460
+      x: 2290
+      y: 1170
     inputs:
       push: 'true'
+    settings:
+      folded: false
+  - id: string-fmt-v1-shark-orange-brown
+    type: string-fmt@v1
+    position:
+      x: 1900
+      y: 1710
+    inputs:
+      input[0]: null
+      fmt: actionforge/graph-runner:latest,actionforge/graph-runner:%v
     settings:
       folded: false
 registries:
