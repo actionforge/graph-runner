@@ -88,6 +88,12 @@ executions:
       node: parallel-exec-v1-cranberry-blueberry-orange
       port: exec[2]
     dst:
+      node: github-com-docker-login-action-v3-0-0-kiwi-giraffe-kiwi
+      port: exec
+  - src:
+      node: github-com-docker-login-action-v3-0-0-kiwi-giraffe-kiwi
+      port: exec
+    dst:
       node: github-com-docker-build-push-action-v5-1-0-brown-orange-banana
       port: exec
 connections:
@@ -310,7 +316,7 @@ nodes:
     type: parallel-exec@v1
     position:
       x: 2000
-      y: 2600
+      y: 2460
     outputs:
       exec[0]: ''
       exec[1]: ''
@@ -386,6 +392,18 @@ nodes:
         ghcr.io/actionforge/graph-runner:latest,ghcr.io/actionforge/graph-runner:v0.1-test%v
     settings:
       folded: false
+  - id: github-com-docker-login-action-v3-0-0-kiwi-giraffe-kiwi
+    type: github.com/docker/login-action@v3.0.0
+    position:
+      x: 2510
+      y: 2190
+    inputs:
+      registry: ghcr.io
+      username: ${{ github.actor }}
+      password: ${{ secrets.GITHUB_TOKEN }}
+    settings:
+      folded: false
 registries:
   - github.com/docker/build-push-action@v5.1.0
+  - github.com/docker/login-action@v3.0.0
 description: ''
