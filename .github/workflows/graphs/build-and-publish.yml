@@ -13,12 +13,6 @@ executions:
       node: penguin-dog-blueberry
       port: exec
   - src:
-      node: gh-start
-      port: exec-on-push
-    dst:
-      node: kiwi-gray-parrot
-      port: exec
-  - src:
       node: blue-monkey-tiger
       port: exec
     dst:
@@ -95,6 +89,18 @@ executions:
       port: exec
     dst:
       node: github-com-docker-build-push-action-v5-1-0-brown-orange-banana
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-push
+    dst:
+      node: github-com-docker-login-action-v3-0-0-butterfly-shark-lemon
+      port: exec
+  - src:
+      node: github-com-docker-login-action-v3-0-0-butterfly-shark-lemon
+      port: exec
+    dst:
+      node: run-v1-coconut-panda-coconut
       port: exec
 connections:
   - src:
@@ -401,6 +407,26 @@ nodes:
       registry: ghcr.io
       username: ${{ github.actor }}
       password: ${{ secrets.GITHUB_TOKEN }}
+    settings:
+      folded: false
+  - id: github-com-docker-login-action-v3-0-0-butterfly-shark-lemon
+    type: github.com/docker/login-action@v3.0.0
+    position:
+      x: 620
+      y: 1940
+    inputs:
+      registry: ghcr.io
+      username: ${{ github.actor }}
+      password: ${{ secrets.GITHUB_TOKEN }}
+    settings:
+      folded: false
+  - id: run-v1-coconut-panda-coconut
+    type: run@v1
+    position:
+      x: 1020
+      y: 1780
+    inputs:
+      script: echo "Done"
     settings:
       folded: false
 registries:
