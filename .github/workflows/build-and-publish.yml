@@ -9,6 +9,6 @@ jobs:
       contents: read
     steps:
       - name: Execute Action Graph
-        uses: actionforge/action@v0.8.20
+        uses: actionforge/action@v0.8.21
         with:
           graph_file: build-and-publish.yml
