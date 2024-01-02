@@ -67,12 +67,6 @@ executions:
       node: github-com-actions-upload-artifact-v3-1-3-purple-rabbit-brown
       port: exec
   - src:
-      node: github-com-docker-login-action-v3-0-0-kiwi-giraffe-kiwi
-      port: exec
-    dst:
-      node: github-com-docker-build-push-action-v5-1-0-brown-orange-banana
-      port: exec
-  - src:
       node: gh-start
       port: exec-on-push
     dst:
@@ -113,6 +107,18 @@ executions:
       port: exec[0]
     dst:
       node: github-com-actions-upload-artifact-v3-1-3-purple-rabbit-brown
+      port: exec
+  - src:
+      node: github-com-docker-login-action-v3-0-0-kiwi-giraffe-kiwi
+      port: exec
+    dst:
+      node: github-com-docker-setup-buildx-action-v3-0-0-silver-koala-lemon
+      port: exec
+  - src:
+      node: github-com-docker-setup-buildx-action-v3-0-0-silver-koala-lemon
+      port: exec
+    dst:
+      node: github-com-docker-build-push-action-v5-1-0-brown-orange-banana
       port: exec
 connections:
   - src:
@@ -411,11 +417,11 @@ nodes:
   - id: github-com-docker-build-push-action-v5-1-0-brown-orange-banana
     type: github.com/docker/build-push-action@v5.1.0
     position:
-      x: 3250
-      y: 930
+      x: 3960
+      y: 1090
     inputs:
       push: 'true'
-      platforms: darwin,linux/amd64,linux/arm64,linux/arm/v7
+      context: .
     settings:
       folded: false
   - id: string-fmt-v1-shark-orange-brown
@@ -469,7 +475,17 @@ nodes:
       env: GITHUB_REF_NAME
     settings:
       folded: false
+  - id: github-com-docker-setup-buildx-action-v3-0-0-silver-koala-lemon
+    type: github.com/docker/setup-buildx-action@v3.0.0
+    position:
+      x: 3320
+      y: 1160
+    inputs:
+      platforms: linux/amd64,linux/arm64,linux/arm/v7
+    settings:
+      folded: false
 registries:
   - github.com/docker/build-push-action@v5.1.0
   - github.com/docker/login-action@v3.0.0
+  - github.com/docker/setup-buildx-action@v3.0.0
 description: ''

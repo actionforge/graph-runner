@@ -31,6 +31,7 @@ func getExecNameRegex() *regexp.Regexp {
 type NodeExecutionInterface interface {
 	ExecuteImpl(c ExecutionContext) error
 	GetNodeType() string
+	GetName() string
 	GetId() string
 }
 
@@ -40,17 +41,20 @@ type NodeEntryInterface interface {
 }
 
 type NodeBaseInterface interface {
-	SetNodeType(name string)
+	SetNodeType(nodeType string)
 	SetId(id string)
 	GetNodeType() string
 	GetId() string
+	GetName() string
+	SetName(name string)
 }
 
 // Base component for nodes that offer values from other nodes.
 // The node that implements this component has outgoing connections.
 type NodeBaseComponent struct {
+	Name     string // Human readable name of the node
 	Id       string // Unique identifier for the node
-	nodeType string // Name of the node
+	nodeType string // Node type of the node (e.g. run@v1 or github.com/actions/checkout@v3)
 }
 
 func (n *NodeBaseComponent) SetId(id string) {
@@ -69,19 +73,24 @@ func (n *NodeBaseComponent) SetNodeType(name string) {
 	n.nodeType = name
 }
 
+func (n *NodeBaseComponent) GetName() string {
+	return n.Name
+}
+
+func (n *NodeBaseComponent) SetName(name string) {
+	n.Name = name
+}
+
 func (n *NodeBaseComponent) Execute(t NodeExecutionInterface, ec ExecutionContext) error {
 	// nothing to execute
 	if t == nil {
 		return nil
 	}
 
-	// GitHub Action Node does its own logging
-	if t.GetNodeType() != "gh-action@v1" {
-		utils.LoggerBase.Printf("Execute '%s (%s)'\n",
-			t.GetId(),
-			t.GetNodeType(),
-		)
-	}
+	utils.LoggerBase.Printf("🟢 Execute '%s (%s)'\n",
+		t.GetName(),
+		t.GetId(),
+	)
 
 	err := t.ExecuteImpl(ec)
 	if err != nil {
@@ -296,6 +305,6 @@ func NewNodeInstance(nodeType string) (NodeRef, error) {
 
 	utils.InitMapAndSliceInStructRecursively(reflect.ValueOf(node))
 
-	node.SetNodeType(nodeType)
+	node.SetName(factoryEntry.Name)
 	return node, nil
 }
