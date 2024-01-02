@@ -1,10 +1,9 @@
-//go:build system_tests
-// +build system_tests
+//go:build system_tests && github_impl
 
 package system_tests
 
 import (
-	"actionforge/graph-runner/core"
+	"actionforge/graph-runner/nodes"
 	"actionforge/graph-runner/utils"
 	"fmt"
 	"testing"
@@ -20,8 +19,8 @@ type testCase struct {
 func Test_Secret(t *testing.T) {
 	defer utils.LoggerString.Clear()
 
-	core.G_secrets["API_KEY_123"] = "THIS_IS_A_SECRET"
-	defer delete(core.G_secrets, "API_KEY_123")
+	nodes.AddGhSecret("API_KEY_123", "THIS_IS_A_SECRET")
+	defer nodes.RemoveGhSecret("API_KEY_123")
 
 	// Test the run node, env node, and string format node.
 	exitCode, err := runGraphFile("system_tests/test_secret.yml")

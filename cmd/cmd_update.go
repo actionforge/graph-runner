@@ -1,6 +1,5 @@
 //go build update_registry
 //go:build update_registry
-// +build update_registry
 
 package cmd
 

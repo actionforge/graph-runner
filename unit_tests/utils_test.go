@@ -1,5 +1,4 @@
 //go:build unit_tests
-// +build unit_tests
 
 package unit_tests
 

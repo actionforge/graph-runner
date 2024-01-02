@@ -1,5 +1,4 @@
 //go:build github_impl
-// +build github_impl
 
 package nodes
 
@@ -10,8 +9,11 @@ import (
 )
 
 func TestReplaceContextVariables(t *testing.T) {
-
 	// Fill github context variables with some dummy data
+
+	// GITHUB_ACTIONS must be set in order to initialize the github context
+	// structures in the init() function of gh-action.
+	os.Setenv("GITHUB_ACTIONS", "true")
 
 	os.Setenv("GITHUB_ACTOR", "actioncat")
 	os.Setenv("GITHUB_BASE_REF", "main")
@@ -22,8 +24,13 @@ func TestReplaceContextVariables(t *testing.T) {
 	os.Setenv("GITHUB_REF", "refs/heads/main")
 	os.Setenv("GITHUB_SHA", "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0")
 	os.Setenv("GITHUB_REPOSITORY", "my-user/my-repo")
-	os.Setenv("GITHUB_TOKEN", "ghp_1234567890abcdef1234567890abcdef12345678")
+	os.Setenv("INPUT_TOKEN", "ghp_1234567890abcdef1234567890abcdef12345678")
 	os.Setenv("GITHUB_WORKFLOW", "CI Build")
+
+	// Since the env variables are not coming from the parent
+	// process and were instead set manually above, the github
+	// context variables need to be initialized again.
+	initGhContexts()
 
 	// Define test cases
 	testCases := []struct {
@@ -154,13 +161,25 @@ func TestReplaceContextVariables(t *testing.T) {
 			},
 			expectedOutput: "Long variable: LongValue.",
 		},
+		{
+			name:           "Check github.token",
+			input:          "Secret is ${{ github.token }}.",
+			inputValues:    map[core.InputId]interface{}{},
+			expectedOutput: "Secret is ghp_1234567890abcdef1234567890abcdef12345678.",
+		},
+		{
+			name:           "Check github.token",
+			input:          "Secret is ${{ secrets.GITHUB_TOKEN }}.",
+			inputValues:    map[core.InputId]interface{}{},
+			expectedOutput: "Secret is ghp_1234567890abcdef1234567890abcdef12345678.",
+		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			output := ReplaceContextVariables(tc.input, tc.inputValues)
 			if output != tc.expectedOutput {
-				t.Errorf("Output should match expected output")
+				t.Errorf("Output should match expected output, but got: %s", output)
 			}
 		})
 	}

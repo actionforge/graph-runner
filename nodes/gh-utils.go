@@ -1,5 +1,4 @@
 //go:build github_impl
-// +build github_impl
 
 package nodes
 
@@ -24,32 +23,8 @@ var (
 	nodeTypeUriRegex     *regexp.Regexp
 )
 
-var githubContext = make(map[string]string)
-
-var secretsContext = map[string]string{}
-
-func githubContextInit() {
-	githubContext["github.job"] = os.Getenv("GITHUB_JOB")
-	githubContext["github.actor"] = os.Getenv("GITHUB_ACTOR")
-	githubContext["github.base_ref"] = os.Getenv("GITHUB_BASE_REF")
-	githubContext["github.event_name"] = os.Getenv("GITHUB_EVENT_NAME")
-	githubContext["github.event_path"] = os.Getenv("GITHUB_EVENT_PATH")
-	githubContext["github.head_ref"] = os.Getenv("GITHUB_HEAD_REF")
-	githubContext["github.ref"] = os.Getenv("GITHUB_REF")
-	githubContext["github.repository"] = os.Getenv("GITHUB_REPOSITORY")
-	githubContext["github.sha"] = os.Getenv("GITHUB_SHA")
-	githubContext["github.workflow"] = os.Getenv("GITHUB_WORKFLOW")
-	githubContext["github.workspace"] = os.Getenv("GITHUB_WORKSPACE")
-	githubContext["github.token"] = os.Getenv("INPUT_TOKEN")
-
-	// TODO: (Seb) Add all remaining env vars
-	// See https://docs.github.com/en/actions/learn-github-actions/contexts
-}
-
 func getGithubVarsRe() *regexp.Regexp {
 	onceGithubVarsRe.Do(func() {
-		githubContextInit()
-
 		githubVarsRe = regexp.MustCompile(`\$\{\{\s*(env|github|inputs|secrets)\.[\w]+\s*\}\}`)
 	})
 	return githubVarsRe
@@ -221,7 +196,7 @@ func ReplaceContextVariables(input string, inputValues map[core.InputId]interfac
 			}
 			return ""
 		} else if strings.HasPrefix(contextVar, "github.") {
-			envVar, exists := githubContext[contextVar]
+			envVar, exists := ghContext[contextVar]
 			if exists {
 				return envVar
 			}
@@ -233,7 +208,7 @@ func ReplaceContextVariables(input string, inputValues map[core.InputId]interfac
 			}
 			return ""
 		} else if strings.HasPrefix(contextVar, "secrets.") {
-			envVar, exists := secretsContext[contextVar]
+			envVar, exists := ghSecrets[contextVar]
 			if exists {
 				return envVar
 			}

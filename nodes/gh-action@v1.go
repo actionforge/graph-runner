@@ -1,5 +1,4 @@
 //go:build github_impl
-// +build github_impl
 
 package nodes
 
@@ -264,13 +263,6 @@ func parseNodeTypeUri(nodeTypeUri string) (registry string, owner string, regnam
 }
 
 func init() {
-	// Use the input token that is provided by the user, or passed as default,
-	// otherwise fall back to use the runtime token that is provided by github.
-	if os.Getenv("INPUT_TOKEN") != "" {
-		core.G_secrets["secrets.GITHUB_TOKEN"] = os.Getenv("INPUT_TOKEN")
-	} else {
-		core.G_secrets["secrets.GITHUB_TOKEN"] = os.Getenv("ACTIONS_RUNTIME_TOKEN")
-	}
 
 	err := core.RegisterNodeFactory(ghActionNodeDefinition, func(ctx interface{}) (core.NodeRef, error) {
 
@@ -292,7 +284,7 @@ func init() {
 		_, err = os.Stat(actionFolder)
 		if os.IsNotExist(err) {
 			// Clone the entire repo but don't check out yet since HEAD might not be the requested ref.
-			cloneUrl := fmt.Sprintf("https://%s@github.com/%s/%s", core.G_githubToken, owner, name)
+			cloneUrl := fmt.Sprintf("https://%s@github.com/%s/%s", ghActionsRuntimeToken, owner, name)
 			c := exec.Command("git", "clone", "--no-checkout", cloneUrl, actionFolder)
 			// c.Stdout = os.Stdout
 			c.Stderr = os.Stderr
