@@ -1,5 +1,3 @@
-//go:build github_impl
-
 package nodes
 
 import (
