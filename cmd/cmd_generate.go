@@ -1,6 +1,5 @@
 //go build generate_node_stubs
 //go:build generate_node_stubs
-// +build generate_node_stubs
 
 package cmd
 

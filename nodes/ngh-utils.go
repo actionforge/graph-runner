@@ -1,5 +1,4 @@
 //go:build !github_impl
-// +build !github_impl
 
 package nodes
 
