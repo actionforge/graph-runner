@@ -34,6 +34,9 @@ func RemoveGhSecret(name string) {
 
 func initGhContexts() {
 
+	// For more information on the githubs context, see:
+	// https://docs.github.com/en/actions/learn-github-actions/contexts
+
 	ghContext["github.action"] = os.Getenv("GITHUB_ACTION")
 	// No direct mapping for 'github.action_path'
 	ghContext["github.actor"] = os.Getenv("GITHUB_ACTOR")
