@@ -71,6 +71,16 @@ func initGhContexts() {
 	ghContext["github.token"] = os.Getenv("INPUT_TOKEN")
 	ghSecrets["secrets.GITHUB_TOKEN"] = os.Getenv("INPUT_TOKEN")
 
+	fmt.Println("Context")
+	for k, v := range ghContext {
+		fmt.Println("  ", k, ":", v)
+	}
+
+	fmt.Println("Secrets")
+	for k, v := range ghSecrets {
+		fmt.Println("  ", k, ":", v)
+	}
+
 	ghActionsRuntimeToken = os.Getenv("ACTIONS_RUNTIME_TOKEN")
 
 	for _, env := range os.Environ() {
