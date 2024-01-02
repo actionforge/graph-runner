@@ -415,6 +415,7 @@ nodes:
       y: 930
     inputs:
       push: 'true'
+      platforms: darwin,linux/amd64,linux/arm64,linux/arm/v7
     settings:
       folded: false
   - id: string-fmt-v1-shark-orange-brown
