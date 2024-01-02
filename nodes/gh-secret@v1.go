@@ -32,15 +32,11 @@ func (n *GhSecretsNode) OutputValueById(c core.ExecutionContext, outputId core.O
 
 	var secretValue string
 
-	if secretName == "GITHUB_TOKEN" {
-		secretValue = core.G_githubToken
-	} else {
-		var ok bool
-		secretValue, ok = core.G_secrets[secretName]
-		if !ok {
-			// return an empty string if the secret is not found
-			return "", nil
-		}
+	var ok bool
+	secretValue, ok = ghSecrets[secretName]
+	if !ok {
+		// return an empty string if the secret is not found
+		return "", nil
 	}
 
 	return fmt.Sprintf("%s%s", prefix, secretValue), nil

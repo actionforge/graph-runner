@@ -9,7 +9,12 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"sync"
+
+	"github.com/joho/godotenv"
 )
+
+var envFileOnce sync.Once
 
 // Inline-if alternative in Go. Example:
 // e ? a : b becomes If(e, a, b)
@@ -19,6 +24,15 @@ func If[E bool, T any](exp E, a T, b T) T {
 	} else {
 		return b
 	}
+}
+
+func LoadEnvOnce() {
+	envFileOnce.Do(func() {
+		loadEnvFile := os.Getenv("LOAD_ENV_FILE")
+		if loadEnvFile != "" {
+			_ = godotenv.Load()
+		}
+	})
 }
 
 func NormalizeLineEndings(s string) string {
