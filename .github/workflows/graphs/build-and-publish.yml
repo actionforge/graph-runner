@@ -466,7 +466,7 @@ nodes:
       x: 2380
       y: 1890
     inputs:
-      env: GITHUB_EVENT_NAME
+      env: GITHUB_REF_NAME
     settings:
       folded: false
 registries:
