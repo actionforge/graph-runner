@@ -32,8 +32,8 @@ func Test_Secret(t *testing.T) {
 
 	actual := utils.LoggerString.String()
 
-	expectedString := `Execute 'start (start@v1)'
-Execute 'run-v1-butterfly-gray-shark (run@v1)'
+	expectedString := `🟢 Execute 'Start (start)'
+🟢 Execute 'Run (run-v1-butterfly-gray-shark)'
 THIS_IS_A_SECRET
 `
 
@@ -61,8 +61,8 @@ func Test_StartAction(t *testing.T) {
 
 		actual := utils.LoggerString.String()
 
-		expectedString := fmt.Sprintf(`Execute 'gh-start (gh-start@v1)'
-Execute 'node-%s (run@v1)'
+		expectedString := fmt.Sprintf(`🟢 Execute 'GitHub Actions Workflow Trigger (gh-start)'
+🟢 Execute 'Run (node-%s)'
 Triggered by %s
 `, event, event)
 

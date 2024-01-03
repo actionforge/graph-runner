@@ -1,7 +1,7 @@
-entry: gh-start
+entry: start
 executions:
   - src:
-      node: gh-start
+      node: start
       port: exec
     dst:
       node: run-v1-giraffe-dolphin-pink
@@ -134,7 +134,7 @@ connections:
       node: string-fmt-v1-strawberry-brown-strawberry
       port: input[3]
 nodes:
-  - id: gh-start
+  - id: start
     type: start@v1
     position:
       x: 660

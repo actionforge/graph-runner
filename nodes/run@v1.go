@@ -98,11 +98,7 @@ func (n *RunNode) ExecuteImpl(c core.ExecutionContext) error {
 	// https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsshell
 	switch shell {
 	case "bash":
-		if runtime.GOOS == "windows" {
-			cmdArgs = append(cmdArgs, "--noprofile", "--norc", "-eo", "pipefail", tmpfileName)
-		} else {
-			cmdArgs = append(cmdArgs, "-e", tmpfileName)
-		}
+		cmdArgs = append(cmdArgs, "--noprofile", "--norc", "-eo", "pipefail", tmpfileName)
 	case "pwsh":
 		cmdArgs = append(cmdArgs, "-command", tmpfileName)
 	case "cmd":

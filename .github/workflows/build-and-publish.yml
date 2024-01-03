@@ -4,8 +4,11 @@ jobs:
   build-and-publish:
     runs-on: ubuntu-latest
     name: Build and Publish
+    permissions:
+      packages: write
+      contents: read
     steps:
       - name: Execute Action Graph
-        uses: actionforge/action@v0.8.20
+        uses: actionforge/action@v0.8.25
         with:
           graph_file: build-and-publish.yml

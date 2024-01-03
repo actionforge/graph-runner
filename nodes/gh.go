@@ -38,7 +38,7 @@ func initGhContexts() {
 	// https://docs.github.com/en/actions/learn-github-actions/contexts
 
 	ghContext["github.action"] = os.Getenv("GITHUB_ACTION")
-	// No direct mapping for 'github.action_path'
+	// No direct mapping yet for 'github.action_path'
 	ghContext["github.actor"] = os.Getenv("GITHUB_ACTOR")
 	ghContext["github.actor_id"] = os.Getenv("GITHUB_ACTOR_ID")
 	ghContext["github.api_url"] = os.Getenv("GITHUB_API_URL")
@@ -47,12 +47,12 @@ func initGhContexts() {
 	ghContext["github.event_name"] = os.Getenv("GITHUB_EVENT_NAME")
 	ghContext["github.event_path"] = os.Getenv("GITHUB_EVENT_PATH")
 	ghContext["github.graphql_url"] = os.Getenv("GITHUB_GRAPHQL_URL")
-	// No direct mapping for 'github.head_ref'
+	ghContext["github.head_ref"] = os.Getenv("GITHUB_HEAD_REF")
 	ghContext["github.job"] = os.Getenv("GITHUB_JOB")
-	// No direct mapping for 'github.ref'
+	ghContext["github.ref"] = os.Getenv("GITHUB_REF")
 	ghContext["github.ref_name"] = os.Getenv("GITHUB_REF_NAME")
-	// No direct mapping for 'github.ref_protected'
-	// No direct mapping for 'github.ref_type'
+	ghContext["github.ref_protected"] = os.Getenv("GITHUB_REF_PROTECTED")
+	ghContext["github.ref_type"] = os.Getenv("GITHUB_REF_TYPE")
 	ghContext["github.repository"] = os.Getenv("GITHUB_REPOSITORY")
 	ghContext["github.repository_id"] = os.Getenv("GITHUB_REPOSITORY_ID")
 	ghContext["github.repository_owner"] = os.Getenv("GITHUB_REPOSITORY_OWNER")
@@ -62,7 +62,8 @@ func initGhContexts() {
 	ghContext["github.run_number"] = os.Getenv("GITHUB_RUN_NUMBER")
 	ghContext["github.server_url"] = os.Getenv("GITHUB_SERVER_URL")
 	ghContext["github.sha"] = os.Getenv("GITHUB_SHA")
-	// No direct mapping for 'github.workflow'
+	ghContext["github.workflow"] = os.Getenv("GITHUB_WORKFLOW")
+	ghContext["github.workflow_ref"] = os.Getenv("GITHUB_WORKFLOW_REF")
 	ghContext["github.workspace"] = os.Getenv("GITHUB_WORKSPACE")
 
 	// As outlined in the documentation, secrets.GITHUB_TOKEN and github.token
