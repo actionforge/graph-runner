@@ -61,7 +61,7 @@ func Test_Simple2(t *testing.T) {
 	actual := utils.LoggerString.String()
 
 	expectedString := `🟢 Execute 'Start (start)'
-Execute 'Run (run-v1-yellow-squirrel-octopus)'
+🟢 Execute 'Run (run-v1-yellow-squirrel-octopus)'
 World
 🟢 Execute 'Run (run-v1-orange-squirrel-koala)'
 Hello World!
