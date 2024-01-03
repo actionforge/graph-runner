@@ -400,6 +400,7 @@ func init() {
 			node.SetOutputDefs(outputs)
 		}
 
+		node.SetNodeType(nodeType)
 		node.SetName(action.Name)
 		return node, nil
 	})

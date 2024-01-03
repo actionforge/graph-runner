@@ -305,6 +305,7 @@ func NewNodeInstance(nodeType string) (NodeRef, error) {
 
 	utils.InitMapAndSliceInStructRecursively(reflect.ValueOf(node))
 
+	node.SetNodeType(nodeType)
 	node.SetName(factoryEntry.Name)
 	return node, nil
 }

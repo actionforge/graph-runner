@@ -172,7 +172,6 @@ func loadNodes(ag *ActionGraph, nodesYaml map[any]interface{}) error {
 			}
 		}
 
-		node.SetNodeType(nodeType)
 		node.SetId(id)
 		ag.AddNode(id, node)
 	}
