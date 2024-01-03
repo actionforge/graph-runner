@@ -33,12 +33,13 @@ func Test_Simple(t *testing.T) {
 
 	actual := utils.LoggerString.String()
 
-	expectedString := `Execute 'start (start@v1)'
-Execute 'run-v1-koala-giraffe-cranberry (run@v1)'
+	expectedString := `🟢 Execute 'Start (start)'
+🟢 Execute 'Run (run-v1-koala-giraffe-cranberry)'
 Hello World!
-Execute 'run-v1-purple-dog-koala (run@v1)'
+🟢 Execute 'Run (run-v1-purple-dog-koala)'
 Success
 `
+
 	if !diffStrings(actual, expectedString) {
 		t.Fatal()
 	}
@@ -59,12 +60,12 @@ func Test_Simple2(t *testing.T) {
 
 	actual := utils.LoggerString.String()
 
-	expectedString := `Execute 'start (start@v1)'
-Execute 'run-v1-yellow-squirrel-octopus (run@v1)'
+	expectedString := `🟢 Execute 'Start (start)'
+🟢 Execute 'Run (run-v1-yellow-squirrel-octopus)'
 World
-Execute 'run-v1-orange-squirrel-koala (run@v1)'
+🟢 Execute 'Run (run-v1-orange-squirrel-koala)'
 Hello World!
-Execute 'run-v1-koala-lemon-cranberry (run@v1)'
+🟢 Execute 'Run (run-v1-koala-lemon-cranberry)'
 Hello 1234!
 `
 
@@ -90,14 +91,14 @@ func Test_Simple3(t *testing.T) {
 
 	actual := utils.LoggerString.String()
 
-	expectedString := `Execute 'start (start@v1)'
-Execute 'run-v1-yellow-squirrel-octopus (run@v1)'
+	expectedString := `🟢 Execute 'Start (start)'
+🟢 Execute 'Run (run-v1-yellow-squirrel-octopus)'
 World
-Execute 'run-v1-orange-squirrel-koala (run@v1)'
+🟢 Execute 'Run (run-v1-orange-squirrel-koala)'
 Hello World!
-Execute 'run-v1-koala-lemon-cranberry (run@v1)'
+🟢 Execute 'Run (run-v1-koala-lemon-cranberry)'
 Hello 1234!
-Execute 'run-v1-apple-zebra-squirrel (run@v1)'
+🟢 Execute 'Run (run-v1-apple-zebra-squirrel)'
 Hello Universe!
 `
 
@@ -111,14 +112,14 @@ func Test_IfAndVariousCompare(t *testing.T) {
 	defer utils.LoggerString.Clear()
 
 	testCase := map[string]string{
-		"Hello World!": `Execute 'start (start@v1)'
-Execute 'if-v1-koala-peach-gray (branch@v1)'
-Execute 'run-v1-penguin-pineapple-pineapple (run@v1)'
+		"Hello World!": `🟢 Execute 'Start (start)'
+🟢 Execute 'Branch (if-v1-koala-peach-gray)'
+🟢 Execute 'Run (run-v1-penguin-pineapple-pineapple)'
 Yes
 `,
-		"Hello Universe!": `Execute 'start (start@v1)'
-Execute 'if-v1-koala-peach-gray (branch@v1)'
-Execute 'run-v1-mango-silver-silver (run@v1)'
+		"Hello Universe!": `🟢 Execute 'Start (start)'
+🟢 Execute 'Branch (if-v1-koala-peach-gray)'
+🟢 Execute 'Run (run-v1-mango-silver-silver)'
 No
 `,
 	}
@@ -160,19 +161,19 @@ func Test_For(t *testing.T) {
 
 	actual := utils.LoggerString.String()
 
-	expectedString := `Execute 'start (start@v1)'
-Execute 'for-v1-snake-strawberry-tiger (for@v1)'
-Execute 'run-v1-butterfly-gray-shark (run@v1)'
+	expectedString := `🟢 Execute 'Start (start)'
+🟢 Execute 'For (for-v1-snake-strawberry-tiger)'
+🟢 Execute 'Run (run-v1-butterfly-gray-shark)'
 3
-Execute 'run-v1-butterfly-gray-shark (run@v1)'
+🟢 Execute 'Run (run-v1-butterfly-gray-shark)'
 4
-Execute 'run-v1-butterfly-gray-shark (run@v1)'
+🟢 Execute 'Run (run-v1-butterfly-gray-shark)'
 5
-Execute 'run-v1-butterfly-gray-shark (run@v1)'
+🟢 Execute 'Run (run-v1-butterfly-gray-shark)'
 6
-Execute 'run-v1-butterfly-gray-shark (run@v1)'
+🟢 Execute 'Run (run-v1-butterfly-gray-shark)'
 7
-Execute 'run-v1-cherry-banana-brown (run@v1)'
+🟢 Execute 'Run (run-v1-cherry-banana-brown)'
 Done
 `
 	if !diffStrings(actual, expectedString) {
@@ -194,8 +195,8 @@ func Test_Bool(t *testing.T) {
 
 	actual := utils.LoggerString.String()
 
-	expectedString := `Execute 'gh-start (start@v1)'
-Execute 'run-v1-giraffe-dolphin-pink (run@v1)'
+	expectedString := `🟢 Execute 'Start (start)'
+🟢 Execute 'Run (run-v1-giraffe-dolphin-pink)'
 AND 0&&0=false 1&&0=false 0&&1=false 1&&1=true
 OR 0&&0=false 1&&0=true 0&&1=true 1&&1=true
 XOR 0&&0=false 1&&0=true 0&&1=true 1&&1=false
@@ -222,10 +223,10 @@ func Test_Option(t *testing.T) {
 
 	actual := utils.LoggerString.String()
 
-	expectedString := `Execute 'start (start@v1)'
-Execute 'run-v1-cranberry-cranberry-grape (run@v1)'
+	expectedString := `🟢 Execute 'Start (start)'
+🟢 Execute 'Run (run-v1-cranberry-cranberry-grape)'
 python
-Execute 'run-v1-parrot-kiwi-gold (run@v1)'
+🟢 Execute 'Run (run-v1-parrot-kiwi-gold)'
 Hello World!
 `
 
@@ -303,7 +304,8 @@ func diffStrings(actual string, expected string) bool {
 	}
 	if different {
 		fmt.Println("\n\n-----------\nExpected output vs actual output (inline-diff):")
-		fmt.Println(dmp.DiffPrettyText(diffs))
+		fmt.Println(actual)
+		//fmt.Println(dmp.DiffPrettyText(diffs))
 	}
 	return !different
 }

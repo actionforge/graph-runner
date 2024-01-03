@@ -1,7 +1,7 @@
 yaml-version: 3.0
 
 id: branch
-name: ""
+name: "Branch"
 version: 1
 description: Conditional Branch
 compact: true
