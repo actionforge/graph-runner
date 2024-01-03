@@ -304,8 +304,7 @@ func diffStrings(actual string, expected string) bool {
 	}
 	if different {
 		fmt.Println("\n\n-----------\nExpected output vs actual output (inline-diff):")
-		fmt.Println(actual)
-		//fmt.Println(dmp.DiffPrettyText(diffs))
+		fmt.Println(dmp.DiffPrettyText(diffs))
 	}
 	return !different
 }
