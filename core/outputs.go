@@ -80,7 +80,7 @@ func (n *Outputs) SetOutputValue(c ExecutionContext, outputId OutputId, value in
 		// if the output could not be found,
 		// check if it is a sub port instead
 		sb := getSubPortRegex().FindStringSubmatch(string(outputId))
-		if len(sb) == 1 {
+		if len(sb) < 2 {
 			return fmt.Errorf("unknown output '%v'", outputId)
 		}
 
