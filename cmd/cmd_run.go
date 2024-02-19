@@ -31,23 +31,23 @@ func ExecuteRun(graphFile string) error {
 }
 
 var cmdRun = &cobra.Command{
-	Use:   "run",
+	Use:   "run [filename]",
 	Short: `Run a graph file`,
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-
-		graphFile, _ := cmd.Flags().GetString("graph_file")
-		if graphFile == "" {
-			graphFile = u.GetVariable("graph_file", "The graph file to use", u.GetVariableOpts{
+		filename := args[1]
+		if filename == "" {
+			filename = u.GetVariable("graph_file", "The graph file to use", u.GetVariableOpts{
 				Env: true,
 			})
 
-			if graphFile == "" {
-				fmt.Println("--graph_file or env:GRAPH_FILE is required")
+			if filename == "" {
+				fmt.Println("argument [filename] or environment variable 'GRAPH_FILE' is required")
 				os.Exit(1)
 			}
 		}
 
-		err := ExecuteRun(graphFile)
+		err := ExecuteRun(filename)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
@@ -59,6 +59,4 @@ var cmdRun = &cobra.Command{
 
 func init() {
 	cmdRoot.AddCommand(cmdRun)
-
-	cmdRun.Flags().String("graph_file", "", "The graph file to run")
 }

@@ -49,10 +49,11 @@ type GoVersion struct {
 }
 
 var cmdFreeze = &cobra.Command{
-	Use:   "freeze",
+	Use:   "freeze [filename]",
 	Short: `Freeze a graph file`,
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		graphFile, _ := cmd.Flags().GetString("graph_file")
+		filename := args[0]
 		output, _ := cmd.Flags().GetString("output")
 		if runtime.GOOS == "windows" {
 			output += ".exe"
@@ -80,7 +81,7 @@ var cmdFreeze = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		graph, err := os.ReadFile(graphFile)
+		graph, err := os.ReadFile(filename)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -113,7 +114,6 @@ var cmdFreeze = &cobra.Command{
 }
 
 func downloadAndExtractGraphRunner(dstDir string) (dir string, err error) {
-
 	var (
 		ref     string
 		refName string
@@ -257,6 +257,5 @@ func getJson(url string, target interface{}) error {
 func init() {
 	cmdRoot.AddCommand(cmdFreeze)
 
-	cmdFreeze.Flags().String("graph_file", "", "The graph file to run")
 	cmdFreeze.Flags().String("output", "", "The output path for the binary")
 }

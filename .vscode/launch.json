@@ -25,7 +25,6 @@
       "program": "${workspaceFolder}",
       "args": [
         "freeze",
-        "--graph_file",
         "/Users/sebastian/Desktop/Untitled.yml",
         "--output",
         "/Users/sebastian/Desktop/http"

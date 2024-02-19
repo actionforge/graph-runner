@@ -25,7 +25,7 @@ graph-runner --help
 The basic command to run an action graph is:
 
 ```bash
-graph-runner run --graph_file ./example-graph.yml
+graph-runner run ./example-graph.yml
 ```
 
 ## Prerequisites

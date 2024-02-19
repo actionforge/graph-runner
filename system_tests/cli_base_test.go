@@ -27,7 +27,7 @@ func TestMain(m *testing.M) {
 }
 
 func Test_Cli(t *testing.T) {
-	cmd := exec.Command("./graph-runner", "run", "--graph_file", "system_tests/test_simple.yml")
+	cmd := exec.Command("./graph-runner", "run", "system_tests/test_simple.yml")
 	cmd.Dir = utils.FindProjectRoot()
 	output, err := cmd.CombinedOutput()
 	fmt.Println(string(output))
@@ -75,7 +75,6 @@ func buildFrozen(graphPath string) error {
 	cmd := exec.Command(
 		"./graph-runner",
 		"freeze",
-		"--graph_file",
 		graphPath,
 		"--output",
 		"frozen",

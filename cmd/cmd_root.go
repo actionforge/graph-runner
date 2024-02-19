@@ -27,7 +27,7 @@ func Execute() {
 
 	// default cmd if no cmd is given
 	if len(os.Args) > 1 && strings.HasSuffix(os.Args[1], ".yml") {
-		args := append([]string{cmdRun.Use, "--graph_file"}, os.Args[1:]...)
+		args := append([]string{cmdRun.Use}, os.Args[1:]...)
 
 		cmd = cmdRun
 		cmd.SetArgs(args)
