@@ -58,19 +58,24 @@ var cmdFreeze = &cobra.Command{
 			output += ".exe"
 		}
 
-		dataPath := utils.GetActionforgeDir()
-
-		err := os.MkdirAll(dataPath, os.ModePerm)
-		if err != nil {
-			log.Fatal("Error creating temp dir")
-		}
-
-		repoDir, err := downloadAndExtractGraphRunner(dataPath)
+		absOutput, err := filepath.Abs(output)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		goBin, err := downloadAndExtractGo(dataPath)
+		actionHomeDir := utils.GetActionforgeDir()
+
+		err = os.MkdirAll(actionHomeDir, os.ModePerm)
+		if err != nil {
+			log.Fatal("Error creating temp dir")
+		}
+
+		repoDir, err := downloadAndExtractGraphRunner(actionHomeDir)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		goBin, err := downloadAndExtractGo(actionHomeDir)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -87,11 +92,13 @@ var cmdFreeze = &cobra.Command{
 		}
 
 		fmt.Println("Building binary")
-		c := exec.Command(goBin, "build", "-ldflags",
+		c := exec.Command(goBin,
+			"build",
+			"-ldflags",
 			"-X actionforge/graph-runner/core.FrozenGraph=true -X actionforge/graph-runner/core.Production=true",
 			"-o",
-			output,
-			".",
+			absOutput,
+			repoDir,
 		)
 		c.Dir = repoDir
 		c.Stdout = os.Stdout
@@ -117,8 +124,8 @@ func downloadAndExtractGraphRunner(dstDir string) (dir string, err error) {
 		ref = info["vcs.revision"]
 		refName = ref
 	} else {
-		refName = "main"
-		ref = "refs/heads/main"
+		refName = "freeze"
+		ref = "refs/heads/freeze"
 	}
 
 	cachePath := filepath.Join(dstDir, "cache")
@@ -134,9 +141,9 @@ func downloadAndExtractGraphRunner(dstDir string) (dir string, err error) {
 			return "", err
 		}
 
-		fmt.Println("Downloading graph-runner")
+		fmt.Printf("Downloading graph-runner from %s\n", ref)
 		err := utils.DownloadFile(fmt.Sprintf("%s/%s.zip", ghZipBaseUrl, ref), repoZip, func(contentLength int64) io.Writer {
-			return progressbar.DefaultBytes(contentLength, "downloading")
+			return progressbar.DefaultBytes(contentLength)
 		})
 		if err != nil {
 			return "", errors.New("Error downloading graph-runner")
@@ -208,9 +215,10 @@ func downloadAndExtractGo(dstDir string) (dir string, err error) {
 				return "", err
 			}
 
-			fmt.Printf("Downloading %s\n", goFile.Version)
-			err = utils.DownloadFile(fmt.Sprintf("%s/%s", goRegistry, goFile.Filename), goZip, func(contentLength int64) io.Writer {
-				return progressbar.DefaultBytes(contentLength, "downloading")
+			downloadUrl := fmt.Sprintf("%s/%s", goRegistry, goFile.Filename)
+			fmt.Printf("Downloading %s from %s\n", goFile.Version, downloadUrl)
+			err = utils.DownloadFile(downloadUrl, goZip, func(contentLength int64) io.Writer {
+				return progressbar.DefaultBytes(contentLength)
 			})
 			if err != nil {
 				return "", errors.New("Error downloading graph-runner")

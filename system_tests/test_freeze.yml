@@ -1,0 +1,29 @@
+entry: start
+executions:
+  - src:
+      node: start
+      port: exec
+    dst:
+      node: run-v1-orange-pink-monkey
+      port: exec
+connections: []
+nodes:
+  - id: start
+    type: start@v1
+    position:
+      x: -1000
+      y: -10
+    settings:
+      folded: false
+  - id: run-v1-orange-pink-monkey
+    type: run@v1
+    position:
+      x: -700
+      y: -120
+    inputs:
+      shell: python
+      script: print("Hello World!")
+    settings:
+      folded: false
+registries: []
+description: ''
