@@ -36,7 +36,8 @@ func Execute() {
 
 	if filename == "" {
 		filename = u.GetVariable("graph_file", "The graph file to use", u.GetVariableOpts{
-			Env: true,
+			Env:      true,
+			Optional: true,
 		})
 	}
 
