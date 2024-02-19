@@ -35,7 +35,7 @@ var cmdRun = &cobra.Command{
 	Short: `Run a graph file`,
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		filename := args[1]
+		filename := args[0]
 		if filename == "" {
 			filename = u.GetVariable("graph_file", "The graph file to use", u.GetVariableOpts{
 				Env: true,
