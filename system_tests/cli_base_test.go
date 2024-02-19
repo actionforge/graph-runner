@@ -27,7 +27,7 @@ func TestMain(m *testing.M) {
 }
 
 func Test_Cli(t *testing.T) {
-	cmd := exec.Command("./graph-runner", "run", "system_tests/test_simple.yml")
+	cmd := exec.Command("./graph-runner", "system_tests/test_simple.yml")
 	cmd.Dir = utils.FindProjectRoot()
 	output, err := cmd.CombinedOutput()
 	fmt.Println(string(output))
