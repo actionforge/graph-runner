@@ -7,9 +7,7 @@
       "request": "launch",
       "mode": "debug",
       "program": "${workspaceFolder}",
-      "args": [
-        "/Users/sebastian/Desktop/Untitled.yml",
-      ],
+      "args": [],
       "buildFlags": "-tags=github_impl",
       "hideSystemGoroutines": true,
       "env": {
