@@ -12,7 +12,13 @@ var (
 	Version string
 
 	Production string
+
+	FrozenGraph string
 )
+
+func HasFrozenGraph() bool {
+	return FrozenGraph == "true"
+}
 
 func GetBuildSettings() (map[string]string, bool) {
 	bi, ok := debug.ReadBuildInfo()

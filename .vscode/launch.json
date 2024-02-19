@@ -30,7 +30,7 @@
         "--output",
         "/Users/sebastian/Desktop/http"
       ],
-      "buildFlags": "-tags=github_impl",
+      "buildFlags": "",
       "hideSystemGoroutines": true,
       "console": "integratedTerminal"
     },

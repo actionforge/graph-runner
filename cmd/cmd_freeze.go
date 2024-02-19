@@ -28,10 +28,6 @@ const ghZipBaseUrl = "https://github.com/actionforge/graph-runner/archive"
 const goRegistryList = "https://go.dev/dl/?mode=json"
 const goRegistry = "https://go.dev/dl"
 
-func HasFrozenGraph() bool {
-	return len(frozenGraph) > 0
-}
-
 func ExecuteFrozenGraph() error {
 	return core.RunGraph(frozenGraph)
 }
@@ -91,7 +87,12 @@ var cmdFreeze = &cobra.Command{
 		}
 
 		fmt.Println("Building binary")
-		c := exec.Command(goBin, "build", "-o", output, ".")
+		c := exec.Command(goBin, "build", "-ldflags",
+			"-X actionforge/graph-runner/core.FrozenGraph=true -X actionforge/graph-runner/core.Production=true",
+			"-o",
+			output,
+			".",
+		)
 		c.Dir = repoDir
 		c.Stdout = os.Stdout
 		c.Stderr = os.Stderr
@@ -100,7 +101,7 @@ var cmdFreeze = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		fmt.Printf("🚀 Binary stored at %s\n", output)
+		fmt.Printf("🚀 Binary written to %s\n", output)
 	},
 }
 

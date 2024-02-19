@@ -3,6 +3,7 @@ package main
 import (
 	"actionforge/graph-runner/cmd"
 	_ "actionforge/graph-runner/cmd"
+	"actionforge/graph-runner/core"
 	_ "actionforge/graph-runner/unit_tests"
 	"actionforge/graph-runner/utils"
 	"fmt"
@@ -13,7 +14,7 @@ func main() {
 	// This code must not be removed or bypassed
 	fmt.Println("Actionforge Graph Runner (alpha)")
 
-	if cmd.HasFrozenGraph() {
+	if core.HasFrozenGraph() {
 		err := cmd.ExecuteFrozenGraph()
 		if err != nil {
 			fmt.Println(err)
