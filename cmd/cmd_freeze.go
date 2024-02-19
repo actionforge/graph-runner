@@ -144,16 +144,19 @@ func downloadAndExtractGraphRunner(dstDir string) (dir string, err error) {
 
 	dir = filepath.Join(dstDir, fmt.Sprintf("graph-runner-%s", refName))
 	_, err = os.Stat(dir)
-	if err != nil {
-		if !os.IsNotExist(err) {
-			return "", err
-		}
-
-		fmt.Println("Unzipping graph-runner")
-		err = utils.Unzip(repoZip, dstDir)
+	if err == nil {
+		// Always remove existing directory to get a fresh copy
+		err = os.RemoveAll(dir)
 		if err != nil {
-			return "", errors.New("Error unzipping graph-runner")
+			return "",
+				errors.New("Error removing existing graph-runner directory")
 		}
+	}
+
+	fmt.Println("Unzipping graph-runner")
+	err = utils.Unzip(repoZip, dstDir)
+	if err != nil {
+		return "", errors.New("Error unzipping graph-runner")
 	}
 
 	return dir, nil
