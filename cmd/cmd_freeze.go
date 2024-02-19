@@ -124,8 +124,8 @@ func downloadAndExtractGraphRunner(dstDir string) (dir string, err error) {
 		ref = info["vcs.revision"]
 		refName = ref
 	} else {
-		refName = "freeze"
-		ref = "refs/heads/freeze"
+		refName = "main"
+		ref = "refs/heads/main"
 	}
 
 	cachePath := filepath.Join(dstDir, "cache")
