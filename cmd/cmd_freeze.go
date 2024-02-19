@@ -5,6 +5,8 @@ import (
 	"actionforge/graph-runner/utils"
 	_ "embed"
 	"encoding/json"
+	"io"
+
 	"errors"
 	"fmt"
 	"log"
@@ -15,6 +17,7 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/schollz/progressbar/v3"
 	"github.com/spf13/cobra"
 )
 
@@ -87,6 +90,7 @@ var cmdFreeze = &cobra.Command{
 			log.Fatal(err)
 		}
 
+		fmt.Println("Building binary")
 		c := exec.Command(goBin, "build", "-o", output, ".")
 		c.Dir = repoDir
 		c.Stdout = os.Stdout
@@ -95,6 +99,8 @@ var cmdFreeze = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
+
+		fmt.Printf("🚀 Binary stored at %s\n", output)
 	},
 }
 
@@ -127,18 +133,12 @@ func downloadAndExtractGraphRunner(dstDir string) (dir string, err error) {
 			return "", err
 		}
 
-		for i := 0; i < 2; i++ {
-			err = utils.DownloadFile(fmt.Sprintf("%s/%s.zip", ghZipBaseUrl, ref), repoZip)
-			if err != nil {
-				if strings.Contains(err.Error(), "404") {
-					ref = "main"
-					repoZip = filepath.Join(cachePath, "graph-runner-main.zip")
-					continue
-				} else {
-					return "", errors.New("Error downloading graph-runner")
-				}
-			}
-			break
+		fmt.Println("Downloading graph-runner")
+		err := utils.DownloadFile(fmt.Sprintf("%s/%s.zip", ghZipBaseUrl, ref), repoZip, func(contentLength int64) io.Writer {
+			return progressbar.DefaultBytes(contentLength, "downloading")
+		})
+		if err != nil {
+			return "", errors.New("Error downloading graph-runner")
 		}
 	}
 
@@ -149,6 +149,7 @@ func downloadAndExtractGraphRunner(dstDir string) (dir string, err error) {
 			return "", err
 		}
 
+		fmt.Println("Unzipping graph-runner")
 		err = utils.Unzip(repoZip, dstDir)
 		if err != nil {
 			return "", errors.New("Error unzipping graph-runner")
@@ -170,6 +171,7 @@ func downloadAndExtractGo(dstDir string) (dir string, err error) {
 			return "", err
 		}
 
+		fmt.Println("Getting go release info")
 		var releases []GoVersion
 		err = getJson(goRegistryList, &releases)
 		if err != nil {
@@ -202,18 +204,23 @@ func downloadAndExtractGo(dstDir string) (dir string, err error) {
 				return "", err
 			}
 
-			err = utils.DownloadFile(fmt.Sprintf("%s/%s", goRegistry, goFile.Filename), goZip)
+			fmt.Printf("Downloading %s\n", goFile.Version)
+			err = utils.DownloadFile(fmt.Sprintf("%s/%s", goRegistry, goFile.Filename), goZip, func(contentLength int64) io.Writer {
+				return progressbar.DefaultBytes(contentLength, "downloading")
+			})
 			if err != nil {
 				return "", errors.New("Error downloading graph-runner")
 			}
 		}
 
 		if strings.HasSuffix(goFile.Filename, ".tar.gz") {
+			fmt.Println("Untarring go")
 			err = utils.Untar(goZip, dstDir)
 			if err != nil {
 				return "", errors.New("Error unzipping graph-runner")
 			}
 		} else if strings.HasSuffix(goFile.Filename, ".zip") {
+			fmt.Println("Unzipping go")
 			err = utils.Unzip(goZip, dstDir)
 			if err != nil {
 				return "", errors.New("Error unzipping graph-runner")

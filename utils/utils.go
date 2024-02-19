@@ -200,23 +200,40 @@ func FindProjectRoot() string {
 	return strings.Trim(string(output), " \r\n")
 }
 
-func DownloadFile(url string, dstFile string) error {
-	out, err := os.Create(dstFile)
+func DownloadFile(url string, dstFile string, cb func(contentLength int64) io.Writer) error {
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return err
 	}
-	defer out.Close()
 
-	resp, err := http.Get(url)
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return err
-	} else if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf(resp.Status)
 	}
-	defer resp.Body.Close()
 
-	_, err = io.Copy(out, resp.Body)
-	return err
+	defer func() {
+		_ = resp.Body.Close()
+	}()
+
+	f, _ := os.OpenFile(dstFile, os.O_CREATE|os.O_WRONLY, 0644)
+	defer f.Close()
+
+	var writer io.Writer
+	if cb != nil {
+		writer = cb(resp.ContentLength)
+	}
+	if writer != nil {
+		_, err := io.Copy(io.MultiWriter(f, writer), resp.Body)
+		if err != nil {
+			return err
+		}
+	} else {
+		_, err := io.Copy(f, resp.Body)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func Unzip(zipFile, dstDir string) error {

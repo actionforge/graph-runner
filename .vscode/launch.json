@@ -32,6 +32,7 @@
       ],
       "buildFlags": "-tags=github_impl",
       "hideSystemGoroutines": true,
+      "console": "integratedTerminal"
     },
     {
       "name": "🧪 Run Current Test File",
