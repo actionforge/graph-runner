@@ -17,7 +17,7 @@ import (
 
 var cmdRoot = &cobra.Command{
 	Use:     "graph-runner [filename]",
-	Short:   "Graph runner is a tool for running action graphs.",
+	Short:   "graph runner is a tool for running action graphs.",
 	Version: core.GetFulllVersionInfo(),
 	Run: func(cmd *cobra.Command, args []string) {
 		_ = cmd.Help()
