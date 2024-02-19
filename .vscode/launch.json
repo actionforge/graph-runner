@@ -25,9 +25,9 @@
       "program": "${workspaceFolder}",
       "args": [
         "freeze",
-        "/Users/sebastian/Desktop/Untitled.yml",
+        "system_tests/test_freeze.yml",
         "--output",
-        "/Users/sebastian/Desktop/http"
+        "~/frozen"
       ],
       "buildFlags": "",
       "hideSystemGoroutines": true,
