@@ -23,11 +23,9 @@ func Test_Secret(t *testing.T) {
 	defer nodes.RemoveGhSecret("API_KEY_123")
 
 	// Test the run node, env node, and string format node.
-	exitCode, err := runGraphFile("system_tests/test_secret.yml")
+	err := runGraphFile("system_tests/test_secret.yml")
 	if err != nil {
 		t.Fatal(err)
-	} else if exitCode != 0 {
-		t.Fatal("exitCode != 0")
 	}
 
 	actual := utils.LoggerString.String()
@@ -52,11 +50,9 @@ func Test_StartAction(t *testing.T) {
 		t.Setenv("GITHUB_EVENT_NAME", event)
 
 		// Test the run node, env node, and string format node.
-		exitCode, err := runGraphFile("system_tests/test_gh-start.yml")
+		err := runGraphFile("system_tests/test_gh-start.yml")
 		if err != nil {
 			t.Fatal(err)
-		} else if exitCode != 0 {
-			t.Fatal("exitCode != 0")
 		}
 
 		actual := utils.LoggerString.String()

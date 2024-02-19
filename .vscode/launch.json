@@ -8,7 +8,7 @@
       "mode": "debug",
       "program": "${workspaceFolder}",
       "args": [
-        "run"
+        "/Users/sebastian/Desktop/Untitled.yml",
       ],
       "buildFlags": "-tags=github_impl",
       "hideSystemGoroutines": true,
@@ -16,6 +16,22 @@
         "LOAD_ENV_FILE": "true",
         "GITHUB_EVENT_NAME": "push"
       }
+    },
+    {
+      "name": "📦 Freeze action graph",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "program": "${workspaceFolder}",
+      "args": [
+        "freeze",
+        "--graph_file",
+        "/Users/sebastian/Desktop/Untitled.yml",
+        "--output",
+        "/Users/sebastian/Desktop/http"
+      ],
+      "buildFlags": "-tags=github_impl",
+      "hideSystemGoroutines": true,
     },
     {
       "name": "🧪 Run Current Test File",

@@ -3,7 +3,6 @@ package core
 import (
 	u "actionforge/graph-runner/utils"
 	"fmt"
-	"os"
 	"reflect"
 	"strings"
 
@@ -68,20 +67,30 @@ func loadEntry(ag *ActionGraph, nodesYaml map[any]interface{}) error {
 	return nil
 }
 
-func LoadActionGraph(graphFile string) (ActionGraph, error) {
+func RunGraph(graphContent []byte) error {
+	ag, err := LoadGraph(graphContent)
+	if err != nil {
+		return err
+	}
+
+	entry, err := ag.GetEntry()
+	if err != nil {
+		return err
+	}
+
+	err = entry.ExecuteEntry()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func LoadGraph(graphContent []byte) (ActionGraph, error) {
 
 	ag := NewActionGraph()
 
-	var graphContent []byte
-
-	var err error
-	graphContent, err = os.ReadFile(graphFile)
-	if err != nil {
-		return ActionGraph{}, u.Throw(err)
-	}
-
 	nodesYaml := make(map[any]any)
-	err = yaml.Unmarshal(graphContent, &nodesYaml)
+	err := yaml.Unmarshal(graphContent, &nodesYaml)
 	if err != nil {
 		return ActionGraph{}, u.Throw(err)
 	}

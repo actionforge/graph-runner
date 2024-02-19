@@ -1,34 +1,33 @@
 package cmd
 
 import (
+	"actionforge/graph-runner/core"
 	u "actionforge/graph-runner/utils"
 	"fmt"
 	"os"
 
 	// initialize all nodes
-	"actionforge/graph-runner/core"
+
 	_ "actionforge/graph-runner/nodes"
+
+	_ "embed"
 
 	"github.com/spf13/cobra"
 )
 
-func ExecuteRun(graphFile string) (error_code int, err error) {
-	ag, err := core.LoadActionGraph(graphFile)
+func ExecuteRun(graphFile string) error {
+
+	graphContent, err := os.ReadFile(graphFile)
 	if err != nil {
-		return 1, err
+		return err
 	}
 
-	entry, err := ag.GetEntry()
+	err = core.RunGraph(graphContent)
 	if err != nil {
-		return 2, err
+		return err
 	}
 
-	err = entry.ExecuteEntry()
-	if err != nil {
-		return 3, err
-	}
-
-	return 0, nil
+	return nil
 }
 
 var cmdRun = &cobra.Command{
@@ -48,10 +47,10 @@ var cmdRun = &cobra.Command{
 			}
 		}
 
-		exitCode, err := ExecuteRun(graphFile)
+		err := ExecuteRun(graphFile)
 		if err != nil {
 			fmt.Println(err)
-			os.Exit(exitCode)
+			os.Exit(1)
 		}
 
 		os.Exit(0)

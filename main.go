@@ -11,12 +11,19 @@ import (
 func main() {
 	// License info
 	// This code must not be removed or bypassed
-	fmt.Println("Actionforge Graph Runner (non-commercial)")
+	fmt.Println("Actionforge Graph Runner (alpha)")
 
-	features := utils.GetFeatureString()
-	if len(features) > 0 {
-		fmt.Println("Features enabled: " + features)
+	if cmd.HasFrozenGraph() {
+		err := cmd.ExecuteFrozenGraph()
+		if err != nil {
+			fmt.Println(err)
+		}
+	} else {
+		features := utils.GetFeatureString()
+		if len(features) > 0 {
+			fmt.Println("Features enabled: " + features)
+		}
+
+		cmd.Execute()
 	}
-
-	cmd.Execute()
 }

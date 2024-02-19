@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -20,9 +21,23 @@ var cmdRoot = &cobra.Command{
 }
 
 func Execute() {
-	_ = cmdRoot.PersistentFlags().Parse(os.Args[1:])
+	_ = cmdRoot.Flags().Parse(os.Args[1:])
 
-	_ = cmdRoot.Execute()
+	var cmd = cmdRoot
+
+	// default cmd if no cmd is given
+	if len(os.Args) > 1 && strings.HasSuffix(os.Args[1], ".yml") {
+		args := append([]string{cmdRun.Use, "--graph_file"}, os.Args[1:]...)
+
+		cmd = cmdRun
+		cmd.SetArgs(args)
+	}
+
+	err := cmd.Execute()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }
 
 func init() {
