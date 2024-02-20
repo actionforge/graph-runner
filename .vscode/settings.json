@@ -1,5 +1,7 @@
 {
     // Formatting
+    "editor.formatOnSave": true,
+    "editor.formatOnSaveMode": "file",
     "[json]": {
         "editor.defaultFormatter": "vscode.json-language-features"
     },
