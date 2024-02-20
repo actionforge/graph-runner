@@ -7,15 +7,29 @@
       "request": "launch",
       "mode": "debug",
       "program": "${workspaceFolder}",
-      "args": [
-        "run"
-      ],
+      "args": [],
       "buildFlags": "-tags=github_impl",
       "hideSystemGoroutines": true,
       "env": {
         "LOAD_ENV_FILE": "true",
         "GITHUB_EVENT_NAME": "push"
       }
+    },
+    {
+      "name": "📦 Freeze action graph",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "program": "${workspaceFolder}",
+      "args": [
+        "freeze",
+        "system_tests/test_freeze.yml",
+        "--output",
+        "~/frozen"
+      ],
+      "buildFlags": "",
+      "hideSystemGoroutines": true,
+      "console": "integratedTerminal"
     },
     {
       "name": "🧪 Run Current Test File",

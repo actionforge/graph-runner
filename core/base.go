@@ -87,10 +87,12 @@ func (n *NodeBaseComponent) Execute(t NodeExecutionInterface, ec ExecutionContex
 		return nil
 	}
 
-	utils.LoggerBase.Printf("🟢 Execute '%s (%s)'\n",
-		t.GetName(),
-		t.GetId(),
-	)
+	if !HasFrozenGraph() {
+		utils.LoggerBase.Printf("🟢 Execute '%s (%s)'\n",
+			t.GetName(),
+			t.GetId(),
+		)
+	}
 
 	err := t.ExecuteImpl(ec)
 	if err != nil {

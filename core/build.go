@@ -1,6 +1,7 @@
 package core
 
 import (
+	"actionforge/graph-runner/utils"
 	"fmt"
 	"runtime/debug"
 )
@@ -9,7 +10,15 @@ var (
 	// To set version number, build with:
 	// $ go build -ldflags "-X actionforge/graph-runner/core.Version=v1.2.3"
 	Version string
+
+	Production string
+
+	FrozenGraph string
 )
+
+func HasFrozenGraph() bool {
+	return FrozenGraph == "true"
+}
 
 func GetBuildSettings() (map[string]string, bool) {
 	bi, ok := debug.ReadBuildInfo()
@@ -23,7 +32,10 @@ func GetBuildSettings() (map[string]string, bool) {
 		settings[s.Key] = s.Value
 	}
 	return settings, true
+}
 
+func IsProduction() bool {
+	return Production == "true"
 }
 
 func GetAppVersion() string {
@@ -56,5 +68,7 @@ func GetFulllVersionInfo() string {
 		revision = revision[:8]
 	}
 
-	return fmt.Sprintf("%s (%s %s, %s, %s%s)", Version, bi["GOOS"], bi["GOARCH"], bi["vcs.time"], revision, modified)
+	production := utils.If(IsProduction(), "prod", "dev")
+
+	return fmt.Sprintf("%s (%s, %s %s, %s, %s%s)", Version, production, bi["GOOS"], bi["GOARCH"], bi["vcs.time"], revision, modified)
 }

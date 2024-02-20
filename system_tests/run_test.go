@@ -24,11 +24,9 @@ func Test_Simple(t *testing.T) {
 	defer utils.LoggerString.Clear()
 
 	// Test the run node
-	exitCode, err := runGraphFile("system_tests/test_simple.yml")
+	err := runGraphFile("system_tests/test_simple.yml")
 	if err != nil {
 		t.Fatal(err)
-	} else if exitCode != 0 {
-		t.Fatal("exitCode != 0")
 	}
 
 	actual := utils.LoggerString.String()
@@ -51,11 +49,9 @@ func Test_Simple2(t *testing.T) {
 	defer utils.LoggerString.Clear()
 
 	// Test the run node, env node, and string format node.
-	exitCode, err := runGraphFile("system_tests/test_simple2.yml")
+	err := runGraphFile("system_tests/test_simple2.yml")
 	if err != nil {
 		t.Fatal(err)
-	} else if exitCode != 0 {
-		t.Fatal("exitCode != 0")
 	}
 
 	actual := utils.LoggerString.String()
@@ -82,11 +78,9 @@ func Test_Simple3(t *testing.T) {
 	t.Setenv("BAS", "Universe")
 
 	// Test the run node, env node, and string format node.
-	exitCode, err := runGraphFile("system_tests/test_simple3.yml")
+	err := runGraphFile("system_tests/test_simple3.yml")
 	if err != nil {
 		t.Fatal(err)
-	} else if exitCode != 0 {
-		t.Fatal("exitCode != 0")
 	}
 
 	actual := utils.LoggerString.String()
@@ -132,11 +126,9 @@ No
 		t.Setenv("FOO", env)
 
 		// Test the run node, env node, and string format node.
-		exitCode, err := runGraphFile("system_tests/test_if.yml")
+		err := runGraphFile("system_tests/test_if.yml")
 		if err != nil {
 			t.Fatal(err)
-		} else if exitCode != 0 {
-			t.Fatal("exitCode != 0")
 		}
 
 		actual := utils.LoggerString.String()
@@ -152,11 +144,9 @@ func Test_For(t *testing.T) {
 	defer utils.LoggerString.Clear()
 
 	// Test the run node, env node, and string format node.
-	exitCode, err := runGraphFile("system_tests/test_for.yml")
+	err := runGraphFile("system_tests/test_for.yml")
 	if err != nil {
 		t.Fatal(err)
-	} else if exitCode != 0 {
-		t.Fatal("exitCode != 0")
 	}
 
 	actual := utils.LoggerString.String()
@@ -186,11 +176,9 @@ func Test_Bool(t *testing.T) {
 	defer utils.LoggerString.Clear()
 
 	// Test the run node, env node, and string format node.
-	exitCode, err := runGraphFile("system_tests/test_bool.yml")
+	err := runGraphFile("system_tests/test_bool.yml")
 	if err != nil {
 		t.Fatal(err)
-	} else if exitCode != 0 {
-		t.Fatal("exitCode != 0")
 	}
 
 	actual := utils.LoggerString.String()
@@ -214,11 +202,9 @@ func Test_Option(t *testing.T) {
 	defer utils.LoggerString.Clear()
 
 	// Test the run node, env node, and string format node.
-	exitCode, err := runGraphFile("system_tests/test_option.yml")
+	err := runGraphFile("system_tests/test_option.yml")
 	if err != nil {
 		t.Fatal(err)
-	} else if exitCode != 0 {
-		t.Fatal("exitCode != 0")
 	}
 
 	actual := utils.LoggerString.String()
@@ -240,11 +226,9 @@ func Test_Parallel(t *testing.T) {
 	defer utils.LoggerString.Clear()
 
 	// Test the run node, env node, and string format node.
-	exitCode, err := runGraphFile("system_tests/test_parallel.yml")
+	err := runGraphFile("system_tests/test_parallel.yml")
 	if err != nil {
 		t.Fatal(err)
-	} else if exitCode != 0 {
-		t.Fatal("exitCode != 0")
 	}
 
 	actual := utils.LoggerString.String()
@@ -273,18 +257,16 @@ func Test_Parallel(t *testing.T) {
 	}
 }
 
-func runGraphFile(graphFileName string) (exitCode int, err error) {
+func runGraphFile(graphFileName string) error {
 	root := utils.FindProjectRoot()
 	graphFile := filepath.Join(root, graphFileName)
 
-	exitCode, err = cmd.ExecuteRun(graphFile)
+	err := cmd.ExecuteRun(graphFile)
 	if err != nil {
-		return exitCode, err
-	} else if exitCode != 0 {
-		return exitCode, nil
+		return err
 	}
 
-	return 0, nil
+	return nil
 }
 
 func diffStrings(actual string, expected string) bool {

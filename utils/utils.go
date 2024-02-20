@@ -1,11 +1,17 @@
 package utils
 
 import (
+	"archive/tar"
+	"archive/zip"
+	"compress/gzip"
 	"flag"
 	"fmt"
+	"io"
 	"log"
+	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"reflect"
 	"strconv"
 	"strings"
@@ -192,4 +198,147 @@ func FindProjectRoot() string {
 		panic(err)
 	}
 	return strings.Trim(string(output), " \r\n")
+}
+
+func DownloadFile(url string, dstFile string, cb func(contentLength int64) io.Writer) error {
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return err
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		_ = resp.Body.Close()
+	}()
+
+	f, _ := os.OpenFile(dstFile, os.O_CREATE|os.O_WRONLY, 0644)
+	defer f.Close()
+
+	var writer io.Writer
+	if cb != nil {
+		writer = cb(resp.ContentLength)
+	}
+	if writer != nil {
+		_, err := io.Copy(io.MultiWriter(f, writer), resp.Body)
+		if err != nil {
+			return err
+		}
+	} else {
+		_, err := io.Copy(f, resp.Body)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func Unzip(zipFile, dstDir string) error {
+	archive, err := zip.OpenReader(zipFile)
+	if err != nil {
+		return err
+	}
+	defer archive.Close()
+
+	for _, f := range archive.File {
+		filePath := filepath.Join(dstDir, f.Name)
+
+		if !strings.HasPrefix(filePath, filepath.Clean(dstDir)+string(os.PathSeparator)) {
+			return err
+		}
+		if f.FileInfo().IsDir() {
+			_ = os.MkdirAll(filePath, os.ModePerm)
+			continue
+		}
+
+		err := os.MkdirAll(filepath.Dir(filePath), os.ModePerm)
+		if err != nil {
+			return err
+		}
+
+		dstFile, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+		if err != nil {
+			return err
+		}
+
+		fileInArchive, err := f.Open()
+		if err != nil {
+			return err
+		}
+
+		_, err = io.Copy(dstFile, fileInArchive)
+		if err != nil {
+			panic(err)
+		}
+
+		dstFile.Close()
+		fileInArchive.Close()
+	}
+
+	return nil
+}
+
+func Untar(tarGzFile, dstDir string) error {
+	file, err := os.Open(tarGzFile)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	gzr, err := gzip.NewReader(file)
+	if err != nil {
+		return err
+	}
+	defer gzr.Close()
+
+	tarReader := tar.NewReader(gzr)
+
+	for {
+		header, err := tarReader.Next()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+
+		filePath := filepath.Join(dstDir, header.Name)
+		if !strings.HasPrefix(filePath, filepath.Clean(dstDir)+string(os.PathSeparator)) {
+			return fmt.Errorf("invalid file path")
+		}
+
+		switch header.Typeflag {
+		case tar.TypeDir:
+			if err := os.MkdirAll(filePath, os.ModePerm); err != nil {
+				return err
+			}
+		case tar.TypeReg:
+			if err := os.MkdirAll(filepath.Dir(filePath), os.ModePerm); err != nil {
+				return err
+			}
+			outFile, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.FileMode(header.Mode))
+			if err != nil {
+				return err
+			}
+
+			if _, err := io.Copy(outFile, tarReader); err != nil {
+				outFile.Close()
+				return err
+			}
+			outFile.Close()
+		}
+	}
+
+	return nil
+}
+
+func GetActionforgeDir() string {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		panic(err)
+	}
+	return filepath.Join(home, ".actionforge")
 }
