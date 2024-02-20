@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 	"testing"
 )
 
@@ -37,7 +38,6 @@ func Test_Cli(t *testing.T) {
 	}
 }
 
-/*
 func Test_Frozen(t *testing.T) {
 	actionHomeDir := utils.GetActionforgeDir()
 
@@ -99,4 +99,3 @@ func testFrozen(expected string) error {
 
 	return err
 }
-*/
