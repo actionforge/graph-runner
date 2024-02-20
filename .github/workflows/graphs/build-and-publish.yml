@@ -214,7 +214,7 @@ nodes:
       x: 700
       y: 970
     inputs:
-      go-version: '1.21'
+      go-version: '1.22'
     settings:
       folded: false
   - id: penguin-coconut-gray
