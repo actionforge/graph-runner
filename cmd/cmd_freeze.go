@@ -55,7 +55,7 @@ var cmdFreeze = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		filename := args[0]
 		output, _ := cmd.Flags().GetString("output")
-		if runtime.GOOS == "windows" {
+		if runtime.GOOS == "windows" && !strings.HasSuffix(output, ".exe") {
 			output += ".exe"
 		}
 
