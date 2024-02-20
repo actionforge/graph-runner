@@ -45,6 +45,6 @@
     "workspaceFolder": "/workspaces/graph-runner",
     "mounts": [
         "source=${localEnv:HOME}${localEnv:USERPROFILE}/Desktop,target=/home/vscode/Desktop,type=bind,consistency=consistent",
-        "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/root/.ssh,type=bind,consistency=consistent"
+        "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=consistent"
     ]
 }
