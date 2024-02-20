@@ -171,6 +171,12 @@ func downloadAndExtractGraphRunner(dstDir string) (dir string, err error) {
 }
 
 func downloadAndExtractGo(dstDir string) (dir string, err error) {
+	// Use the go executable in the path if it exists, otherwise download it
+	if testGoExecutable() == nil {
+		return "go", nil
+	}
+
+
 	goBin := filepath.Join(dstDir, "go", "bin", "go")
 	if runtime.GOOS == "windows" {
 		goBin += ".exe"
@@ -252,6 +258,15 @@ func getJson(url string, target interface{}) error {
 	defer r.Body.Close()
 
 	return json.NewDecoder(r.Body).Decode(target)
+}
+
+func testGoExecutable() error {
+	cmd := exec.Command("go", "version")
+	_, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("failed to execute `go version`: %v", err)
+	}
+	return nil
 }
 
 func init() {
