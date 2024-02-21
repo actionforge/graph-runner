@@ -74,7 +74,7 @@ func initGhContexts() {
 
 	ghActionsRuntimeToken = os.Getenv("ACTIONS_RUNTIME_TOKEN")
 
-	for _, env := range os.Environ() {
+	for _, env := range utils.GetSanitizedEnviron() {
 		if strings.HasPrefix(strings.ToUpper(env), "SECRET_") {
 			pair := strings.SplitN(env, "=", 2)
 			if len(pair) == 1 {

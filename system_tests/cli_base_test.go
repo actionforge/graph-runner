@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 	"testing"
 )
 
@@ -14,9 +15,12 @@ func TestMain(m *testing.M) {
 	cmd := exec.Command("go",
 		"build",
 		"--tags=github_impl",
+		"-ldflags",
+		"-X actionforge/graph-runner/core.Production=true",
 		".",
 	)
 	cmd.Dir = utils.FindProjectRoot()
+	cmd.Env = utils.GetSanitizedEnviron()
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		fmt.Println(string(output))
@@ -37,8 +41,7 @@ func Test_Cli(t *testing.T) {
 	}
 }
 
-/*
-func Test_Frozen(t *testing.T) {
+func Test_Freeze(t *testing.T) {
 	actionHomeDir := utils.GetActionforgeDir()
 
 	err := os.RemoveAll(actionHomeDir)
@@ -79,9 +82,16 @@ func buildFrozen(graphPath string) error {
 		"--output",
 		"frozen",
 	)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	cmd.Env = utils.GetSanitizedEnviron()
 	cmd.Dir = utils.FindProjectRoot()
-	output, err := cmd.CombinedOutput()
-	fmt.Println(string(output))
+
+	err := cmd.Run()
+	if err != nil {
+		return err
+	}
 
 	return err
 }
@@ -99,4 +109,3 @@ func testFrozen(expected string) error {
 
 	return err
 }
-*/

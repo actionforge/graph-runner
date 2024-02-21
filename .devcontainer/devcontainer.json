@@ -16,7 +16,7 @@
             "version": "3.9"
         },
         "ghcr.io/devcontainers/features/go:1": {
-            "version": "1.21"
+            "version": "1.22"
         }
     },
     "remoteUser": "vscode",
@@ -38,13 +38,14 @@
                 "ms-python.python",
                 "github.vscode-github-actions",
                 "eamodio.gitlens",
-                "shd101wyy.markdown-preview-enhanced"
+                "shd101wyy.markdown-preview-enhanced",
+                "Actionforge.actionforge"
             ]
         }
     },
     "workspaceFolder": "/workspaces/graph-runner",
     "mounts": [
         "source=${localEnv:HOME}${localEnv:USERPROFILE}/Desktop,target=/home/vscode/Desktop,type=bind,consistency=consistent",
-        "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/root/.ssh,type=bind,consistency=consistent"
+        "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=consistent"
     ]
 }

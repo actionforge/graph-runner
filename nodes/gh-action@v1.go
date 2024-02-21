@@ -56,8 +56,8 @@ func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
 		return fmt.Errorf("GITHUB_WORKSPACE not set")
 	}
 
-	environ := make([]string, len(os.Environ()))
-	for _, env := range os.Environ() {
+	environ := make([]string, 0)
+	for _, env := range utils.GetSanitizedEnviron() {
 		// remove all INPUT_ env as they are resolved in the next code block below
 		if !strings.HasPrefix(env, "INPUT_") {
 			environ = append(environ, env)

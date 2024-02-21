@@ -109,7 +109,7 @@ var cmdFreeze = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		fmt.Printf("🚀 Binary written to %s\n", output)
+		fmt.Printf("🚀 Binary written to %s\n", absOutput)
 	},
 }
 
@@ -164,13 +164,18 @@ func downloadAndExtractGraphRunner(dstDir string) (dir string, err error) {
 	fmt.Println("Unzipping graph-runner")
 	err = utils.Unzip(repoZip, dstDir)
 	if err != nil {
-		return "", errors.New("Error unzipping graph-runner")
+		return "", fmt.Errorf("Error unzipping graph-runner: %v", err)
 	}
 
 	return dir, nil
 }
 
 func downloadAndExtractGo(dstDir string) (dir string, err error) {
+	// Use the go executable from the system if it exists, otherwise download it
+	if testGoExecutable() == nil {
+		return "go", nil
+	}
+
 	goBin := filepath.Join(dstDir, "go", "bin", "go")
 	if runtime.GOOS == "windows" {
 		goBin += ".exe"
@@ -229,13 +234,13 @@ func downloadAndExtractGo(dstDir string) (dir string, err error) {
 			fmt.Println("Untarring go")
 			err = utils.Untar(goZip, dstDir)
 			if err != nil {
-				return "", errors.New("Error unzipping graph-runner")
+				return "", fmt.Errorf("Error untarring graph-runner: %v", err)
 			}
 		} else if strings.HasSuffix(goFile.Filename, ".zip") {
 			fmt.Println("Unzipping go")
 			err = utils.Unzip(goZip, dstDir)
 			if err != nil {
-				return "", errors.New("Error unzipping graph-runner")
+				return "", fmt.Errorf("Error unzipping graph-runner: %v", err)
 			}
 		} else {
 			return "", errors.New("Unknown file type")
@@ -252,6 +257,15 @@ func getJson(url string, target interface{}) error {
 	defer r.Body.Close()
 
 	return json.NewDecoder(r.Body).Decode(target)
+}
+
+func testGoExecutable() error {
+	cmd := exec.Command("go", "version")
+	_, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("failed to execute `go version`: %v", err)
+	}
+	return nil
 }
 
 func init() {
