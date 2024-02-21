@@ -342,3 +342,14 @@ func GetActionforgeDir() string {
 	}
 	return filepath.Join(home, ".actionforge")
 }
+
+func GetSanitizedEnviron() []string {
+	env := os.Environ()
+	var sanitizedEnv []string
+	for _, e := range env {
+		if !strings.HasPrefix(e, "GRAPH_FILE=") {
+			sanitizedEnv = append(sanitizedEnv, e)
+		}
+	}
+	return sanitizedEnv
+}

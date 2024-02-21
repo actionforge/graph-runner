@@ -56,7 +56,7 @@ func (n *RunNode) ExecuteImpl(c core.ExecutionContext) error {
 		envs[i] = ReplaceContextVariables(env, n.GetInputValues())
 	}
 
-	env := append(envs, os.Environ()...)
+	env := append(envs, utils.GetSanitizedEnviron()...)
 
 	tmpfilePath := "run-script-*"
 	if runtime.GOOS == "windows" {
