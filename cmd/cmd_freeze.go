@@ -272,4 +272,5 @@ func init() {
 	cmdRoot.AddCommand(cmdFreeze)
 
 	cmdFreeze.Flags().String("output", "", "The output path for the binary")
+	_ = cmdFreeze.MarkFlagRequired("output")
 }
