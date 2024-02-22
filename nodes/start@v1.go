@@ -5,7 +5,6 @@ import (
 	ni "actionforge/graph-runner/node_interfaces"
 	"context"
 	_ "embed"
-	"fmt"
 )
 
 //go:embed start@v1.yml
@@ -26,7 +25,7 @@ func (n *StartNode) ExecuteEntry() error {
 func (n *StartNode) ExecuteImpl(c core.ExecutionContext) error {
 	exec, ok := n.Executions[ni.Start_v1_Output_exec]
 	if !ok {
-		return fmt.Errorf("missing execution node")
+		return nil
 	}
 
 	err := n.Execute(exec, c)
