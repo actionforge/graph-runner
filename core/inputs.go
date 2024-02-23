@@ -208,21 +208,26 @@ func InputValueFromSubInputs[R any](tc ExecutionContext, n Inputs, inputId Input
 }
 
 func inputValueById[R any](tc ExecutionContext, n Inputs, inputId InputId, group *InputId) (R, error) {
-	var def R
+	var empty R
 	v, err := n.InputValueById(tc, inputId, group)
 	if err != nil {
-		return def, err
+		return empty, err
+	}
+
+	// if no value provided, return default
+	if v == nil {
+		return empty, nil
 	}
 
 	typeOfValue := reflect.TypeOf(v)
-	typeOfRequested := reflect.TypeOf(def)
+	typeOfRequested := reflect.TypeOf(empty)
 
 	// typeOfRequested/typeOfValue is nil for 'any'	type
 	if typeOfRequested != nil && typeOfValue != nil {
 
 		converted, err := convertValue(reflect.ValueOf(v), typeOfRequested)
 		if err != nil {
-			return def, fmt.Errorf("failed to convert value: %v", err)
+			return empty, fmt.Errorf("failed to convert value: %v", err)
 		}
 
 		v = converted.Interface()
@@ -232,9 +237,9 @@ func inputValueById[R any](tc ExecutionContext, n Inputs, inputId InputId, group
 	casted, ok := v.(R)
 	if !ok {
 		if typeOfValue == nil {
-			return def, fmt.Errorf("value for input '%v' is not of type '%v'", inputId, typeOfRequested)
+			return empty, fmt.Errorf("value for input '%v' is not of type '%v'", inputId, typeOfRequested)
 		} else {
-			return def, fmt.Errorf("value for input '%v' is not of type '%v' but '%T'", inputId, typeOfRequested, typeOfValue.String())
+			return empty, fmt.Errorf("value for input '%v' is not of type '%v' but '%T'", inputId, typeOfRequested, typeOfValue.String())
 		}
 	}
 	return casted, nil
