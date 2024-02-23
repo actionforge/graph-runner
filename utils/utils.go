@@ -97,7 +97,7 @@ func InitMapAndSliceInStructRecursively(v reflect.Value) {
 
 // GetItem retrieves an item or subitem from a map.
 // Especially used to retrieve items from yaml or json interface maps.
-func GetItem[T any](i map[any]any, attrs ...string) (T, error) {
+func GetItem[T any](i map[string]any, attrs ...string) (T, error) {
 	var (
 		exists bool
 		v      T
@@ -110,7 +110,7 @@ func GetItem[T any](i map[any]any, attrs ...string) (T, error) {
 		// traverse the map until the last map is reached.
 		// 'foo', 'bar', 'bas' -> i['foo']['bar']
 		for _, attr := range attrs[:len(attrs)-1] {
-			i, exists = i[attr].(map[any]any)
+			i, exists = i[attr].(map[string]any)
 			if !exists {
 				return v, fmt.Errorf("executions is not a map")
 			}
@@ -140,6 +140,20 @@ func GetItem[T any](i map[any]any, attrs ...string) (T, error) {
 	}
 
 	return v, nil
+}
+
+func IsUtf16Le(b []byte) bool {
+	if len(b)%2 != 0 {
+		// UTF-16 should have an even number of bytes
+		return false
+	}
+
+	for i := 0; i < len(b); i += 2 {
+		if b[i+1] != 0 {
+			return false
+		}
+	}
+	return true
 }
 
 type GetVariableOpts struct {

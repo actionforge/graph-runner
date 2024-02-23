@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"strings"
 
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 type ActionGraph struct {
@@ -59,7 +59,7 @@ func NewActionGraph() ActionGraph {
 	}
 }
 
-func loadEntry(ag *ActionGraph, nodesYaml map[any]interface{}) error {
+func loadEntry(ag *ActionGraph, nodesYaml map[string]interface{}) error {
 	entryAny, exists := nodesYaml["entry"]
 	if !exists {
 		return fmt.Errorf("entry is missing")
@@ -101,6 +101,8 @@ func LoadGraph(graphContent []byte) (ActionGraph, error) {
 	if err != nil {
 		return ActionGraph{}, u.Throw(err)
 	}
+
+	ag := NewActionGraph()
 
 	// Load Nodes
 	err = loadNodes(&ag, graphYaml)
@@ -176,7 +178,7 @@ func loadNodes(ag *ActionGraph, nodesYaml map[any]interface{}) error {
 	}
 
 	for _, node := range nodesList {
-		nodeI, ok := node.(map[any]any)
+		nodeI, ok := node.(map[string]any)
 		if !ok {
 			return fmt.Errorf("node is not a map")
 		}
@@ -215,12 +217,7 @@ func loadNodes(ag *ActionGraph, nodesYaml map[any]interface{}) error {
 
 				for key, value := range is {
 
-					k, ok := key.(string)
-					if !ok {
-						return fmt.Errorf("input key is not a string")
-					}
-
-					err = inputs.SetInputValue(InputId(k), value)
+					err = inputs.SetInputValue(InputId(key), value)
 					if err != nil {
 						return u.Throw(err)
 					}
@@ -234,7 +231,7 @@ func loadNodes(ag *ActionGraph, nodesYaml map[any]interface{}) error {
 	return nil
 }
 
-func loadExecutions(ag *ActionGraph, nodesYaml map[any]interface{}) error {
+func loadExecutions(ag *ActionGraph, nodesYaml map[string]interface{}) error {
 
 	executionList, err := u.GetItem[[]interface{}](nodesYaml, "executions")
 	if err != nil {
@@ -242,7 +239,7 @@ func loadExecutions(ag *ActionGraph, nodesYaml map[any]interface{}) error {
 	}
 
 	for _, execution := range executionList {
-		e, ok := execution.(map[any]interface{})
+		e, ok := execution.(map[string]interface{})
 		if !ok {
 			return fmt.Errorf("execution is not a map")
 		}
@@ -323,7 +320,7 @@ func loadExecutions(ag *ActionGraph, nodesYaml map[any]interface{}) error {
 	return nil
 }
 
-func loadConnections(ag *ActionGraph, nodesYaml map[any]any) error {
+func loadConnections(ag *ActionGraph, nodesYaml map[string]any) error {
 
 	connectionsList, err := u.GetItem[[]interface{}](nodesYaml, "connections")
 	if err != nil {
@@ -331,7 +328,7 @@ func loadConnections(ag *ActionGraph, nodesYaml map[any]any) error {
 	}
 
 	for _, connection := range connectionsList {
-		c, ok := connection.(map[any]interface{})
+		c, ok := connection.(map[string]interface{})
 		if !ok {
 			return fmt.Errorf("connection is not a map")
 		}
