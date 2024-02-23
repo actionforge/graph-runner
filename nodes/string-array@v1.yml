@@ -1,0 +1,24 @@
+yaml-version: 3.0
+
+id: string-array
+version: 1
+description: Array of strings.
+compact: true
+style:
+  header:
+    background: "rgb(69 93 87)"
+  body:
+    background: "rgb(69 93 87)"
+inputs:
+  env:
+    name: ""
+    type: string
+    group: true
+    group_initial: 1
+    index: 0
+
+outputs:
+  env:
+    name: ""
+    type: "[]string"
+    index: 0
