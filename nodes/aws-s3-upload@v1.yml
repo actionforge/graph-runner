@@ -1,0 +1,30 @@
+yaml-version: 3.0
+
+id: aws-s3-upload
+name: AWS S3 Upload
+version: 1
+description: Node to upload an object to an S3 bucket.
+outputs:
+  exec:
+    name: Exec
+    exec: true
+    index: 0
+inputs:
+  exec:
+    exec: true
+    index: 0
+  name:
+    name: Name
+    type: string
+    index: 1
+    required: true
+  bucket:
+    name: Bucket
+    type: string
+    index: 2
+    required: true
+  content:
+    name: Content
+    type: any
+    index: 3
+    required: true

@@ -1,9 +1,9 @@
 yaml-version: 3.0
 
-id: run
-name: Run
+id: run-exec
+name: Run Executable
 version: 1
-description: Run code
+description: Run executable
 style:
   header:
     background: "#393836"
@@ -30,25 +30,14 @@ inputs:
   exec:
     exec: true
     index: 0
-  shell:
-    name: Shell
-    type: option
-    index: 1
-    default: bash
-    options:
-      - name: Bash
-        value: bash
-      - name: Python
-        value: python
-      - name: PowerShell
-        value: pwsh
-      - name: Windows CMD
-        value: cmd
-  script:
+  path:
     type: string
-    name: Script
+    name: Path
+    index: 1
+  args:
+    name: Arguments
+    type: "[]string"
     index: 2
-    multiline: true
   stdin:
     type: any
     name: Stdin

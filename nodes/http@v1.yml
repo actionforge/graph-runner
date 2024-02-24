@@ -1,0 +1,54 @@
+yaml-version: 3.0
+
+id: http
+name: HTTP
+version: 1
+description: Node to make HTTP requests
+outputs:
+  exec:
+    name: Exec
+    exec: true
+    index: 0
+  body:
+    name: Body
+    type: string
+    index: 1
+  http_status:
+    name: Http Status
+    type: number
+    index: 2
+inputs:
+  exec:
+    exec: true
+    index: 0
+  method:
+    name: Method
+    type: option
+    index: 1
+    default: get
+    options:
+      - name: OPTIONS
+        value: OPTIONS
+      - name: GET
+        value: GET
+      - name: HEAD
+        value: HEAD
+      - name: POST
+        value: POST
+      - name: PUT
+        value: PUT
+      - name: DELETE
+        value: DELETE
+      - name: TRACE
+        value: TRACE
+      - name: CONNECT
+        value: CONNECT
+  url:
+    name: URL
+    type: string
+    index: 2
+    required: true
+  header:
+    name: Header
+    type: "[]string"
+    index: 3

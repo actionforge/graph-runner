@@ -1,0 +1,29 @@
+yaml-version: 3.0
+
+id: dirwalk
+name: Directory Walker
+version: 1
+description: Walks through a directory and executes a body for each file
+outputs:
+  exec:
+    exec: true
+    index: 0
+  items:
+    type: "[]string"
+    name: Items
+    description: The items that were walked
+    index: 1
+inputs:
+  exec:
+    exec: true
+    index: 0
+  dir:
+    type: string
+    name: Directory
+    description: The directory to walk
+    index: 1
+  glob:
+    type: string
+    name: Glob
+    description: The glob to match
+    index: 2

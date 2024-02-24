@@ -146,6 +146,8 @@ func isValidOutputType(value interface{}, expectedType string) bool {
 		return valueType.Kind() == reflect.Slice && valueType.Elem().Kind() == reflect.Bool
 	case "any":
 		return true
+	case "stream":
+		return valueType.Kind() == reflect.Interface
 	default:
 		return valueType.String() == expectedType
 	}

@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+	"strings"
 	"sync"
 
 	"golang.org/x/text/encoding"
@@ -48,6 +49,11 @@ func (n *RunNode) ExecuteImpl(c core.ExecutionContext) error {
 	}
 
 	envs, err := core.InputValueById[[]string](c, n.Inputs, ni.Run_v1_Input_env)
+	if err != nil {
+		return err
+	}
+
+	stdin, err := core.InputValueById[string](c, n.Inputs, ni.Run_v1_Input_stdin)
 	if err != nil {
 		return err
 	}
@@ -144,6 +150,10 @@ func (n *RunNode) ExecuteImpl(c core.ExecutionContext) error {
 		cmdErr error
 	)
 
+	if stdin != "" {
+		cmd.Stdin = strings.NewReader(stdin)
+	}
+
 	if print == "stdout" {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
@@ -152,7 +162,7 @@ func (n *RunNode) ExecuteImpl(c core.ExecutionContext) error {
 		output, cmdErr = cmd.CombinedOutput()
 		var decoder *encoding.Decoder
 		if runtime.GOOS == "windows" {
-			if isUTF16LE(output) {
+			if utils.IsUtf16Le(output) {
 				// Sometimes Windows returns UTF16
 				decoder = unicode.UTF16(unicode.LittleEndian, unicode.IgnoreBOM).NewDecoder()
 			} else {
@@ -199,20 +209,6 @@ func (n *RunNode) ExecuteImpl(c core.ExecutionContext) error {
 	}
 
 	return nil
-}
-
-func isUTF16LE(b []byte) bool {
-	if len(b)%2 != 0 {
-		// UTF-16 should have an even number of bytes
-		return false
-	}
-
-	for i := 0; i < len(b); i += 2 {
-		if b[i+1] != 0 {
-			return false
-		}
-	}
-	return true
 }
 
 func init() {

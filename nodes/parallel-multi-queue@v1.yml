@@ -1,0 +1,30 @@
+yaml-version: 3.0
+
+id: parallel-multi-queue
+name: Parallel Multi Queue
+version: 1
+description: Execute a set of tasks in parallel with a multi-queue.
+outputs:
+  exec-body:
+    name: Body
+    exec: true
+    index: 0
+  context:
+    name: Context
+    type: any
+    index: 1
+inputs:
+  exec:
+    exec: true
+    index: 0
+  worker_count:
+    name: Worker Count
+    type: number
+    index: 1
+    default: 4
+    required: true
+    step: 1
+  context:
+    name: Context
+    type: any
+    index: 2

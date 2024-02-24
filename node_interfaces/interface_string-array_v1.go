@@ -2,7 +2,7 @@
 
 package node_interfaces
 
-import "actionforge/graph-runner/core"// List of strings.
+import "actionforge/graph-runner/core"// Array of strings.
 
 
 // ==> (o) Inputs

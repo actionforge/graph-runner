@@ -1,0 +1,28 @@
+yaml-version: 3.0
+
+id: iterator
+name: Iterator
+version: 1
+description: Iterators are a way to walk through an array or map
+outputs:
+  exec:
+    exec: true
+    index: 0
+  key:
+    type: number
+    name: Key
+    description: The index of the item
+    index: 1
+  value:
+    type: string
+    name: Value
+    description: The value of the item
+    index: 2
+inputs:
+  exec:
+    exec: true
+    index: 0
+  array:
+    type: "[]string"
+    name: Array
+    index: 1

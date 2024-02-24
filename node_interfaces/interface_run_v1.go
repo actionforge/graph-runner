@@ -17,6 +17,8 @@ const Run_v1_Input_print core.InputId = "print"
 const Run_v1_Input_script core.InputId = "script"
 // 
 const Run_v1_Input_shell core.InputId = "shell"
+// 
+const Run_v1_Input_stdin core.InputId = "stdin"
 
 
 // Outputs (o) ==> 
