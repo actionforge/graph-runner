@@ -1,0 +1,15 @@
+yaml-version: 3.0
+
+id: tostring
+name: '""'
+version: 1
+description: Convert the input to a string.
+compact: true
+outputs:
+  string:
+    type: string
+    index: 0
+inputs:
+  value:
+    type: any
+    index: 0

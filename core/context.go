@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 	"slices"
+	"sync"
 
 	"github.com/google/uuid"
 )
@@ -28,11 +29,13 @@ type contextKey string
 type ExecutionContext struct {
 	context.Context
 	contextKeys []contextKey
+	Wg          *sync.WaitGroup
 }
 
 func EmptyExecutionContext() ExecutionContext {
 	c := ExecutionContext{Context: context.Background(),
 		contextKeys: []contextKey{""},
+		Wg:          &sync.WaitGroup{},
 	}
 	return c
 }
@@ -40,6 +43,7 @@ func EmptyExecutionContext() ExecutionContext {
 func NewExecutionContext(ctx context.Context) ExecutionContext {
 	c := ExecutionContext{Context: ctx,
 		contextKeys: []contextKey{""},
+		Wg:          &sync.WaitGroup{},
 	}
 	return c
 }
@@ -64,6 +68,7 @@ func (c *ExecutionContext) PushNewExecutionContext() ExecutionContext {
 	return ExecutionContext{
 		Context:     context.WithValue(c.Context, ck, "random-value"),
 		contextKeys: threadIds,
+		Wg:          c.Wg,
 	}
 }
 

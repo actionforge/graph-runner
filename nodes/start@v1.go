@@ -23,6 +23,15 @@ func (n *StartNode) ExecuteEntry(inputValues map[core.OutputId]any) error {
 	defer cancel()
 	c := core.NewExecutionContext(ctx)
 
+	err := n.Execute(n, c)
+	if err != nil {
+		return err
+	}
+
+	c.Wg.Wait()
+	return nil
+}
+
 	err := n.Outputs.SetOutputValue(c, ni.Start_v1_Output_args, utils.GetSanitizedEnviron())
 	if err != nil {
 		return err

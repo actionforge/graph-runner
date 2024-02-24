@@ -47,6 +47,8 @@ func (n *AwsS3Node) ExecuteImpl(c core.ExecutionContext) error {
 		return err
 	}
 
+	fmt.Println("Upload to bucket: ", bucket, " with name: ", name)
+
 	bb := BucketBasics{
 		S3Client: s3.NewFromConfig(config),
 	}

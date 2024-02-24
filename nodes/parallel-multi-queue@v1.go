@@ -36,7 +36,9 @@ func (n *ParallelMultiQueueNode) ExecuteImpl(ti core.ExecutionContext) error {
 
 	var errors []error
 
+	ti.Wg.Add(1)
 	n.pool.AddTask(func() {
+		defer ti.Wg.Done()
 		nti := ti.PushNewExecutionContext()
 
 		if context != nil {
