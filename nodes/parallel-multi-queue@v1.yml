@@ -11,8 +11,12 @@ outputs:
     index: 0
   context:
     name: Context
-    type: any
+    type: $input.context
     index: 1
+  exec-finish:
+    name: Finish
+    exec: true
+    index: 2
 inputs:
   exec:
     exec: true

@@ -27,7 +27,7 @@ func (n *ParallelMultiQueueNode) ExecuteImpl(ti core.ExecutionContext) error {
 		return err
 	}
 
-	context, err := core.InputValueById[interface{}](ti, n.Inputs, ni.Parallel_multi_queue_v1_Input_context)
+	context, err := core.InputValueById[any](ti, n.Inputs, ni.Parallel_multi_queue_v1_Input_context)
 	if err != nil {
 		return err
 	}
@@ -65,15 +65,12 @@ func (n *ParallelMultiQueueNode) ExecuteImpl(ti core.ExecutionContext) error {
 }
 
 func worker(taskQueue chan func()) {
-	fmt.Println("Listening for tasks")
 	for task := range taskQueue {
-		fmt.Println("Received task", task)
 		if task == nil {
 			break
 		}
 		task()
 	}
-	fmt.Println("END!")
 }
 
 type ThreadPool struct {
