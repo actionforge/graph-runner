@@ -8,12 +8,12 @@ import "actionforge/graph-runner/core"// Convert the input to a string.
 // ==> (o) Inputs
 
 // 
-const Tostring_v1_Input_value core.InputId = "value"
+const Cast_string_v1_Input_value core.InputId = "value"
 
 
 // Outputs (o) ==> 
 
 // 
-const Tostring_v1_Output_string core.OutputId = "string"
+const Cast_string_v1_Output_output core.OutputId = "output"
 
 

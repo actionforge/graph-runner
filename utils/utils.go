@@ -45,6 +45,23 @@ func NormalizeLineEndings(s string) string {
 	return strings.ReplaceAll(s, "\r\n", "\n")
 }
 
+func AnyToBool(value any) bool {
+	switch v := value.(type) {
+	case bool:
+		return v
+	case string:
+		return v != ""
+	case int, int8, int16, int32, int64:
+		return reflect.ValueOf(v).Int() != 0
+	case uint, uint8, uint16, uint32, uint64:
+		return reflect.ValueOf(v).Uint() != 0
+	case float32, float64:
+		return reflect.ValueOf(v).Float() != 0
+	default:
+		return value != nil
+	}
+}
+
 func AnyToString(value any) string {
 	switch v := value.(type) {
 	case int, int8, int16, int32, int64:

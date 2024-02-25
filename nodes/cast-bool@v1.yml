@@ -1,13 +1,13 @@
 yaml-version: 3.0
 
-id: tostring
-name: '""'
+id: cast-bool
+name: ➡️
 version: 1
-description: Convert the input to a string.
+description: Convert the input to a bool.
 compact: true
 outputs:
-  string:
-    type: string
+  output:
+    type: bool
     index: 0
 inputs:
   value:

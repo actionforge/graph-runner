@@ -14,7 +14,7 @@ outputs:
     description: The index of the item
     index: 1
   value:
-    type: string
+    type: "@input.array"
     name: Value
     description: The value of the item
     index: 2
@@ -23,6 +23,6 @@ inputs:
     exec: true
     index: 0
   array:
-    type: "[]string"
+    type: "any"
     name: Array
     index: 1
