@@ -1,9 +1,9 @@
 yaml-version: 3.0
 
-id: file-read-stream
-name: File Read Stream
+id: file-write
+name: File Write Stream
 version: 1
-description: Read a file from the file system via a stream.
+description: Write a file to the file system.
 style:
   header:
     background: "rgb(197, 147, 31)"
@@ -14,9 +14,9 @@ outputs:
     name: Exec
     exec: true
     index: 0
-  stream:
-    name: Stream
-    type: any
+  exec-err:
+    name: Error
+    exec: true
     index: 1
 inputs:
   exec:
@@ -27,3 +27,7 @@ inputs:
     type: string
     index: 1
     required: true
+  content:
+    name: Content
+    type: any
+    index: 2

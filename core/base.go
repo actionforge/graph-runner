@@ -3,6 +3,7 @@ package core
 import (
 	"actionforge/graph-runner/utils"
 	"fmt"
+	"os"
 	"reflect"
 	"regexp"
 	"sync"
@@ -95,7 +96,7 @@ func (n *NodeBaseComponent) Execute(t NodeExecutionInterface, ec ExecutionContex
 		return nil
 	}
 
-	if !HasFrozenGraph() {
+	if os.Getenv("GITHUB_EVENT_NAME") != "" {
 		utils.LoggerBase.Printf("🟢 Execute '%s (%s)'\n",
 			t.GetName(),
 			t.GetId(),
