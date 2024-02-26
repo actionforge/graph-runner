@@ -11,7 +11,7 @@ outputs:
     index: 0
   context:
     name: Context
-    type: $input.context
+    type: unknown
     index: 1
   exec-finish:
     name: Finish
@@ -30,5 +30,5 @@ inputs:
     step: 1
   context:
     name: Context
-    type: any
+    type: unknown
     index: 2
