@@ -4,6 +4,11 @@ id: parallel-multi-queue
 name: Parallel Multi Queue
 version: 1
 description: Execute a set of tasks in parallel with a multi-queue.
+style:
+  header:
+    background: "rgb(44, 53, 65)"
+  body:
+    background: "linear-gradient(to right, rgb(19 70 82), rgb(10 128 120))"
 outputs:
   exec-body:
     name: Body

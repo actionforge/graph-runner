@@ -4,6 +4,11 @@ id: file-read-stream
 name: File Read Stream
 version: 1
 description: Read a file from the file system via a stream.
+style:
+  header:
+    background: "rgb(197, 147, 31)"
+  body:
+    background: "rgb(131, 81, 58)"
 outputs:
   exec:
     name: Exec

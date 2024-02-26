@@ -1,0 +1,17 @@
+yaml-version: 3.0
+
+id: filepath-join
+version: 1
+description: Perform a join operation on a file path
+compact: true
+outputs:
+  result:
+    type: string
+    index: 0
+inputs:
+  paths:
+    name: Join Paths
+    type: string
+    index: 0
+    group: true
+    group_initial: 2

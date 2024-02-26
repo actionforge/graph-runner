@@ -1,0 +1,35 @@
+yaml-version: 3.0
+
+id: filepath-op
+name: 🔗
+version: 1
+description: Perform operations on filepaths.
+compact: true
+outputs:
+  result:
+    type: string
+    index: 0
+inputs:
+  path:
+    name: Path
+    type: string
+    index: 0
+  op:
+    type: option
+    index: 1
+    default: both
+    options:
+      - name: Base
+        value: base
+      - name: Clean
+        value: clean
+      - name: Dir
+        value: Dir
+      - name: Ext
+        value: Ext
+      - name: From Slash
+        value: from_slash
+      - name: To Slash
+        value: to_slash
+      - name: Volume
+        value: volume

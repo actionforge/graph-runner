@@ -4,6 +4,11 @@ id: iterator
 name: Iterator
 version: 1
 description: Iterators are a way to walk through an array or map
+style:
+  header:
+    background: "linear-gradient(to right, rgb(19 70 82), rgb(10 128 120))"
+  body:
+    background: "linear-gradient(to right, rgb(19 70 82), rgb(10 128 120))"
 outputs:
   exec:
     exec: true
