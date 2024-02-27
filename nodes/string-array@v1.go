@@ -14,6 +14,7 @@ var stringArrayDefinition string
 type StringArrayNode struct {
 	core.NodeBaseComponent
 	core.Inputs
+	core.Outputs
 }
 
 func (n *StringArrayNode) OutputValueById(c core.ExecutionContext, outputId core.OutputId) (interface{}, error) {

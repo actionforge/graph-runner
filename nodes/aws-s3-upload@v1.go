@@ -57,11 +57,15 @@ func (n *AwsS3Node) ExecuteImpl(c core.ExecutionContext) error {
 		return err
 	}
 
+	cleanup := func() {
+		if f := reader.(*os.File); f != nil {
+			_ = f.Close()
+		}
+	}
+
 	err = bb.UploadFile(bucket, name, reader)
 
-	if f := input.(*os.File); f != nil {
-		f.Close()
-	}
+	cleanup()
 
 	if err != nil {
 		return err

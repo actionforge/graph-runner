@@ -19,6 +19,9 @@ type FileWriteNode struct {
 }
 
 func (n *FileWriteNode) ExecuteImpl(c core.ExecutionContext) error {
+
+	var fr io.Reader
+
 	path, err := core.InputValueById[string](c, n.Inputs, ni.File_write_v1_Input_path)
 	if err != nil {
 		return err
@@ -29,23 +32,27 @@ func (n *FileWriteNode) ExecuteImpl(c core.ExecutionContext) error {
 		return err
 	}
 
-	file, err := os.Create(path)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	reader, err := utils.AnyToReader(content)
+	fw, err := os.Create(path)
 	if err != nil {
 		return err
 	}
 
-	_, err = io.Copy(file, reader)
-	if err == nil {
-		if f := content.(*os.File); f != nil {
-			err = f.Close()
+	cleanup := func() {
+		_ = fw.Close()
+		if f := fr.(*os.File); f != nil {
+			_ = f.Close()
 		}
 	}
+
+	defer cleanup()
+
+	fr, err = utils.AnyToReader(content)
+	if err != nil {
+		return err
+	}
+
+	_, err = io.Copy(fw, fr)
+	cleanup()
 
 	if err == nil {
 		err = n.Execute(n.Executions[ni.File_write_v1_Output_exec], c)

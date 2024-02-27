@@ -17,7 +17,7 @@ inputs:
   op:
     type: option
     index: 1
-    default: both
+    default: base
     options:
       - name: Base
         value: base

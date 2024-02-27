@@ -23,12 +23,11 @@ func (n *ReadFileNode) ExecuteImpl(c core.ExecutionContext) error {
 		return err
 	}
 
-	file, err := os.Open(path)
-	if err != nil {
-		return err
+	openFile := func() (*os.File, error) {
+		return os.Open(path)
 	}
 
-	err = n.Outputs.SetOutputValue(c, ni.File_read_v1_Output_file, file)
+	err = n.Outputs.SetOutputValue(c, ni.File_read_v1_Output_file, openFile)
 	if err != nil {
 		return err
 	}

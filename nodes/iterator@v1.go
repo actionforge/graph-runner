@@ -5,6 +5,8 @@ import (
 	ni "actionforge/graph-runner/node_interfaces"
 	u "actionforge/graph-runner/utils"
 	_ "embed"
+	"fmt"
+	"reflect"
 )
 
 //go:embed iterator@v1.yml
@@ -19,19 +21,13 @@ type IteratorNode struct {
 
 func (n *IteratorNode) ExecuteImpl(ti core.ExecutionContext) error {
 
-	array, err := core.InputValueById[interface{}](ti, n.Inputs, "array")
-	if err != nil {
-		return err
-	}
-
-	for i, item := range array.([]string) {
-
-		err = n.Outputs.SetOutputValue(ti, ni.Iterator_v1_Output_key, i)
+	iter := func(key any, value any) error {
+		err := n.Outputs.SetOutputValue(ti, ni.Iterator_v1_Output_key, key)
 		if err != nil {
 			return err
 		}
 
-		err = n.Outputs.SetOutputValue(ti, ni.Iterator_v1_Output_value, item)
+		err = n.Outputs.SetOutputValue(ti, ni.Iterator_v1_Output_value, value)
 		if err != nil {
 			return err
 		}
@@ -40,6 +36,41 @@ func (n *IteratorNode) ExecuteImpl(ti core.ExecutionContext) error {
 		if err != nil {
 			return u.Throw(err)
 		}
+		return nil
+	}
+
+	iterable, err := core.InputValueById[interface{}](ti, n.Inputs, ni.Iterator_v1_Input_array)
+	if err != nil {
+		return err
+	}
+
+	v := reflect.ValueOf(iterable)
+
+	switch v.Kind() {
+	case reflect.String:
+		for i := 0; i < v.Len(); i++ {
+			ch := []rune(v.String())[i]
+			err := iter(i, string(ch))
+			if err != nil {
+				return err
+			}
+		}
+	case reflect.Slice, reflect.Array:
+		for i := 0; i < v.Len(); i++ {
+			err := iter(i, v.Index(i).Interface())
+			if err != nil {
+				return err
+			}
+		}
+	case reflect.Map:
+		for _, key := range v.MapKeys() {
+			err := iter(key, v.MapIndex(key))
+			if err != nil {
+				return err
+			}
+		}
+	default:
+		return fmt.Errorf("type %s is not iterable", v.Kind())
 	}
 
 	return nil

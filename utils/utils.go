@@ -48,14 +48,14 @@ func NormalizeLineEndings(s string) string {
 
 func AnyToReader(value any) (io.Reader, error) {
 	switch v := value.(type) {
+	case func() (*os.File, error):
+		return v()
 	case string:
 		return strings.NewReader(v), nil
 	case []byte:
 		return bytes.NewReader(v), nil
 	case []string:
 		return strings.NewReader(strings.Join(v, "\n")), nil
-	case *os.File:
-		return v, nil
 	case io.Reader:
 		return v, nil
 	default:
