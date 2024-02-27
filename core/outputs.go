@@ -14,6 +14,7 @@ type HasOutputsInterface interface {
 
 	OutputValueById(c ExecutionContext, outputId OutputId) (value interface{}, err error)
 	SetOutputValue(c ExecutionContext, outputId OutputId, value interface{}) error
+	AddConnectionCounter(outputId OutputId)
 }
 
 type Executions struct {
@@ -40,6 +41,18 @@ type Outputs struct {
 
 	outputDefs   map[OutputId]OutputDefinition
 	outputValues map[contextKey]map[OutputId]interface{}
+
+	connectionCounter map[OutputId]int64
+}
+
+func (n *Outputs) AddConnectionCounter(outputId OutputId) {
+	n.outputLock.Lock()
+	defer n.outputLock.Unlock()
+
+	if n.connectionCounter == nil {
+		n.connectionCounter = make(map[OutputId]int64)
+	}
+	n.connectionCounter[outputId]++
 }
 
 func (n *Outputs) OutputDefsCopy() map[OutputId]OutputDefinition {
@@ -87,6 +100,12 @@ func (n *Outputs) OutputValueById(c ExecutionContext, outputId OutputId) (interf
 // The value type must match the output type, otherwise an error
 // is returned.
 func (n *Outputs) SetOutputValue(c ExecutionContext, outputId OutputId, value interface{}) error {
+
+	// if the output is not connected, we don't need to keep the value alive
+	connectionCounter := n.connectionCounter[outputId]
+	if connectionCounter == 0 {
+		return nil
+	}
 
 	n.outputLock.Lock()
 	defer n.outputLock.Unlock()
