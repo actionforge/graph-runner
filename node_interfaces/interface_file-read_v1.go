@@ -20,6 +20,6 @@ const File_read_v1_Input_path core.InputId = "path"
 // 
 const File_read_v1_Output_exec core.OutputId = "exec"
 // 
-const File_read_v1_Output_stream core.OutputId = "stream"
+const File_read_v1_Output_file core.OutputId = "file"
 
 

@@ -28,7 +28,7 @@ func (n *ReadFileNode) ExecuteImpl(c core.ExecutionContext) error {
 		return err
 	}
 
-	err = n.Outputs.SetOutputValue(c, ni.File_read_v1_Output_stream, file)
+	err = n.Outputs.SetOutputValue(c, ni.File_read_v1_Output_file, file)
 	if err != nil {
 		return err
 	}

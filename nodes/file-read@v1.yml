@@ -14,8 +14,8 @@ outputs:
     name: Exec
     exec: true
     index: 0
-  stream:
-    name: Stream
+  file:
+    name: File
     type: any
     index: 1
 inputs:
@@ -28,10 +28,10 @@ inputs:
     type: option
     default: stream
     options:
-      - name: String
-        value: string
       - name: Stream
         value: stream
+      - name: String
+        value: string
   path:
     name: Path
     type: string
