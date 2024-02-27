@@ -115,6 +115,14 @@ func Test_SetOutputValue_Decline(t *testing.T) {
 		t.Fatal("Node does not implement HasOuputsInterface")
 	}
 
+	nodeOutputs.IncrementConnectionCounter(ni.Test_v1_Output_output_bool)
+	nodeOutputs.IncrementConnectionCounter(ni.Test_v1_Output_output_number)
+	nodeOutputs.IncrementConnectionCounter(ni.Test_v1_Output_output_string)
+	nodeOutputs.IncrementConnectionCounter(ni.Test_v1_Output_output_array_string)
+	nodeOutputs.IncrementConnectionCounter(ni.Test_v1_Output_output_array_number)
+	nodeOutputs.IncrementConnectionCounter(ni.Test_v1_Output_output_array_bool)
+	nodeOutputs.IncrementConnectionCounter(ni.Test_v1_Output_output_map_string_int32)
+
 	// nil is not a valid value for any type
 	err = nodeOutputs.SetOutputValue(ec, ni.Test_v1_Output_output_bool, nil)
 	if err != nil {

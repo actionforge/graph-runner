@@ -107,12 +107,12 @@ func Test_IfAndVariousCompare(t *testing.T) {
 
 	testCase := map[string]string{
 		"Hello World!": `🟢 Execute 'Start (start)'
-🟢 Execute 'Branch (if-v1-koala-peach-gray)'
+🟢 Execute ' (if-v1-koala-peach-gray)'
 🟢 Execute 'Run (run-v1-penguin-pineapple-pineapple)'
 Yes
 `,
 		"Hello Universe!": `🟢 Execute 'Start (start)'
-🟢 Execute 'Branch (if-v1-koala-peach-gray)'
+🟢 Execute ' (if-v1-koala-peach-gray)'
 🟢 Execute 'Run (run-v1-mango-silver-silver)'
 No
 `,

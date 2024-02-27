@@ -12,6 +12,8 @@ import (
 )
 
 func TestMain(m *testing.M) {
+	os.Setenv("GITHUB_EVENT_NAME", "test")
+
 	cmd := exec.Command("go",
 		"build",
 		"--tags=github_impl",

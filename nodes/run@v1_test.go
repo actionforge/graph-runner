@@ -45,6 +45,9 @@ func Test_RunNode_Simple(t *testing.T) {
 
 	c := core.EmptyExecutionContext()
 
+	outputs.IncrementConnectionCounter(ni.Run_v1_Output_output)
+	outputs.IncrementConnectionCounter(ni.Run_v1_Output_exit_code)
+
 	err := nei.ExecuteImpl(c)
 	if err != nil {
 		t.Fatal(err)
@@ -86,6 +89,9 @@ func Test_RunNode_Env(t *testing.T) {
 
 	c := core.EmptyExecutionContext()
 
+	outputs.IncrementConnectionCounter(ni.Run_v1_Output_output)
+	outputs.IncrementConnectionCounter(ni.Run_v1_Output_exit_code)
+
 	err := nei.ExecuteImpl(c)
 	if err != nil {
 		t.Fatal(err)
@@ -120,6 +126,9 @@ func Test_RunNode_ExitCode(t *testing.T) {
 	inputs.SetInputValue(ni.Run_v1_Input_script, "abc")
 
 	c := core.EmptyExecutionContext()
+
+	outputs.IncrementConnectionCounter(ni.Run_v1_Output_output)
+	outputs.IncrementConnectionCounter(ni.Run_v1_Output_exit_code)
 
 	err := nei.ExecuteImpl(c)
 	if err == nil {
@@ -162,6 +171,9 @@ func Test_RunNode_NoInput1(t *testing.T) {
 	// no script provided
 
 	c := core.EmptyExecutionContext()
+
+	outputs.IncrementConnectionCounter(ni.Run_v1_Output_output)
+	outputs.IncrementConnectionCounter(ni.Run_v1_Output_exit_code)
 
 	err := nei.ExecuteImpl(c)
 	if err != nil {
