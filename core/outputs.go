@@ -14,7 +14,7 @@ type HasOutputsInterface interface {
 
 	OutputValueById(c ExecutionContext, outputId OutputId) (value interface{}, err error)
 	SetOutputValue(c ExecutionContext, outputId OutputId, value interface{}) error
-	AddConnectionCounter(outputId OutputId)
+	IncrementConnectionCounter(outputId OutputId)
 }
 
 type Executions struct {
@@ -45,7 +45,7 @@ type Outputs struct {
 	connectionCounter map[OutputId]int64
 }
 
-func (n *Outputs) AddConnectionCounter(outputId OutputId) {
+func (n *Outputs) IncrementConnectionCounter(outputId OutputId) {
 	n.outputLock.Lock()
 	defer n.outputLock.Unlock()
 

@@ -78,7 +78,7 @@ func (n *Inputs) ConnectDataPort(dstname InputId, src DataSource) {
 	n.inputToOutputMapping[dstname] = src.Output
 	n.incomingNodes[dstname] = src.SrcNode
 
-	src.Node.AddConnectionCounter(src.Name)
+	src.Node.IncrementConnectionCounter(src.Name)
 }
 
 func (n *Inputs) GetInputDefs() map[InputId]InputDefinition {
