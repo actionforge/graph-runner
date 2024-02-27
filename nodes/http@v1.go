@@ -24,15 +24,15 @@ type HttpNode struct {
 	core.Outputs
 }
 
-var allowedMethods = map[string]bool{
-	"OPTIONS": true,
-	"GET":     true,
-	"HEAD":    true,
-	"POST":    true,
-	"PUT":     true,
-	"DELETE":  true,
-	"TRACE":   true,
-	"CONNECT": true,
+var allowedMethods = map[string]struct{}{
+	"OPTIONS": struct{}{},
+	"GET":     struct{}{},
+	"HEAD":    struct{}{},
+	"POST":    struct{}{},
+	"PUT":     struct{}{},
+	"DELETE":  struct{}{},
+	"TRACE":   struct{}{},
+	"CONNECT": struct{}{},
 }
 
 func (n *HttpNode) ExecuteImpl(c core.ExecutionContext) error {
