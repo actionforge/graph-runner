@@ -3,6 +3,7 @@ package utils
 import (
 	"archive/tar"
 	"archive/zip"
+	"bytes"
 	"compress/gzip"
 	"flag"
 	"fmt"
@@ -43,6 +44,23 @@ func LoadEnvOnce() {
 
 func NormalizeLineEndings(s string) string {
 	return strings.ReplaceAll(s, "\r\n", "\n")
+}
+
+func AnyToReader(value any) (io.Reader, error) {
+	switch v := value.(type) {
+	case string:
+		return strings.NewReader(v), nil
+	case []byte:
+		return bytes.NewReader(v), nil
+	case []string:
+		return strings.NewReader(strings.Join(v, "\n")), nil
+	case *os.File:
+		return v, nil
+	case io.Reader:
+		return v, nil
+	default:
+		return nil, fmt.Errorf("unsupported type")
+	}
 }
 
 func AnyToBool(value any) bool {

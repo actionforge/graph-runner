@@ -3,13 +3,12 @@ package nodes
 import (
 	"actionforge/graph-runner/core"
 	ni "actionforge/graph-runner/node_interfaces"
-	"bytes"
+	"actionforge/graph-runner/utils"
 	"context"
 	_ "embed"
 	"fmt"
 	"io"
 	"os"
-	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -53,24 +52,17 @@ func (n *AwsS3Node) ExecuteImpl(c core.ExecutionContext) error {
 		S3Client: s3.NewFromConfig(config),
 	}
 
-	var reader io.Reader
-
-	switch v := input.(type) {
-	case string:
-		reader = strings.NewReader(v)
-	case []byte:
-		reader = bytes.NewReader(v)
-	case []string:
-		reader = strings.NewReader(strings.Join(v, "\n"))
-	case *os.File:
-		reader = v
-	case io.Reader:
-		reader = v
-	default:
-		return fmt.Errorf("unsupported type")
+	reader, err := utils.AnyToReader(input)
+	if err != nil {
+		return err
 	}
 
 	err = bb.UploadFile(bucket, name, reader)
+
+	if f := input.(*os.File); f != nil {
+		f.Close()
+	}
+
 	if err != nil {
 		return err
 	}

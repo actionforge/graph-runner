@@ -35,12 +35,16 @@ func (n *FileWriteNode) ExecuteImpl(c core.ExecutionContext) error {
 	}
 	defer file.Close()
 
-	switch c := content.(type) {
-	case io.Reader:
-		_, err = io.Copy(file, c)
-	default:
-		content := utils.AnyToString(content)
-		_, err = file.WriteString(content)
+	reader, err := utils.AnyToReader(content)
+	if err != nil {
+		return err
+	}
+
+	_, err = io.Copy(file, reader)
+	if err == nil {
+		if f := content.(*os.File); f != nil {
+			err = f.Close()
+		}
 	}
 
 	if err == nil {
