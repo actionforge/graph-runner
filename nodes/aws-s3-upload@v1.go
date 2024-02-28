@@ -41,7 +41,7 @@ func (n *AwsS3Node) ExecuteImpl(c core.ExecutionContext) error {
 		return err
 	}
 
-	config, err := config.LoadDefaultConfig(context.TODO())
+	config, err := config.LoadDefaultConfig(context.Background())
 	if err != nil {
 		return err
 	}
@@ -56,7 +56,7 @@ func (n *AwsS3Node) ExecuteImpl(c core.ExecutionContext) error {
 	}
 
 	cleanup := func() {
-		if f := reader.(*os.File); f != nil {
+		if f, ok := reader.(*os.File); ok {
 			_ = f.Close()
 		}
 	}

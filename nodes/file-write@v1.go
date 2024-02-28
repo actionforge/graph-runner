@@ -39,7 +39,7 @@ func (n *FileWriteNode) ExecuteImpl(c core.ExecutionContext) error {
 
 	cleanup := func() {
 		_ = fw.Close()
-		if f := fr.(*os.File); f != nil {
+		if f, ok := content.(*os.File); ok {
 			_ = f.Close()
 		}
 	}

@@ -1,0 +1,38 @@
+yaml-version: 3.0
+
+id: aws-s3-list
+name: AWS S3 List
+version: 1
+description: Node to list objects in an S3 bucket directory.
+outputs:
+  exec:
+    name: Exec
+    exec: true
+    index: 0
+  items:
+    name: Items
+    type: "[]string"
+    index: 1
+    description: The list of items in the specified S3 directory.
+inputs:
+  exec:
+    exec: true
+    index: 0
+  bucket:
+    name: Bucket
+    type: string
+    index: 1
+    required: true
+  prefix:
+    name: Prefix
+    type: string
+    index: 2
+    required: false
+    description: The directory prefix for the S3 bucket. If not specified, lists all objects in the bucket.
+  delimiter:
+    name: Delimiter
+    type: string
+    index: 3
+    required: false
+    default: "/"
+    description: A delimiter is a character you use to group keys.

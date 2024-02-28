@@ -12,6 +12,7 @@ inputs:
   exec:
     exec: true
     group: true
+    group_initial: 2
     index: 0
   after:
     type: number
