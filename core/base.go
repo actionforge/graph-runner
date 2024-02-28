@@ -31,7 +31,6 @@ func getExecNameRegex() *regexp.Regexp {
 // An interface for nodes that execute their logic.
 type NodeExecutionInterface interface {
 	ExecuteImpl(c ExecutionContext) error
-	GetNodeType() string
 	GetName() string
 	GetId() string
 
@@ -47,8 +46,8 @@ type NodeBaseInterface interface {
 	SetNodeType(nodeType string)
 	SetId(id string)
 	GetNodeType() string
-	GetId() string
 	GetName() string
+	GetId() string
 	SetName(name string)
 	GetSubGraph() *ActionGraph
 }
