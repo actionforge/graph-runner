@@ -20,6 +20,13 @@ type GhActionStartNode struct {
 	core.Executions
 }
 
+const unexpectedEventErrorStr = `
+Error: No trigger port connected for event: '%s'
+
+For more information, verify the accepted trigger events in
+your GitHub Action workflow file and consult the documentation:
+🔗 https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#%s`
+
 func (n *GhActionStartNode) ExecuteEntry() error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -29,7 +36,7 @@ func (n *GhActionStartNode) ExecuteEntry() error {
 
 func (n *GhActionStartNode) ExecuteImpl(c core.ExecutionContext) error {
 
-	env := os.Getenv("GITHUB_EVENT_NAME")
+	event := os.Getenv("GITHUB_EVENT_NAME")
 
 	var (
 		exec core.NodeExecutionInterface
@@ -38,7 +45,7 @@ func (n *GhActionStartNode) ExecuteImpl(c core.ExecutionContext) error {
 
 	// All trigger events are listed here:
 	// https://docs.github.com/en/actions/reference/events-that-trigger-workflows
-	switch env {
+	switch event {
 	case "branch_protection_rule":
 		exec, ok = n.Executions[ni.Gh_start_v1_Output_exec_on_branch_protection_rule]
 	case "check_run":
@@ -111,11 +118,11 @@ func (n *GhActionStartNode) ExecuteImpl(c core.ExecutionContext) error {
 	case "workflow_run":
 		exec, ok = n.Executions[ni.Gh_start_v1_Output_exec_on_workflow_run]
 	default:
-		return fmt.Errorf("no execution found for event: %s", env)
+		return fmt.Errorf("unknown event name: %s", event)
 	}
 
 	if !ok {
-		return fmt.Errorf("unknown event name: %s", env)
+		return fmt.Errorf(unexpectedEventErrorStr, event, event)
 	}
 
 	err := n.Execute(exec, c)
