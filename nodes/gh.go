@@ -17,7 +17,7 @@ var (
 
 	// This is the map of secrets that are available during the execution
 	// of the action graph. The values contain the context name and
-	// the secret value. Example: secrets.input1 github.token
+	// the secret value. Example: 'secrets.input1' or 'secrets.GITHUB_TOKEN'
 	ghSecrets = make(map[string]string, 0)
 
 	// this is the map of context variables that are available to the action
@@ -80,6 +80,7 @@ func initGhContexts() {
 			if len(pair) == 1 {
 				// empty secrets are valid
 				ghSecrets[pair[0]] = ""
+				os.Unsetenv(pair[0])
 			} else if len(pair) == 2 {
 				key := strings.TrimPrefix(strings.ToUpper(pair[0]), "SECRET_")
 				value := pair[1]
