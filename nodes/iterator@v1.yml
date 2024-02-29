@@ -20,6 +20,7 @@ outputs:
     index: 1
   value:
     type: unknown
+    name: Value
     description: The value of the item
     index: 2
 inputs:
