@@ -56,14 +56,7 @@ func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
 		return fmt.Errorf("GITHUB_WORKSPACE not set")
 	}
 
-	environ := make([]string, 0)
-	for _, env := range utils.GetSanitizedEnviron() {
-		// remove all INPUT_ env as they are resolved in the next code block below
-		if !strings.HasPrefix(env, "INPUT_") {
-			environ = append(environ, env)
-		}
-	}
-
+	environ := utils.GetSanitizedEnviron()
 	withInputs := ""
 
 	for inputName := range n.Inputs.GetInputDefs() {
@@ -71,7 +64,7 @@ func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
 		if err != nil {
 			return err
 		}
-		v = ReplaceContextVariables(v, n.Inputs.GetInputValues())
+		v = ReplaceContextVariables(v)
 		environ = append(environ, fmt.Sprintf("INPUT_%v=%v", strings.ToUpper(string(inputName)), v))
 
 		withInputs += fmt.Sprintf(" %s: %s\n", inputName, v)
@@ -219,7 +212,7 @@ func (n *GhActionNode) ExecuteDocker(c core.ExecutionContext, workspace string, 
 
 	ContainerEntryArgs := make([]string, 0)
 	for _, arg := range n.actionRuns.Args {
-		ContainerEntryArgs = append(ContainerEntryArgs, ReplaceContextVariables(arg, n.Inputs.GetInputValues()))
+		ContainerEntryArgs = append(ContainerEntryArgs, ReplaceContextVariables(arg))
 	}
 
 	ci := ContainerInfo{

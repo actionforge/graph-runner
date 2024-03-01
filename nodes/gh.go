@@ -4,7 +4,9 @@ package nodes
 
 import (
 	"actionforge/graph-runner/utils"
+	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 )
@@ -17,11 +19,17 @@ var (
 
 	// This is the map of secrets that are available during the execution
 	// of the action graph. The values contain the context name and
-	// the secret value. Example: secrets.input1 github.token
+	// the secret value. Example: 'secrets.input1' or 'secrets.GITHUB_TOKEN'
 	ghSecrets = make(map[string]string, 0)
 
-	// this is the map of context variables that are available to the action
+	// this is the map of 'github.xyz' context variables
 	ghContext = make(map[string]string)
+
+	// this is the map of all 'matrix.xyz' variables
+	ghMatrix = make(map[string]string)
+
+	// this is the map of all 'inputs.xyz' variables
+	ghInputs = make(map[string]string)
 )
 
 func AddGhSecret(name string, secret string) {
@@ -32,7 +40,28 @@ func RemoveGhSecret(name string) {
 	delete(ghSecrets, name)
 }
 
-func initGhContexts() {
+func decodeJsonFromEnv(e string, prefix string) (map[string]string, error) {
+	envMap := make(map[string]string, 0)
+	pair := strings.SplitN(e, "=", 2)
+	if len(pair) == 2 {
+		if pair[1] == "" {
+			return envMap, nil
+		}
+		var tmp map[string]string
+		err := json.NewDecoder(strings.NewReader(pair[1])).Decode(&tmp)
+		if err != nil {
+			return nil, err
+		}
+		for k, v := range tmp {
+			envMap[fmt.Sprintf("%s.%s", prefix, k)] = v
+		}
+		return envMap, nil
+	} else {
+		return nil, fmt.Errorf("Invalid %s: %s", prefix, pair[0])
+	}
+}
+
+func initGhContexts() error {
 
 	// For more information on the githubs context, see:
 	// https://docs.github.com/en/actions/learn-github-actions/contexts
@@ -74,12 +103,13 @@ func initGhContexts() {
 
 	ghActionsRuntimeToken = os.Getenv("ACTIONS_RUNTIME_TOKEN")
 
-	for _, env := range utils.GetSanitizedEnviron() {
+	for _, env := range os.Environ() {
 		if strings.HasPrefix(strings.ToUpper(env), "SECRET_") {
 			pair := strings.SplitN(env, "=", 2)
 			if len(pair) == 1 {
 				// empty secrets are valid
 				ghSecrets[pair[0]] = ""
+				os.Unsetenv(pair[0])
 			} else if len(pair) == 2 {
 				key := strings.TrimPrefix(strings.ToUpper(pair[0]), "SECRET_")
 				value := pair[1]
@@ -87,15 +117,40 @@ func initGhContexts() {
 				ghSecrets[key] = value
 				os.Unsetenv(pair[0])
 			} else {
-				fmt.Println("WARN: Invalid secret: ", pair[0])
+				return fmt.Errorf("Invalid secret: %s", pair[0])
+			}
+		} else if strings.HasPrefix(strings.ToUpper(env), "INPUT_MATRIX=") {
+			var err error
+			ghMatrix, err = decodeJsonFromEnv(env, "matrix")
+			if err != nil {
+				return err
+			}
+		} else if strings.HasPrefix(strings.ToUpper(env), "INPUT_INPUTS=") {
+			var err error
+			ghInputs, err = decodeJsonFromEnv(env, "inputs")
+			if err != nil {
+				return err
 			}
 		}
 	}
+
+	// The information in the inputs context and github.event.inputs context is identical
+	// except that the inputs context preserves Boolean values as Booleans instead of converting
+	// them to strings. TODO: (Seb) Change the ghInputs to map[string]interface{} to preserve
+	// the types for inputs.
+	for k, v := range ghSecrets {
+		ghContext[fmt.Sprintf("github.event.%s", k)] = v
+	}
+
+	return nil
 }
 
 func init() {
 
 	utils.LoadEnvOnce()
 
-	initGhContexts()
+	err := initGhContexts()
+	if err != nil {
+		log.Fatalf("Error initializing github context: %s", err)
+	}
 }

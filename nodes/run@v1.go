@@ -53,7 +53,7 @@ func (n *RunNode) ExecuteImpl(c core.ExecutionContext) error {
 	}
 
 	for i, env := range envs {
-		envs[i] = ReplaceContextVariables(env, n.GetInputValues())
+		envs[i] = ReplaceContextVariables(env)
 	}
 
 	env := append(envs, utils.GetSanitizedEnviron()...)
