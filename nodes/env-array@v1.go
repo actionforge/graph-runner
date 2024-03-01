@@ -22,7 +22,7 @@ func (n *EnvArrayNode) OutputValueById(c core.ExecutionContext, outputId core.Ou
 	}
 
 	for i, env := range envs {
-		envs[i] = ReplaceContextVariables(env, n.GetInputValues())
+		envs[i] = ReplaceContextVariables(env)
 	}
 
 	return envs, nil

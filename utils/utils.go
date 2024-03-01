@@ -347,7 +347,8 @@ func GetSanitizedEnviron() []string {
 	env := os.Environ()
 	var sanitizedEnv []string
 	for _, e := range env {
-		if !strings.HasPrefix(e, "GRAPH_FILE=") {
+		if !strings.HasPrefix(e, "GRAPH_FILE=") &&
+			!strings.HasPrefix(e, "INPUT_") {
 			sanitizedEnv = append(sanitizedEnv, e)
 		}
 	}

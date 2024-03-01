@@ -2,9 +2,7 @@
 
 package nodes
 
-import "actionforge/graph-runner/core"
-
 // Dummy implementation if project isn't build with GitHub support
-func ReplaceContextVariables(input string, inputValues map[core.InputId]interface{}) string {
+func ReplaceContextVariables(input string) string {
 	return input
 }

@@ -3,7 +3,6 @@
 package nodes
 
 import (
-	"actionforge/graph-runner/core"
 	"context"
 	"fmt"
 	"os"
@@ -25,7 +24,7 @@ var (
 
 func getGithubVarsRe() *regexp.Regexp {
 	onceGithubVarsRe.Do(func() {
-		githubVarsRe = regexp.MustCompile(`\$\{\{\s*(env|github|inputs|secrets)\.[\w]+\s*\}\}`)
+		githubVarsRe = regexp.MustCompile(`\$\{\{\s*(env|github|matrix|inputs|secrets)\.[\w]+\s*\}\}`)
 	})
 	return githubVarsRe
 }
@@ -181,21 +180,13 @@ func DockerPull(ctx context.Context, image string) (int, error) {
 	return ExecuteDockerCommand(ctx, "pull", image, nil, nil)
 }
 
-func ReplaceContextVariables(input string, inputValues map[core.InputId]interface{}) string {
+func ReplaceContextVariables(input string) string {
 
 	return getGithubVarsRe().ReplaceAllStringFunc(input, func(s string) string {
 		// Remove the template syntax to get the context variable
 		contextVar := strings.Trim(s, "${ }")
 
-		// Handle `${{ foo.bar }}`
-		if strings.HasPrefix(contextVar, "inputs.") {
-			inputVar := strings.TrimPrefix(contextVar, "inputs.")
-			inputValue, exists := inputValues[core.InputId(inputVar)]
-			if exists {
-				return fmt.Sprintf("%v", inputValue)
-			}
-			return ""
-		} else if strings.HasPrefix(contextVar, "github.") {
+		if strings.HasPrefix(contextVar, "github.") {
 			envVar, exists := ghContext[contextVar]
 			if exists {
 				return envVar
@@ -209,6 +200,18 @@ func ReplaceContextVariables(input string, inputValues map[core.InputId]interfac
 			return ""
 		} else if strings.HasPrefix(contextVar, "secrets.") {
 			envVar, exists := ghSecrets[contextVar]
+			if exists {
+				return envVar
+			}
+			return ""
+		} else if strings.HasPrefix(contextVar, "matrix.") {
+			envVar, exists := ghMatrix[contextVar]
+			if exists {
+				return envVar
+			}
+			return ""
+		} else if strings.HasPrefix(contextVar, "inputs.") {
+			envVar, exists := ghInputs[contextVar]
 			if exists {
 				return envVar
 			}
