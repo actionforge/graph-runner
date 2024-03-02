@@ -101,9 +101,9 @@ func (n *NodeBaseComponent) Execute(t NodeExecutionInterface, ec ExecutionContex
 	return nil
 }
 
-type SourceNode struct {
-	Src  HasOutputsInterface
-	Name OutputId
+type DataSource struct {
+	SrcNode HasOutputsInterface
+	Output  OutputId
 }
 
 type nodeFactoryFunc func(ctx interface{}, nodeDef map[any]any) (NodeRef, error)

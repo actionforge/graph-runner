@@ -303,9 +303,9 @@ func loadConnections(ag *ActionGraph, nodesYaml map[any]any) error {
 		v := reflect.ValueOf(dstNode)
 		ConnectDataPort := v.MethodByName("ConnectDataPort")
 
-		source := reflect.ValueOf(SourceNode{
-			Src:  srcNode.(HasOutputsInterface),
-			Name: OutputId(srcPort),
+		source := reflect.ValueOf(DataSource{
+			SrcNode: srcNode.(HasOutputsInterface),
+			Output:  OutputId(srcPort),
 		})
 
 		ConnectDataPort.Call([]reflect.Value{reflect.ValueOf(InputId(dstPort)), source})

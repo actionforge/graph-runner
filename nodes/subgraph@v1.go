@@ -116,9 +116,9 @@ func init() {
 			subStartInputs, ok := subStart.(core.HasInputsInterface)
 			if ok {
 				for k := range idefs {
-					subStartInputs.ConnectDataPort(k, core.SourceNode{
-						Name: core.OutputId(k),
-						Src:  &subgraph,
+					subStartInputs.ConnectDataPort(k, core.DataSource{
+						Output:  core.OutputId(k),
+						SrcNode: &subgraph,
 					})
 				}
 				subStartInputs.SetInputDefs(idefs)
