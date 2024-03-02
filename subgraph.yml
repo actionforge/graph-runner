@@ -17,24 +17,33 @@ nodes:
   - id: my-subgraph
     type: subgraph@v1
     entry: start
+    inputs:
+      args:
+        name: Args
+        type: "[]string"
+        index: 1
     executions:
       - src:
           node: start
           port: exec
         dst:
-          node: run-v1-parrot-dolphin-apple
+          node: my-print
           port: exec
-    connections: []
+    connections:
+      - src:
+          node: start
+          port: args
+        dst:
+          node: my-print
+          port: value
     nodes:
       - id: start
-        type: start@v1
+        type: subgraph-start@v1
         position:
           x: -210
           y: -10
-        settings:
-          folded: false
-      - id: run-v1-parrot-dolphin-apple
-        type: run@v1
+      - id: my-print
+        type: print@v1
         position:
           x: 250
           y: -190

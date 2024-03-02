@@ -27,7 +27,7 @@ For more information, verify the accepted trigger events in
 your GitHub Action workflow file and consult the documentation:
 🔗 https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#%s`
 
-func (n *GhActionStartNode) ExecuteEntry() error {
+func (n *GhActionStartNode) ExecuteEntry(inputValues map[core.OutputId]any) error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	c := core.NewExecutionContext(ctx)

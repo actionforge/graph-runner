@@ -78,7 +78,7 @@ func RunGraph(graphContent []byte) error {
 		return err
 	}
 
-	err = entry.ExecuteEntry()
+	err = entry.ExecuteEntry(nil)
 	if err != nil {
 		return err
 	}
@@ -158,24 +158,27 @@ func loadNodes(ag *ActionGraph, nodesYaml map[any]interface{}) error {
 		// If there are user input values, then set them to the input values array
 		_, exists := nodeI["inputs"]
 		if exists {
-			is, err := u.GetItem[map[any]any](nodeI, "inputs")
-			if err != nil {
-				return u.Throw(err)
-			}
+			// subgraphs have an input field but its the subgraph input types, not input values
+			if !strings.HasPrefix(node.GetNodeType(), "subgraph@") {
+				is, err := u.GetItem[map[any]any](nodeI, "inputs")
+				if err != nil {
+					return u.Throw(err)
+				}
 
-			// If node has inputs defined in yaml, set them
-			inputs, hasInputs := node.(HasInputsInterface)
-			if hasInputs {
-				for key, value := range is {
+				// If node has inputs defined in yaml, set them
+				inputs, hasInputs := node.(HasInputsInterface)
+				if hasInputs {
+					for key, value := range is {
 
-					k, ok := key.(string)
-					if !ok {
-						return fmt.Errorf("input key is not a string")
-					}
+						k, ok := key.(string)
+						if !ok {
+							return fmt.Errorf("input key is not a string")
+						}
 
-					err = inputs.SetInputValue(InputId(k), value)
-					if err != nil {
-						return u.Throw(err)
+						err = inputs.SetInputValue(InputId(k), value)
+						if err != nil {
+							return u.Throw(err)
+						}
 					}
 				}
 			}
@@ -298,14 +301,14 @@ func loadConnections(ag *ActionGraph, nodesYaml map[any]any) error {
 		}
 
 		v := reflect.ValueOf(dstNode)
-		ConnectPort := v.MethodByName("ConnectPort")
+		ConnectDataPort := v.MethodByName("ConnectDataPort")
 
 		source := reflect.ValueOf(SourceNode{
-			Src:  srcNode.(HasOuputsInterface),
+			Src:  srcNode.(HasOutputsInterface),
 			Name: OutputId(srcPort),
 		})
 
-		ConnectPort.Call([]reflect.Value{reflect.ValueOf(InputId(dstPort)), source})
+		ConnectDataPort.Call([]reflect.Value{reflect.ValueOf(InputId(dstPort)), source})
 	}
 	return nil
 }

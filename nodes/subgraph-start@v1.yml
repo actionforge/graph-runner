@@ -1,0 +1,7 @@
+yaml-version: 3.0
+
+id: subgraph-start
+name: Subgraph Start
+version: 1
+description: Invocation point for a subgraph
+entry: true

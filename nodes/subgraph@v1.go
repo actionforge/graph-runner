@@ -2,8 +2,11 @@ package nodes
 
 import (
 	"actionforge/graph-runner/core"
+	ni "actionforge/graph-runner/node_interfaces"
+	u "actionforge/graph-runner/utils"
 	"bytes"
 	_ "embed"
+	"errors"
 
 	"gopkg.in/yaml.v2"
 )
@@ -17,20 +20,44 @@ type SubGraphNode struct {
 	core.Outputs
 	core.Executions
 
-	ag core.ActionGraph
+	ag    core.ActionGraph
+	start core.NodeExecutionInterface
+}
+
+func (n *SubGraphNode) OutputValueById(c core.ExecutionContext, outputId core.OutputId) (interface{}, error) {
+
+	v, err := n.InputValueById(c, core.InputId(outputId), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return v, nil
 }
 
 func (n *SubGraphNode) ExecuteImpl(c core.ExecutionContext) error {
-	entry, err := n.ag.GetEntry()
+	err := n.Execute(n.Executions[ni.Subgraph_v1_Output_exec], c)
 	if err != nil {
-		return err
+		return u.Throw(err)
 	}
 
-	err = entry.ExecuteEntry()
-	if err != nil {
-		return err
-	}
 	return nil
+}
+
+func anyToPortDefinition[T any](o any) (T, error) {
+	var (
+		tmp bytes.Buffer
+		ret T
+	)
+	err := yaml.NewEncoder(&tmp).Encode(o)
+	if err != nil {
+		return ret, err
+	}
+
+	err = yaml.NewDecoder(&tmp).Decode(&ret)
+	if err != nil {
+		return ret, err
+	}
+	return ret, err
 }
 
 func init() {
@@ -47,9 +74,63 @@ func init() {
 			return nil, err
 		}
 
-		return &SubGraphNode{
-			ag: ag,
-		}, nil
+		subStart, err := ag.FindNode(ag.Entry)
+		if err != nil {
+			return nil, errors.New("subgraph has no entry")
+		}
+
+		subStartExec, ok := subStart.(core.NodeExecutionInterface)
+		if !ok {
+			return nil, errors.New("subgraph entry is not an executable node")
+		}
+
+		subgraph := SubGraphNode{
+			ag:    ag,
+			start: subStartExec,
+		}
+
+		subgraph.Executions = make(map[core.OutputId]core.NodeExecutionInterface)
+		subgraph.Executions[ni.Subgraph_v1_Output_exec] = subStartExec
+
+		inputs, ok := nodeDef["inputs"]
+		if ok {
+			idefs := make(map[core.InputId]core.InputDefinition)
+			odefs := make(map[core.OutputId]core.OutputDefinition)
+			for k, v := range inputs.(map[any]any) {
+				idef, err := anyToPortDefinition[core.InputDefinition](v)
+				if err != nil {
+					return nil, err
+				}
+
+				odef, err := anyToPortDefinition[core.OutputDefinition](v)
+				if err != nil {
+					return nil, err
+				}
+
+				idefs[core.InputId(k.(string))] = idef
+				odefs[core.OutputId(k.(string))] = odef
+			}
+			subgraph.SetInputDefs(idefs)
+			subgraph.SetOutputDefs(odefs)
+
+			subStartInputs, ok := subStart.(core.HasInputsInterface)
+			if ok {
+				for k := range idefs {
+					subStartInputs.ConnectDataPort(k, core.SourceNode{
+						Name: core.OutputId(k),
+						Src:  &subgraph,
+					})
+				}
+				subStartInputs.SetInputDefs(idefs)
+			}
+
+			subStartOutputs, ok := subStart.(core.HasOutputsInterface)
+			if ok {
+				subStartOutputs.SetOutputDefs(odefs)
+			}
+		}
+
+		return &subgraph, nil
 	})
 	if err != nil {
 		panic(err)

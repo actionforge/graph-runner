@@ -37,7 +37,7 @@ type NodeExecutionInterface interface {
 
 // An interface for nodes that can kick off an action graph.
 type NodeEntryInterface interface {
-	ExecuteEntry() error
+	ExecuteEntry(outputValues map[OutputId]any) error
 }
 
 type NodeBaseInterface interface {
@@ -102,7 +102,7 @@ func (n *NodeBaseComponent) Execute(t NodeExecutionInterface, ec ExecutionContex
 }
 
 type SourceNode struct {
-	Src  HasOuputsInterface
+	Src  HasOutputsInterface
 	Name OutputId
 }
 
@@ -290,14 +290,18 @@ func NewNodeInstance(nodeType string, nodeDef map[any]any) (NodeRef, error) {
 		return nil, fmt.Errorf("unknown node type '%v'", nodeType)
 	}
 
-	inputNode, ok := node.(HasInputsInterface)
-	if ok {
-		inputNode.SetInputDefs(factoryEntry.Inputs)
+	if factoryEntry.Inputs != nil {
+		inputs, ok := node.(HasInputsInterface)
+		if ok {
+			inputs.SetInputDefs(factoryEntry.Inputs)
+		}
 	}
 
-	outputNode, ok := node.(HasOuputsInterface)
-	if ok {
-		outputNode.SetOutputDefs(factoryEntry.Outputs)
+	if factoryEntry.Outputs != nil {
+		outputs, ok := node.(HasOutputsInterface)
+		if ok {
+			outputs.SetOutputDefs(factoryEntry.Outputs)
+		}
 	}
 
 	// Ensure that the factory function returned a pointer

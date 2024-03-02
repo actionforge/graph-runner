@@ -6,9 +6,9 @@ import (
 	"sync"
 )
 
-// HasOuputsInterface is a representation for all outputs of a node.
+// HasOutputsInterface is a representation for all outputs of a node.
 // The node that implements this interface has outgoing connections.
-type HasOuputsInterface interface {
+type HasOutputsInterface interface {
 	OutputDefsCopy() map[OutputId]OutputDefinition
 	SetOutputDefs(outputs map[OutputId]OutputDefinition)
 
@@ -74,29 +74,31 @@ func (n *Outputs) SetOutputValue(c ExecutionContext, outputId OutputId, value in
 	n.outputLock.Lock()
 	defer n.outputLock.Unlock()
 
-	output, outputExists := n.outputDefs[outputId]
-	if !outputExists {
-
-		// if the output could not be found,
-		// check if it is a sub port instead
-		sb := getSubPortRegex().FindStringSubmatch(string(outputId))
-		if len(sb) < 2 {
-			return fmt.Errorf("unknown output '%v'", outputId)
-		}
-
-		output, outputExists = n.outputDefs[OutputId(sb[1])]
+	/*
+		output, outputExists := n.outputDefs[outputId]
 		if !outputExists {
-			// If still nothing found, return an error
-			return fmt.Errorf("unknown output '%v'", outputId)
+
+			// if the output could not be found,
+			// check if it is a sub port instead
+			sb := getSubPortRegex().FindStringSubmatch(string(outputId))
+			if len(sb) < 2 {
+				return fmt.Errorf("unknown output '%v'", outputId)
+			}
+
+			output, outputExists = n.outputDefs[OutputId(sb[1])]
+			if !outputExists {
+				// If still nothing found, return an error
+				return fmt.Errorf("unknown output '%v'", outputId)
+			}
 		}
-	}
+
+		if !isValidOutputType(value, output.Type) {
+			return fmt.Errorf("type mismatch: expected %v, got %T", output.Type, value)
+		}
+	*/
 
 	if n.outputValues == nil {
 		n.outputValues = make(map[contextKey]map[OutputId]interface{})
-	}
-
-	if !isValidOutputType(value, output.Type) {
-		return fmt.Errorf("type mismatch: expected %v, got %T", output.Type, value)
 	}
 
 	ti := c.GetLastContextKey()

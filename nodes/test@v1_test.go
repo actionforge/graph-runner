@@ -42,7 +42,7 @@ func Test_SetOutputValue_Success(t *testing.T) {
 
 	ec := core.EmptyExecutionContext()
 
-	nodeOutputs, ok := node.(core.HasOuputsInterface)
+	nodeOutputs, ok := node.(core.HasOutputsInterface)
 	if !ok {
 		t.Fatal("Node does not implement HasOuputsInterface")
 	}
@@ -110,7 +110,7 @@ func Test_SetOutputValue_Decline(t *testing.T) {
 
 	ec := core.EmptyExecutionContext()
 
-	nodeOutputs, ok := node.(core.HasOuputsInterface)
+	nodeOutputs, ok := node.(core.HasOutputsInterface)
 	if !ok {
 		t.Fatal("Node does not implement HasOuputsInterface")
 	}
@@ -198,43 +198,43 @@ func Test_InputValueById_Match(t *testing.T) {
 	ec := core.EmptyExecutionContext()
 
 	// Connect all ports
-	test2Inputs.ConnectPort(ni.Test_v1_Input_input_string, core.SourceNode{
-		Src:  test1Node.(core.HasOuputsInterface),
+	test2Inputs.ConnectDataPort(ni.Test_v1_Input_input_string, core.SourceNode{
+		Src:  test1Node.(core.HasOutputsInterface),
 		Name: ni.Test_v1_Output_output_string,
 	})
 
-	test2Inputs.ConnectPort(ni.Test_v1_Input_input_number, core.SourceNode{
-		Src:  test1Node.(core.HasOuputsInterface),
+	test2Inputs.ConnectDataPort(ni.Test_v1_Input_input_number, core.SourceNode{
+		Src:  test1Node.(core.HasOutputsInterface),
 		Name: ni.Test_v1_Output_output_number,
 	})
 
-	test2Inputs.ConnectPort(ni.Test_v1_Input_input_bool, core.SourceNode{
-		Src:  test1Node.(core.HasOuputsInterface),
+	test2Inputs.ConnectDataPort(ni.Test_v1_Input_input_bool, core.SourceNode{
+		Src:  test1Node.(core.HasOutputsInterface),
 		Name: ni.Test_v1_Output_output_bool,
 	})
 
-	test2Inputs.ConnectPort(ni.Test_v1_Input_input_array_string, core.SourceNode{
-		Src:  test1Node.(core.HasOuputsInterface),
+	test2Inputs.ConnectDataPort(ni.Test_v1_Input_input_array_string, core.SourceNode{
+		Src:  test1Node.(core.HasOutputsInterface),
 		Name: ni.Test_v1_Output_output_array_string,
 	})
 
-	test2Inputs.ConnectPort(ni.Test_v1_Input_input_array_number, core.SourceNode{
-		Src:  test1Node.(core.HasOuputsInterface),
+	test2Inputs.ConnectDataPort(ni.Test_v1_Input_input_array_number, core.SourceNode{
+		Src:  test1Node.(core.HasOutputsInterface),
 		Name: ni.Test_v1_Output_output_array_number,
 	})
 
-	test2Inputs.ConnectPort(ni.Test_v1_Input_input_array_bool, core.SourceNode{
-		Src:  test1Node.(core.HasOuputsInterface),
+	test2Inputs.ConnectDataPort(ni.Test_v1_Input_input_array_bool, core.SourceNode{
+		Src:  test1Node.(core.HasOutputsInterface),
 		Name: ni.Test_v1_Output_output_array_bool,
 	})
 
-	test2Inputs.ConnectPort(ni.Test_v1_Input_input_map_string_int32, core.SourceNode{
-		Src:  test1Node.(core.HasOuputsInterface),
+	test2Inputs.ConnectDataPort(ni.Test_v1_Input_input_map_string_int32, core.SourceNode{
+		Src:  test1Node.(core.HasOutputsInterface),
 		Name: ni.Test_v1_Output_output_map_string_int32,
 	})
 
-	test2Inputs.ConnectPort(ni.Test_v1_Input_input_any, core.SourceNode{
-		Src:  test1Node.(core.HasOuputsInterface),
+	test2Inputs.ConnectDataPort(ni.Test_v1_Input_input_any, core.SourceNode{
+		Src:  test1Node.(core.HasOutputsInterface),
 		Name: ni.Test_v1_Output_output_any,
 	})
 
@@ -503,7 +503,7 @@ func Test_InputValueById_Casting(t *testing.T) {
 	}
 }
 
-func createTwoNodesAndConnectThem(t *testing.T) (src core.NodeRef, srcOutputs core.HasOuputsInterface, dst core.NodeRef, dstInputs core.HasInputsInterface) {
+func createTwoNodesAndConnectThem(t *testing.T) (src core.NodeRef, srcOutputs core.HasOutputsInterface, dst core.NodeRef, dstInputs core.HasInputsInterface) {
 	src, err := core.NewNodeInstance("test@v1", nil)
 	if err != nil {
 		t.Fatal(err)
@@ -514,7 +514,7 @@ func createTwoNodesAndConnectThem(t *testing.T) (src core.NodeRef, srcOutputs co
 		t.Fatal(err)
 	}
 
-	testOutputs, ok := src.(core.HasOuputsInterface)
+	testOutputs, ok := src.(core.HasOutputsInterface)
 	if !ok {
 		t.Fatal("Node does not implement HasOuputsInterface")
 	}
@@ -524,43 +524,43 @@ func createTwoNodesAndConnectThem(t *testing.T) (src core.NodeRef, srcOutputs co
 		t.Fatal("Node does not implement HasInputsInterface")
 	}
 
-	test2Inputs.ConnectPort(ni.Test_v1_Input_input_string, core.SourceNode{
-		Src:  src.(core.HasOuputsInterface),
+	test2Inputs.ConnectDataPort(ni.Test_v1_Input_input_string, core.SourceNode{
+		Src:  src.(core.HasOutputsInterface),
 		Name: ni.Test_v1_Output_output_string,
 	})
 
-	test2Inputs.ConnectPort(ni.Test_v1_Input_input_number, core.SourceNode{
-		Src:  src.(core.HasOuputsInterface),
+	test2Inputs.ConnectDataPort(ni.Test_v1_Input_input_number, core.SourceNode{
+		Src:  src.(core.HasOutputsInterface),
 		Name: ni.Test_v1_Output_output_number,
 	})
 
-	test2Inputs.ConnectPort(ni.Test_v1_Input_input_bool, core.SourceNode{
-		Src:  src.(core.HasOuputsInterface),
+	test2Inputs.ConnectDataPort(ni.Test_v1_Input_input_bool, core.SourceNode{
+		Src:  src.(core.HasOutputsInterface),
 		Name: ni.Test_v1_Output_output_bool,
 	})
 
-	test2Inputs.ConnectPort(ni.Test_v1_Input_input_array_string, core.SourceNode{
-		Src:  src.(core.HasOuputsInterface),
+	test2Inputs.ConnectDataPort(ni.Test_v1_Input_input_array_string, core.SourceNode{
+		Src:  src.(core.HasOutputsInterface),
 		Name: ni.Test_v1_Output_output_array_string,
 	})
 
-	test2Inputs.ConnectPort(ni.Test_v1_Input_input_array_number, core.SourceNode{
-		Src:  src.(core.HasOuputsInterface),
+	test2Inputs.ConnectDataPort(ni.Test_v1_Input_input_array_number, core.SourceNode{
+		Src:  src.(core.HasOutputsInterface),
 		Name: ni.Test_v1_Output_output_array_number,
 	})
 
-	test2Inputs.ConnectPort(ni.Test_v1_Input_input_array_bool, core.SourceNode{
-		Src:  src.(core.HasOuputsInterface),
+	test2Inputs.ConnectDataPort(ni.Test_v1_Input_input_array_bool, core.SourceNode{
+		Src:  src.(core.HasOutputsInterface),
 		Name: ni.Test_v1_Output_output_array_bool,
 	})
 
-	test2Inputs.ConnectPort(ni.Test_v1_Input_input_map_string_int32, core.SourceNode{
-		Src:  src.(core.HasOuputsInterface),
+	test2Inputs.ConnectDataPort(ni.Test_v1_Input_input_map_string_int32, core.SourceNode{
+		Src:  src.(core.HasOutputsInterface),
 		Name: ni.Test_v1_Output_output_map_string_int32,
 	})
 
-	test2Inputs.ConnectPort(ni.Test_v1_Input_input_any, core.SourceNode{
-		Src:  src.(core.HasOuputsInterface),
+	test2Inputs.ConnectDataPort(ni.Test_v1_Input_input_any, core.SourceNode{
+		Src:  src.(core.HasOutputsInterface),
 		Name: ni.Test_v1_Output_output_any,
 	})
 

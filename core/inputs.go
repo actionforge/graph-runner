@@ -38,14 +38,14 @@ type HasInputsInterface interface {
 	InputValueById(c ExecutionContext, inputId InputId, group *InputId) (value interface{}, err error)
 	SetInputValue(inputId InputId, value interface{}) error
 
-	ConnectPort(dstname InputId, src SourceNode)
+	ConnectDataPort(dstname InputId, src SourceNode)
 }
 
 type Inputs struct {
 	inputDefs   map[InputId]InputDefinition
 	inputValues map[InputId]interface{}
 
-	incomingNodes map[InputId]HasOuputsInterface
+	incomingNodes map[InputId]HasOutputsInterface
 
 	// Map which input is connected to which output
 	inputToOutputMapping map[InputId]OutputId
@@ -67,9 +67,9 @@ func (n *Inputs) InputDefsCopy() map[InputId]InputDefinition {
 	return inputDefsCopy
 }
 
-func (n *Inputs) ConnectPort(dstname InputId, src SourceNode) {
+func (n *Inputs) ConnectDataPort(dstname InputId, src SourceNode) {
 	if n.incomingNodes == nil {
-		n.incomingNodes = make(map[InputId]HasOuputsInterface)
+		n.incomingNodes = make(map[InputId]HasOutputsInterface)
 	}
 	if n.inputToOutputMapping == nil {
 		n.inputToOutputMapping = make(map[InputId]OutputId)

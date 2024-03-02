@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func createRunNode(t *testing.T) (*core.NodeRef, core.NodeExecutionInterface, core.HasInputsInterface, core.HasOuputsInterface) {
+func createRunNode(t *testing.T) (*core.NodeRef, core.NodeExecutionInterface, core.HasInputsInterface, core.HasOutputsInterface) {
 
 	r, err := core.NewNodeInstance("run@v1", nil)
 	if err != nil {
@@ -27,7 +27,7 @@ func createRunNode(t *testing.T) (*core.NodeRef, core.NodeExecutionInterface, co
 		t.Fatal("run@v1 has no inputs")
 	}
 
-	outputs, ok := r.(core.HasOuputsInterface)
+	outputs, ok := r.(core.HasOutputsInterface)
 	if !ok {
 		t.Fatal("run@v1 has no outputs")
 	}

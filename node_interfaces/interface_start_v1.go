@@ -8,6 +8,10 @@ import "actionforge/graph-runner/core"// A node that is able to execute javascri
 // Outputs (o) ==> 
 
 // 
+const Start_v1_Output_args core.OutputId = "args"
+// 
+const Start_v1_Output_env core.OutputId = "env"
+// 
 const Start_v1_Output_exec core.OutputId = "exec"
 
 
