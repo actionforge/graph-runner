@@ -3,8 +3,10 @@ package nodes
 import (
 	"actionforge/graph-runner/core"
 	ni "actionforge/graph-runner/node_interfaces"
+	"actionforge/graph-runner/utils"
 	"context"
 	_ "embed"
+	"os"
 )
 
 //go:embed start@v1.yml
@@ -16,11 +18,26 @@ type StartNode struct {
 	core.Outputs
 }
 
-func (n *StartNode) ExecuteEntry() error {
+func (n *StartNode) ExecuteEntry(inputValues map[core.OutputId]any) error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	c := core.NewExecutionContext(ctx)
-	return n.Execute(n, c)
+
+	err := n.Outputs.SetOutputValue(c, ni.Start_v1_Output_args, utils.GetSanitizedEnviron())
+	if err != nil {
+		return err
+	}
+
+	err = n.Outputs.SetOutputValue(c, ni.Start_v1_Output_env, os.Environ())
+	if err != nil {
+		return err
+	}
+
+	err = n.Execute(n, c)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (n *StartNode) ExecuteImpl(c core.ExecutionContext) error {
