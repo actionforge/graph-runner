@@ -23,10 +23,6 @@ func (n *BranchNode) ExecuteImpl(c core.ExecutionContext) error {
 		return err
 	}
 
-	if err != nil {
-		return err
-	}
-
 	if condition {
 		err = n.Execute(n.Executions[ni.Branch_v1_Output_exec_then], c)
 		if err != nil {

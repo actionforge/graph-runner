@@ -28,10 +28,6 @@ func (n *ForNode) ExecuteImpl(c core.ExecutionContext) error {
 		return err
 	}
 
-	if err != nil {
-		return err
-	}
-
 	if firstIndex > lastIndex {
 		// zero executions
 		return nil
