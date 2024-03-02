@@ -38,7 +38,7 @@ func (n *StartNode) ExecuteImpl(c core.ExecutionContext) error {
 }
 
 func init() {
-	err := core.RegisterNodeFactory(startNodeDefinition, func(ctx interface{}) (core.NodeRef, error) {
+	err := core.RegisterNodeFactory(startNodeDefinition, func(ctx interface{}, nodeDef map[any]any) (core.NodeRef, error) {
 		return &StartNode{}, nil
 	})
 	if err != nil {
