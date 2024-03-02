@@ -31,7 +31,7 @@ func (n *NegateNode) OutputValueById(c core.ExecutionContext, outputId core.Outp
 }
 
 func init() {
-	err := core.RegisterNodeFactory(negateDefinition, func(context interface{}) (core.NodeRef, error) {
+	err := core.RegisterNodeFactory(negateDefinition, func(ctx interface{}, nodeDef map[any]any) (core.NodeRef, error) {
 		return &NegateNode{}, nil
 	})
 	if err != nil {

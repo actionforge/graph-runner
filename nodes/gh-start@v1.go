@@ -136,7 +136,7 @@ func (n *GhActionStartNode) ExecuteImpl(c core.ExecutionContext) error {
 func init() {
 	utils.SetFeature("github", true)
 
-	err := core.RegisterNodeFactory(GithubActionStartNodeDefinition, func(context interface{}) (core.NodeRef, error) {
+	err := core.RegisterNodeFactory(GithubActionStartNodeDefinition, func(ctx interface{}, nodeDef map[any]any) (core.NodeRef, error) {
 		return &GhActionStartNode{}, nil
 	})
 	if err != nil {

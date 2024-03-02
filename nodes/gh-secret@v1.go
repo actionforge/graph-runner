@@ -43,7 +43,7 @@ func (n *GhSecretsNode) OutputValueById(c core.ExecutionContext, outputId core.O
 }
 
 func init() {
-	err := core.RegisterNodeFactory(GithubActionSecretDefinition, func(context interface{}) (core.NodeRef, error) {
+	err := core.RegisterNodeFactory(GithubActionSecretDefinition, func(ctx interface{}, nodeDef map[any]any) (core.NodeRef, error) {
 		return &GhSecretsNode{}, nil
 	})
 	if err != nil {

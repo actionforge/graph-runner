@@ -31,7 +31,7 @@ func (n *EnvGetNode) OutputValueById(c core.ExecutionContext, outputId core.Outp
 }
 
 func init() {
-	err := core.RegisterNodeFactory(envGetDefinition, func(context interface{}) (core.NodeRef, error) {
+	err := core.RegisterNodeFactory(envGetDefinition, func(ctx interface{}, nodeDef map[any]any) (core.NodeRef, error) {
 		return &EnvGetNode{}, nil
 	})
 	if err != nil {

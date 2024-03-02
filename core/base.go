@@ -106,7 +106,7 @@ type SourceNode struct {
 	Name OutputId
 }
 
-type nodeFactoryFunc func(context interface{}) (NodeRef, error)
+type nodeFactoryFunc func(ctx interface{}, nodeDef map[any]any) (NodeRef, error)
 
 type InputsOutputs struct {
 	Inputs  any
@@ -266,7 +266,7 @@ func NewGhActionNode(nodeType string) (NodeRef, error) {
 		return nil, fmt.Errorf("node type '%v' not registered", nodeType)
 	}
 
-	node, err := factoryEntry.FactoryFn(nodeType)
+	node, err := factoryEntry.FactoryFn(nodeType, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -275,14 +275,14 @@ func NewGhActionNode(nodeType string) (NodeRef, error) {
 	return node, nil
 }
 
-func NewNodeInstance(nodeType string) (NodeRef, error) {
+func NewNodeInstance(nodeType string, nodeDef map[any]any) (NodeRef, error) {
 	var (
 		node NodeRef
 		err  error
 	)
 	factoryEntry, exists := registries[nodeType]
 	if exists {
-		node, err = factoryEntry.FactoryFn(nil)
+		node, err = factoryEntry.FactoryFn(nil, nodeDef)
 		if err != nil {
 			return nil, err
 		}

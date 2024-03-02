@@ -12,7 +12,7 @@ import (
 
 // Run a simple script/program and check that the output is correct.
 func Test_NewNodeInstance(t *testing.T) {
-	n, err := core.NewNodeInstance("run@v1")
+	n, err := core.NewNodeInstance("run@v1", nil)
 	if err != nil {
 		t.Fatal(err)
 	}

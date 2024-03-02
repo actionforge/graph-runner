@@ -15,7 +15,7 @@ type TestNode struct {
 }
 
 func init() {
-	err := core.RegisterNodeFactory(testNodeDefinition, func(context interface{}) (core.NodeRef, error) {
+	err := core.RegisterNodeFactory(testNodeDefinition, func(ctx interface{}, nodeDef map[any]any) (core.NodeRef, error) {
 		return &TestNode{}, nil
 	})
 	if err != nil {

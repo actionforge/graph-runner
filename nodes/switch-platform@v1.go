@@ -40,7 +40,7 @@ func (n *PlatformSwitchNode) ExecuteImpl(c core.ExecutionContext) error {
 }
 
 func init() {
-	err := core.RegisterNodeFactory(platformSwitchDefinition, func(context interface{}) (core.NodeRef, error) {
+	err := core.RegisterNodeFactory(platformSwitchDefinition, func(ctx interface{}, nodeDef map[any]any) (core.NodeRef, error) {
 		return &PlatformSwitchNode{}, nil
 	})
 	if err != nil {

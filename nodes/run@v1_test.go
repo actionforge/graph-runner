@@ -12,7 +12,7 @@ import (
 
 func createRunNode(t *testing.T) (*core.NodeRef, core.NodeExecutionInterface, core.HasInputsInterface, core.HasOuputsInterface) {
 
-	r, err := core.NewNodeInstance("run@v1")
+	r, err := core.NewNodeInstance("run@v1", nil)
 	if err != nil {
 		t.Fatal(err)
 	}

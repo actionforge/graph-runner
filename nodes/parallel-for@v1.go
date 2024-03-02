@@ -91,7 +91,7 @@ func (n *ParallelForNode) ExecuteImpl(ti core.ExecutionContext) error {
 }
 
 func init() {
-	err := core.RegisterNodeFactory(parallelForDefinition, func(context interface{}) (core.NodeRef, error) {
+	err := core.RegisterNodeFactory(parallelForDefinition, func(ctx interface{}, nodeDef map[any]any) (core.NodeRef, error) {
 		return &ParallelForNode{}, nil
 	})
 	if err != nil {

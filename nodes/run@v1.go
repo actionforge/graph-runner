@@ -216,7 +216,7 @@ func isUTF16LE(b []byte) bool {
 }
 
 func init() {
-	err := core.RegisterNodeFactory(runDefinition, func(context interface{}) (core.NodeRef, error) {
+	err := core.RegisterNodeFactory(runDefinition, func(ctx interface{}, nodeDef map[any]any) (core.NodeRef, error) {
 		return &RunNode{}, nil
 	})
 	if err != nil {

@@ -68,7 +68,7 @@ func (n *WaitForNode) ExecuteImpl(c core.ExecutionContext) error {
 }
 
 func init() {
-	err := core.RegisterNodeFactory(waitForDefinition, func(context interface{}) (core.NodeRef, error) {
+	err := core.RegisterNodeFactory(waitForDefinition, func(ctx interface{}, nodeDef map[any]any) (core.NodeRef, error) {
 		return &WaitForNode{
 			Lock:           sync.Mutex{},
 			CurrentCounter: -1,

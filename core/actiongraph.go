@@ -149,7 +149,7 @@ func loadNodes(ag *ActionGraph, nodesYaml map[any]interface{}) error {
 		if strings.HasPrefix(nodeType, "github.com/") {
 			node, err = NewGhActionNode(nodeType)
 		} else {
-			node, err = NewNodeInstance(nodeType)
+			node, err = NewNodeInstance(nodeType, nodeI)
 		}
 		if err != nil {
 			return u.Throw(err)

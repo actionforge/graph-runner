@@ -12,7 +12,7 @@ import (
 
 // Test that the node type exists.
 func Test_NewNodeInstance_Exists(t *testing.T) {
-	n, err := core.NewNodeInstance("run@v1")
+	n, err := core.NewNodeInstance("run@v1", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -24,7 +24,7 @@ func Test_NewNodeInstance_Exists(t *testing.T) {
 
 // Test that the node type doesn't exist
 func Test_NewNodeInstance_NotExists(t *testing.T) {
-	_, err := core.NewNodeInstance("abc@v2")
+	_, err := core.NewNodeInstance("abc@v2", nil)
 	if err == nil {
 		t.Error("Expected error")
 		return
@@ -34,7 +34,7 @@ func Test_NewNodeInstance_NotExists(t *testing.T) {
 // Test to ensure that all output values
 // with matching types can be set and don't fail.
 func Test_SetOutputValue_Success(t *testing.T) {
-	node, err := core.NewNodeInstance("test@v1")
+	node, err := core.NewNodeInstance("test@v1", nil)
 	if err != nil {
 		t.Error(err)
 		return
@@ -102,7 +102,7 @@ func Test_SetOutputValue_Success(t *testing.T) {
 // Test to ensure that all output values
 // with mismatching types are declined.
 func Test_SetOutputValue_Decline(t *testing.T) {
-	node, err := core.NewNodeInstance("test@v1")
+	node, err := core.NewNodeInstance("test@v1", nil)
 	if err != nil {
 		t.Error(err)
 		return
@@ -504,12 +504,12 @@ func Test_InputValueById_Casting(t *testing.T) {
 }
 
 func createTwoNodesAndConnectThem(t *testing.T) (src core.NodeRef, srcOutputs core.HasOuputsInterface, dst core.NodeRef, dstInputs core.HasInputsInterface) {
-	src, err := core.NewNodeInstance("test@v1")
+	src, err := core.NewNodeInstance("test@v1", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	dst, err = core.NewNodeInstance("test@v1")
+	dst, err = core.NewNodeInstance("test@v1", nil)
 	if err != nil {
 		t.Fatal(err)
 	}

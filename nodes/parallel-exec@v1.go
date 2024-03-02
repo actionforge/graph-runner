@@ -62,7 +62,7 @@ func (n *ParallelExecNode) ExecuteImpl(ti core.ExecutionContext) error {
 }
 
 func init() {
-	err := core.RegisterNodeFactory(parallelExecDefinition, func(context interface{}) (core.NodeRef, error) {
+	err := core.RegisterNodeFactory(parallelExecDefinition, func(ctx interface{}, nodeDef map[any]any) (core.NodeRef, error) {
 		return &ParallelExecNode{}, nil
 	})
 	if err != nil {

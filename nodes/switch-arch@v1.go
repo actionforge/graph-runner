@@ -40,7 +40,7 @@ func (n *ArchSwitchNode) ExecuteImpl(c core.ExecutionContext) error {
 }
 
 func init() {
-	err := core.RegisterNodeFactory(archSwitchDefinition, func(context interface{}) (core.NodeRef, error) {
+	err := core.RegisterNodeFactory(archSwitchDefinition, func(ctx interface{}, nodeDef map[any]any) (core.NodeRef, error) {
 		return &ArchSwitchNode{}, nil
 	})
 	if err != nil {
