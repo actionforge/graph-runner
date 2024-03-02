@@ -1,0 +1,55 @@
+entry: start
+executions:
+  - src:
+      node: start
+      port: exec
+    dst:
+      node: my-subgraph
+      port: exec
+connections:
+  - src:
+      node: start
+      port: args
+    dst:
+      node: my-subgraph
+      port: args
+nodes:
+  - id: my-subgraph
+    type: subgraph@v1
+    entry: start
+    executions:
+      - src:
+          node: start
+          port: exec
+        dst:
+          node: run-v1-parrot-dolphin-apple
+          port: exec
+    connections: []
+    nodes:
+      - id: start
+        type: start@v1
+        position:
+          x: -210
+          y: -10
+        settings:
+          folded: false
+      - id: run-v1-parrot-dolphin-apple
+        type: run@v1
+        position:
+          x: 250
+          y: -190
+        inputs:
+          script: echo "FOO"
+        settings:
+          folded: false
+    registries: []
+    description: ""
+  - id: start
+    type: start@v1
+    position:
+      x: -210
+      y: -10
+    settings:
+      folded: false
+registries: []
+description: ""
