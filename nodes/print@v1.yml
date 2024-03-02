@@ -1,0 +1,18 @@
+yaml-version: 3.0
+
+id: print
+name: Print
+version: 1
+description: Print something to the console
+outputs:
+  exec:
+    exec: true
+    index: 0
+inputs:
+  exec:
+    exec: true
+    index: 0
+  value:
+    name: Value
+    type: any
+    index: 1
