@@ -13,6 +13,7 @@ var startNodeDefinition string
 type StartNode struct {
 	core.NodeBaseComponent
 	core.Executions
+	core.Outputs
 }
 
 func (n *StartNode) ExecuteEntry() error {
