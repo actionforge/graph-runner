@@ -108,11 +108,6 @@ type DataSource struct {
 
 type nodeFactoryFunc func(ctx interface{}, nodeDef map[any]any) (NodeRef, error)
 
-type InputsOutputs struct {
-	Inputs  any
-	Outputs any
-}
-
 var registries = make(map[string]NodeTypeDefinitionFull)
 
 func GetRegistries() map[string]NodeTypeDefinitionFull {
