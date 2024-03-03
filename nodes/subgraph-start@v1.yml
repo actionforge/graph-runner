@@ -5,3 +5,7 @@ name: Subgraph Start
 version: 1
 description: Invocation point for a subgraph
 entry: true
+outputs:
+  exec:
+    exec: true
+    index: 0
