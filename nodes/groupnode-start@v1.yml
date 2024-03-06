@@ -1,0 +1,11 @@
+yaml-version: 3.0
+
+id: groupnode-start
+name: Group Node Start
+version: 1
+description: Invocation point for a groupnode
+entry: true
+outputs:
+  exec:
+    exec: true
+    index: 0

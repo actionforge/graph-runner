@@ -4,18 +4,18 @@ executions:
       node: start
       port: exec
     dst:
-      node: my-subgraph
+      node: my-groupnode
       port: exec
 connections:
   - src:
       node: start
       port: args
     dst:
-      node: my-subgraph
+      node: my-groupnode
       port: args
 nodes:
-  - id: my-subgraph
-    type: subgraph@v1
+  - id: my-groupnode
+    type: groupnode@v1
     entry: start
     inputs:
       args:
@@ -38,7 +38,7 @@ nodes:
           port: value
     nodes:
       - id: start
-        type: subgraph-start@v1
+        type: groupnode-start@v1
         position:
           x: -210
           y: -10

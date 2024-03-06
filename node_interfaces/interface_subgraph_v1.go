@@ -2,7 +2,7 @@
 
 package node_interfaces
 
-import "actionforge/graph-runner/core"// Subgraph
+import "actionforge/graph-runner/core"// Group Node
 
 
 // ==> (o) Inputs

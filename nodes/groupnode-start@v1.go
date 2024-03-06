@@ -7,7 +7,7 @@ import (
 	_ "embed"
 )
 
-//go:embed subgraph-start@v1.yml
+//go:embed groupnode-start@v1.yml
 var subGraphStartDefinition string
 
 type SubGraphStartNode struct {

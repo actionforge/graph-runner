@@ -2,6 +2,6 @@
 
 package node_interfaces
 
-// Invocation point for a subgraph
+// Invocation point for a groupnode
 
 

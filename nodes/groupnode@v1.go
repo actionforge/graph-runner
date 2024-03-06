@@ -11,7 +11,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-//go:embed subgraph@v1.yml
+//go:embed groupnode@v1.yml
 var subgraphDefinition string
 
 type SubGraphNode struct {
@@ -76,21 +76,21 @@ func init() {
 
 		subStart, err := ag.FindNode(ag.Entry)
 		if err != nil {
-			return nil, errors.New("subgraph has no entry")
+			return nil, errors.New("groupnode has no entry")
 		}
 
 		subStartExec, ok := subStart.(core.NodeExecutionInterface)
 		if !ok {
-			return nil, errors.New("subgraph entry is not an executable node")
+			return nil, errors.New("groupnode entry is not an executable node")
 		}
 
-		subgraph := SubGraphNode{
+		groupnode := SubGraphNode{
 			ag:    ag,
 			start: subStartExec,
 		}
 
-		subgraph.Executions = make(map[core.OutputId]core.NodeExecutionInterface)
-		subgraph.Executions[ni.Subgraph_v1_Output_exec] = subStartExec
+		groupnode.Executions = make(map[core.OutputId]core.NodeExecutionInterface)
+		groupnode.Executions[ni.Subgraph_v1_Output_exec] = subStartExec
 
 		inputs, ok := nodeDef["inputs"]
 		if ok {
@@ -110,15 +110,15 @@ func init() {
 				idefs[core.InputId(k.(string))] = idef
 				odefs[core.OutputId(k.(string))] = odef
 			}
-			subgraph.SetInputDefs(idefs)
-			subgraph.SetOutputDefs(odefs)
+			groupnode.SetInputDefs(idefs)
+			groupnode.SetOutputDefs(odefs)
 
 			subStartInputs, ok := subStart.(core.HasInputsInterface)
 			if ok {
 				for k := range idefs {
 					subStartInputs.ConnectDataPort(k, core.DataSource{
 						Output:  core.OutputId(k),
-						SrcNode: &subgraph,
+						SrcNode: &groupnode,
 					})
 				}
 				subStartInputs.SetInputDefs(idefs)
@@ -130,7 +130,7 @@ func init() {
 			}
 		}
 
-		return &subgraph, nil
+		return &groupnode, nil
 	})
 	if err != nil {
 		panic(err)
