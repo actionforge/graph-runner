@@ -1,6 +1,6 @@
 yaml-version: 3.0
 
-id: groupnode
+id: group
 name: Group node
 version: 1
 description: Group Node

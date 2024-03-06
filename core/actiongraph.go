@@ -158,8 +158,8 @@ func loadNodes(ag *ActionGraph, nodesYaml map[any]interface{}) error {
 		// If there are user input values, then set them to the input values array
 		_, exists := nodeI["inputs"]
 		if exists {
-			// subgraphs have an input field but its the groupnode input types, not input values
-			if !strings.HasPrefix(node.GetNodeType(), "groupnode@") {
+			// subgraphs have an input field but its the group input types, not input values
+			if !strings.HasPrefix(node.GetNodeType(), "group@") {
 				is, err := u.GetItem[map[any]any](nodeI, "inputs")
 				if err != nil {
 					return u.Throw(err)

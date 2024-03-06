@@ -1,9 +1,9 @@
 yaml-version: 3.0
 
-id: groupnode-start
+id: group-start
 name: Group Node Start
 version: 1
-description: Invocation point for a groupnode
+description: Invocation point for a group
 entry: true
 outputs:
   exec:

@@ -4,18 +4,18 @@ executions:
       node: start
       port: exec
     dst:
-      node: my-groupnode
+      node: my-group
       port: exec
 connections:
   - src:
       node: start
       port: args
     dst:
-      node: my-groupnode
+      node: my-group
       port: args
 nodes:
-  - id: my-groupnode
-    type: groupnode@v1
+  - id: my-group
+    type: group@v1
     entry: start
     inputs:
       args:
@@ -38,7 +38,7 @@ nodes:
           port: value
     nodes:
       - id: start
-        type: groupnode-start@v1
+        type: group-start@v1
         position:
           x: -210
           y: -10

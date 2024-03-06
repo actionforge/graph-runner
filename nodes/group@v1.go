@@ -11,10 +11,10 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-//go:embed groupnode@v1.yml
+//go:embed group@v1.yml
 var subgraphDefinition string
 
-type SubGraphNode struct {
+type GroupNode struct {
 	core.NodeBaseComponent
 	core.Inputs
 	core.Outputs
@@ -24,7 +24,7 @@ type SubGraphNode struct {
 	start core.NodeExecutionInterface
 }
 
-func (n *SubGraphNode) OutputValueById(c core.ExecutionContext, outputId core.OutputId) (interface{}, error) {
+func (n *GroupNode) OutputValueById(c core.ExecutionContext, outputId core.OutputId) (interface{}, error) {
 
 	v, err := n.InputValueById(c, core.InputId(outputId), nil)
 	if err != nil {
@@ -34,7 +34,7 @@ func (n *SubGraphNode) OutputValueById(c core.ExecutionContext, outputId core.Ou
 	return v, nil
 }
 
-func (n *SubGraphNode) ExecuteImpl(c core.ExecutionContext) error {
+func (n *GroupNode) ExecuteImpl(c core.ExecutionContext) error {
 	err := n.Execute(n.Executions[ni.Subgraph_v1_Output_exec], c)
 	if err != nil {
 		return u.Throw(err)
@@ -76,21 +76,21 @@ func init() {
 
 		subStart, err := ag.FindNode(ag.Entry)
 		if err != nil {
-			return nil, errors.New("groupnode has no entry")
+			return nil, errors.New("group has no entry")
 		}
 
 		subStartExec, ok := subStart.(core.NodeExecutionInterface)
 		if !ok {
-			return nil, errors.New("groupnode entry is not an executable node")
+			return nil, errors.New("group entry is not an executable node")
 		}
 
-		groupnode := SubGraphNode{
+		group := GroupNode{
 			ag:    ag,
 			start: subStartExec,
 		}
 
-		groupnode.Executions = make(map[core.OutputId]core.NodeExecutionInterface)
-		groupnode.Executions[ni.Subgraph_v1_Output_exec] = subStartExec
+		group.Executions = make(map[core.OutputId]core.NodeExecutionInterface)
+		group.Executions[ni.Subgraph_v1_Output_exec] = subStartExec
 
 		inputs, ok := nodeDef["inputs"]
 		if ok {
@@ -110,15 +110,15 @@ func init() {
 				idefs[core.InputId(k.(string))] = idef
 				odefs[core.OutputId(k.(string))] = odef
 			}
-			groupnode.SetInputDefs(idefs)
-			groupnode.SetOutputDefs(odefs)
+			group.SetInputDefs(idefs)
+			group.SetOutputDefs(odefs)
 
 			subStartInputs, ok := subStart.(core.HasInputsInterface)
 			if ok {
 				for k := range idefs {
 					subStartInputs.ConnectDataPort(k, core.DataSource{
 						Output:  core.OutputId(k),
-						SrcNode: &groupnode,
+						SrcNode: &group,
 					})
 				}
 				subStartInputs.SetInputDefs(idefs)
@@ -130,7 +130,7 @@ func init() {
 			}
 		}
 
-		return &groupnode, nil
+		return &group, nil
 	})
 	if err != nil {
 		panic(err)
