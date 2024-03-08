@@ -14,45 +14,59 @@ connections:
       node: my-group
       port: args
 nodes:
+  - id: start
+    type: start@v1
+    position:
+      x: -210
+      y: -10
+    settings:
+      folded: false
   - id: my-group
     type: group@v1
-    entry: start
-    inputs:
-      args:
-        name: Args
-        type: "[]string"
-        index: 1
-    executions:
-      - src:
-          node: start
-          port: exec
-        dst:
-          node: my-print
-          port: exec
-    connections:
-      - src:
-          node: start
-          port: args
-        dst:
-          node: my-print
-          port: value
-    nodes:
-      - id: start
-        type: group-start@v1
-        position:
-          x: -210
-          y: -10
-      - id: my-print
-        type: print@v1
-        position:
-          x: 250
-          y: -190
-        inputs:
-          script: echo "FOO"
-        settings:
-          folded: false
-    registries: []
-    description: ""
+    position:
+      x: 210
+      y: -10
+    graph:
+      inputs:
+        args:
+          name: Args
+          type: "[]string"
+          index: 0
+        exec:
+          exec: true
+          index: 1
+      entry: start
+      executions:
+        - src:
+            node: start
+            port: exec
+          dst:
+            node: my-print
+            port: exec
+      connections:
+        - src:
+            node: start
+            port: args
+          dst:
+            node: my-print
+            port: value
+      nodes:
+        - id: start
+          type: group-start@v1
+          position:
+            x: -210
+            y: -10
+        - id: my-print
+          type: print@v1
+          position:
+            x: 250
+            y: -190
+          inputs:
+            script: echo "FOO"
+          settings:
+            folded: false
+      registries: []
+      description: ""
   - id: start
     type: start@v1
     position:

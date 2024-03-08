@@ -43,28 +43,11 @@ func (n *GroupNode) ExecuteImpl(c core.ExecutionContext) error {
 	return nil
 }
 
-func anyToPortDefinition[T any](o any) (T, error) {
-	var (
-		tmp bytes.Buffer
-		ret T
-	)
-	err := yaml.NewEncoder(&tmp).Encode(o)
-	if err != nil {
-		return ret, err
-	}
-
-	err = yaml.NewDecoder(&tmp).Decode(&ret)
-	if err != nil {
-		return ret, err
-	}
-	return ret, err
-}
-
 func init() {
 	err := core.RegisterNodeFactory(subgraphDefinition, func(ctx interface{}, nodeDef map[any]any) (core.NodeRef, error) {
 
 		var yamlDef bytes.Buffer
-		err := yaml.NewEncoder(&yamlDef).Encode(nodeDef)
+		err := yaml.NewEncoder(&yamlDef).Encode(nodeDef["graph"])
 		if err != nil {
 			return nil, err
 		}
@@ -92,41 +75,36 @@ func init() {
 		group.Executions = make(map[core.OutputId]core.NodeExecutionInterface)
 		group.Executions[ni.Subgraph_v1_Output_exec] = subStartExec
 
-		inputs, ok := nodeDef["inputs"]
-		if ok {
-			idefs := make(map[core.InputId]core.InputDefinition)
-			odefs := make(map[core.OutputId]core.OutputDefinition)
-			for k, v := range inputs.(map[any]any) {
-				idef, err := anyToPortDefinition[core.InputDefinition](v)
-				if err != nil {
-					return nil, err
-				}
-
-				odef, err := anyToPortDefinition[core.OutputDefinition](v)
-				if err != nil {
-					return nil, err
-				}
-
-				idefs[core.InputId(k.(string))] = idef
-				odefs[core.OutputId(k.(string))] = odef
-			}
-			group.SetInputDefs(idefs)
-			group.SetOutputDefs(odefs)
+		if ag.Inputs != nil {
+			group.SetInputDefs(ag.Inputs)
 
 			subStartInputs, ok := subStart.(core.HasInputsInterface)
 			if ok {
-				for k := range idefs {
+				for k := range ag.Inputs {
 					subStartInputs.ConnectDataPort(k, core.DataSource{
 						Output:  core.OutputId(k),
 						SrcNode: &group,
 					})
 				}
-				subStartInputs.SetInputDefs(idefs)
+				subStartInputs.SetInputDefs(ag.Inputs)
 			}
+		}
 
-			subStartOutputs, ok := subStart.(core.HasOutputsInterface)
+		if ag.Outputs != nil {
+			group.SetOutputDefs(ag.Outputs)
+
+			groupStartOutputs, ok := subStart.(core.HasOutputsInterface)
 			if ok {
-				subStartOutputs.SetOutputDefs(odefs)
+				// TODO: (Seb)
+				/*
+					for k := range ag.Inputs {
+						subStartInputs.ConnectDataPort(k, core.DataSource{
+							Output:  core.OutputId(k),
+							SrcNode: &group,
+						})
+					}
+				*/
+				groupStartOutputs.SetOutputDefs(ag.Outputs)
 			}
 		}
 

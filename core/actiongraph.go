@@ -2,6 +2,7 @@ package core
 
 import (
 	u "actionforge/graph-runner/utils"
+	"bytes"
 	"fmt"
 	"reflect"
 	"strings"
@@ -10,7 +11,9 @@ import (
 )
 
 type ActionGraph struct {
-	Nodes map[string]NodeRef
+	Nodes   map[string]NodeRef
+	Inputs  map[InputId]InputDefinition   `yaml:"inputs" json:"inputs" bson:"inputs"`
+	Outputs map[OutputId]OutputDefinition `yaml:"outputs" json:"outputs" bson:"outputs"`
 	// Connections are handled within the nodes
 
 	Entry string
@@ -119,7 +122,46 @@ func LoadGraph(graphContent []byte) (ActionGraph, error) {
 		return ActionGraph{}, u.Throw(err)
 	}
 
+	inputs, ok := nodesYaml["inputs"]
+	if ok {
+		idefs := make(map[InputId]InputDefinition)
+		odefs := make(map[OutputId]OutputDefinition)
+		for k, v := range inputs.(map[any]any) {
+			idef, err := anyToPortDefinition[InputDefinition](v)
+			if err != nil {
+				return ActionGraph{}, err
+			}
+
+			odef, err := anyToPortDefinition[OutputDefinition](v)
+			if err != nil {
+				return ActionGraph{}, err
+			}
+
+			idefs[InputId(k.(string))] = idef
+			odefs[OutputId(k.(string))] = odef
+		}
+		ag.Inputs = idefs
+		ag.Outputs = odefs
+	}
+
 	return ag, nil
+}
+
+func anyToPortDefinition[T any](o any) (T, error) {
+	var (
+		tmp bytes.Buffer
+		ret T
+	)
+	err := yaml.NewEncoder(&tmp).Encode(o)
+	if err != nil {
+		return ret, err
+	}
+
+	err = yaml.NewDecoder(&tmp).Decode(&ret)
+	if err != nil {
+		return ret, err
+	}
+	return ret, err
 }
 
 func loadNodes(ag *ActionGraph, nodesYaml map[any]interface{}) error {
@@ -158,27 +200,24 @@ func loadNodes(ag *ActionGraph, nodesYaml map[any]interface{}) error {
 		// If there are user input values, then set them to the input values array
 		_, exists := nodeI["inputs"]
 		if exists {
-			// subgraphs have an input field but its the group input types, not input values
-			if !strings.HasPrefix(node.GetNodeType(), "group@") {
+			// If node has inputs defined in yaml, set them
+			inputs, hasInputs := node.(HasInputsInterface)
+			if hasInputs {
 				is, err := u.GetItem[map[any]any](nodeI, "inputs")
 				if err != nil {
 					return u.Throw(err)
 				}
 
-				// If node has inputs defined in yaml, set them
-				inputs, hasInputs := node.(HasInputsInterface)
-				if hasInputs {
-					for key, value := range is {
+				for key, value := range is {
 
-						k, ok := key.(string)
-						if !ok {
-							return fmt.Errorf("input key is not a string")
-						}
+					k, ok := key.(string)
+					if !ok {
+						return fmt.Errorf("input key is not a string")
+					}
 
-						err = inputs.SetInputValue(InputId(k), value)
-						if err != nil {
-							return u.Throw(err)
-						}
+					err = inputs.SetInputValue(InputId(k), value)
+					if err != nil {
+						return u.Throw(err)
 					}
 				}
 			}
