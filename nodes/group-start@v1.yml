@@ -5,3 +5,8 @@ name: Group Node Start
 version: 1
 description: Invocation point for a group
 entry: true
+style:
+  header:
+    background: "linear-gradient(to right, #027867, rgb(21 69 130))"
+  body:
+    background: "linear-gradient(to right, #027867, rgb(21 69 130))"

@@ -33,6 +33,8 @@ type NodeExecutionInterface interface {
 	GetNodeType() string
 	GetName() string
 	GetId() string
+
+	ConnectExecutionPort(portName OutputId, target NodeExecutionInterface)
 }
 
 // An interface for nodes that can kick off an action graph.
@@ -47,6 +49,7 @@ type NodeBaseInterface interface {
 	GetId() string
 	GetName() string
 	SetName(name string)
+	GetSubGraph() *ActionGraph
 }
 
 // Base component for nodes that offer values from other nodes.
@@ -54,7 +57,8 @@ type NodeBaseInterface interface {
 type NodeBaseComponent struct {
 	Name     string // Human readable name of the node
 	Id       string // Unique identifier for the node
-	nodeType string // Node type of the node (e.g. run@v1 or github.com/actions/checkout@v3)
+	NodeType string // Node type of the node (e.g. run@v1 or github.com/actions/checkout@v3)
+	Subgraph *ActionGraph
 }
 
 func (n *NodeBaseComponent) SetId(id string) {
@@ -66,11 +70,15 @@ func (n *NodeBaseComponent) GetId() string {
 }
 
 func (n *NodeBaseComponent) GetNodeType() string {
-	return n.nodeType
+	return n.NodeType
 }
 
 func (n *NodeBaseComponent) SetNodeType(name string) {
-	n.nodeType = name
+	n.NodeType = name
+}
+
+func (n *NodeBaseComponent) GetSubGraph() *ActionGraph {
+	return n.Subgraph
 }
 
 func (n *NodeBaseComponent) GetName() string {
@@ -99,6 +107,11 @@ func (n *NodeBaseComponent) Execute(t NodeExecutionInterface, ec ExecutionContex
 		return err
 	}
 	return nil
+}
+
+type ExecutionSource struct {
+	SrcNode NodeExecutionInterface
+	Output  OutputId
 }
 
 type DataSource struct {
@@ -261,7 +274,7 @@ func NewGhActionNode(nodeType string) (NodeRef, error) {
 		return nil, fmt.Errorf("node type '%v' not registered", nodeType)
 	}
 
-	node, err := factoryEntry.FactoryFn(nodeType, nil)
+	node, err := factoryEntry.FactoryFn(nil, nil)
 	if err != nil {
 		return nil, err
 	}

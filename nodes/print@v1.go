@@ -26,7 +26,7 @@ func (n *PrintNode) ExecuteImpl(c core.ExecutionContext) error {
 
 	fmt.Printf("%v\n", value)
 
-	err = n.Execute(n.Executions[core.OutputId(ni.Print_v1_Output_exec)], c)
+	err = n.Execute(n.GetExecutionPort(ni.Print_v1_Output_exec), c)
 	if err != nil {
 		return u.Throw(err)
 	}

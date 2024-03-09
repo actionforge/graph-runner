@@ -33,7 +33,7 @@ func (n *ForNode) ExecuteImpl(c core.ExecutionContext) error {
 		return nil
 	}
 
-	body := n.Executions[ni.For_v1_Output_exec_body]
+	body := n.GetExecutionPort(ni.For_v1_Output_exec_body)
 	if body != nil {
 
 		for i := firstIndex; i <= lastIndex; i++ {
@@ -50,7 +50,7 @@ func (n *ForNode) ExecuteImpl(c core.ExecutionContext) error {
 		}
 	}
 
-	finish := n.Executions[ni.For_v1_Output_exec_finish]
+	finish := n.GetExecutionPort(ni.For_v1_Output_exec_finish)
 	if finish != nil {
 		err = n.Execute(finish, c)
 		if err != nil {

@@ -41,12 +41,7 @@ func (n *StartNode) ExecuteEntry(inputValues map[core.OutputId]any) error {
 }
 
 func (n *StartNode) ExecuteImpl(c core.ExecutionContext) error {
-	exec, ok := n.Executions[ni.Start_v1_Output_exec]
-	if !ok {
-		return nil
-	}
-
-	err := n.Execute(exec, c)
+	err := n.Execute(n.GetExecutionPort(ni.Start_v1_Output_exec), c)
 	if err != nil {
 		return err
 	}

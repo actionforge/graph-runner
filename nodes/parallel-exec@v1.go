@@ -25,7 +25,7 @@ func (n *ParallelExecNode) ExecuteImpl(ti core.ExecutionContext) error {
 	var mutex sync.Mutex
 	var errors []error
 
-	for _, e := range n.Executions {
+	for _, e := range n.GetAllExecutionPorts() {
 		if e == nil {
 			continue
 		}
@@ -53,7 +53,7 @@ func (n *ParallelExecNode) ExecuteImpl(ti core.ExecutionContext) error {
 		return fmt.Errorf("parallel execution errors: %v", errors)
 	}
 
-	err := n.Execute(n.Executions[ni.Parallel_for_v1_Output_exec_finish], ti)
+	err := n.Execute(n.GetExecutionPort(ni.Parallel_for_v1_Output_exec_finish), ti)
 	if err != nil {
 		return u.Throw(err)
 	}

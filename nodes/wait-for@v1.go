@@ -59,7 +59,7 @@ func (n *WaitForNode) ExecuteImpl(c core.ExecutionContext) error {
 
 	n.Lock.Unlock()
 
-	err = n.Execute(n.Executions[ni.Wait_for_v1_Output_exec], c)
+	err = n.Execute(n.GetExecutionPort(ni.Wait_for_v1_Output_exec), c)
 	if err != nil {
 		return err
 	}

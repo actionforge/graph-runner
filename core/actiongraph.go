@@ -31,6 +31,10 @@ func (ag *ActionGraph) FindNode(nodeId string) (NodeRef, error) {
 	return node, nil
 }
 
+func (ag *ActionGraph) GetNodes() map[string]NodeRef {
+	return ag.Nodes
+}
+
 func (ag *ActionGraph) SetEntry(entryName string) {
 	ag.Entry = entryName
 }
@@ -92,37 +96,38 @@ func LoadGraph(graphContent []byte) (ActionGraph, error) {
 
 	ag := NewActionGraph()
 
-	nodesYaml := make(map[any]any)
-	err := yaml.Unmarshal(graphContent, &nodesYaml)
+	graphYaml := make(map[any]any)
+	err := yaml.Unmarshal(graphContent, &graphYaml)
 	if err != nil {
 		return ActionGraph{}, u.Throw(err)
 	}
 
 	// Load Nodes
-	err = loadNodes(&ag, nodesYaml)
+	err = loadNodes(&ag, graphYaml)
 	if err != nil {
 		return ActionGraph{}, u.Throw(err)
 	}
 
 	// Load Executions
-	err = loadExecutions(&ag, nodesYaml)
+	err = loadExecutions(&ag, graphYaml)
 	if err != nil {
 		return ActionGraph{}, u.Throw(err)
 	}
 
 	// Load connections
-	err = loadConnections(&ag, nodesYaml)
+	err = loadConnections(&ag, graphYaml)
 	if err != nil {
 		return ActionGraph{}, u.Throw(err)
 	}
 
 	// Load Entry
-	err = loadEntry(&ag, nodesYaml)
+	err = loadEntry(&ag, graphYaml)
 	if err != nil {
 		return ActionGraph{}, u.Throw(err)
 	}
 
-	inputs, ok := nodesYaml["inputs"]
+	// load group inputs and outputs if available
+	inputs, ok := graphYaml["inputs"]
 	if ok {
 		idefs := make(map[InputId]InputDefinition)
 		odefs := make(map[OutputId]OutputDefinition)
@@ -256,6 +261,7 @@ func loadExecutions(ag *ActionGraph, nodesYaml map[any]interface{}) error {
 		if err != nil {
 			return u.Throw(err)
 		}
+
 		dstNode, err := ag.FindNode(dstNodeId)
 		if err != nil {
 			return fmt.Errorf("execution dst node does not exist")
@@ -266,31 +272,52 @@ func loadExecutions(ag *ActionGraph, nodesYaml map[any]interface{}) error {
 			return fmt.Errorf("execution src node does not exist")
 		}
 
+		if strings.HasPrefix(dstNode.GetNodeType(), "group@") {
+			subgraph := dstNode.GetSubGraph()
+			if subgraph == nil {
+				return fmt.Errorf("group node has no sub graph")
+			}
+
+			groupStart, err := subgraph.FindNode(subgraph.Entry)
+			if err != nil {
+				return fmt.Errorf("sub graph has no entry")
+			}
+
+			dstNode = groupStart
+			// 'exec' stays the same
+		} else if strings.HasPrefix(srcNode.GetNodeType(), "group@") {
+			subgraph := srcNode.GetSubGraph()
+			if subgraph == nil {
+				return fmt.Errorf("group node has no sub graph")
+			}
+			var groupEnd NodeRef
+			for _, node := range subgraph.GetNodes() {
+				if strings.HasPrefix(node.GetNodeType(), "group-output@") {
+					groupEnd = node
+					break
+				}
+			}
+			if groupEnd == nil {
+				return fmt.Errorf("group has no output")
+			}
+
+			srcNode = groupEnd
+			// 'exec' stays the same
+		}
+
 		vSrcNode := reflect.ValueOf(srcNode).Elem()
 		if !vSrcNode.IsValid() {
 			return fmt.Errorf("executions src node is not valid")
 		}
 
-		execs := vSrcNode.FieldByName("Executions")
-		if !execs.IsValid() {
-			return fmt.Errorf("executions src node is not valid")
-		}
+		v := reflect.ValueOf(srcNode)
+		ConnectExecutionPort := v.MethodByName("ConnectExecutionPort")
 
-		// check if execs is a map
-		if execs.Kind() != reflect.Map {
-			return fmt.Errorf("executions src node is not a map")
+		args := []reflect.Value{reflect.ValueOf(
+			OutputId(srcNodePortId)),
+			reflect.ValueOf(dstNode),
 		}
-
-		// check if execs is a map of OutputId to NodeExecutionInterface
-		if execs.Type().Key().Kind() != reflect.String {
-			return fmt.Errorf("executions src node is not a map of string to NodeExecutionInterface")
-		}
-
-		if execs.Type().Elem().Kind() != reflect.Interface {
-			return fmt.Errorf("executions src node is not a map of string to NodeExecutionInterface")
-		}
-
-		execs.SetMapIndex(reflect.ValueOf(OutputId(srcNodePortId)), reflect.ValueOf(dstNode))
+		ConnectExecutionPort.Call(args)
 	}
 
 	return nil

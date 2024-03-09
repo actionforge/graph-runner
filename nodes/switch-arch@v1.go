@@ -23,11 +23,11 @@ func (n *ArchSwitchNode) ExecuteImpl(c core.ExecutionContext) error {
 
 	switch runtime.GOARCH {
 	case "amd64":
-		err = n.Execute(n.Executions[ni.Switch_arch_v1_Output_exec_x64], c)
+		err = n.Execute(n.GetExecutionPort(ni.Switch_arch_v1_Output_exec_x64), c)
 	case "arm64":
-		err = n.Execute(n.Executions[ni.Switch_arch_v1_Output_exec_arm64], c)
+		err = n.Execute(n.GetExecutionPort(ni.Switch_arch_v1_Output_exec_arm64), c)
 	case "arm":
-		err = n.Execute(n.Executions[ni.Switch_arch_v1_Output_exec_arm32], c)
+		err = n.Execute(n.GetExecutionPort(ni.Switch_arch_v1_Output_exec_arm32), c)
 	default:
 		return fmt.Errorf("unsupported platform: %s", runtime.GOOS)
 	}

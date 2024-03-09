@@ -2,11 +2,10 @@ package nodes
 
 import (
 	"actionforge/graph-runner/core"
-	ni "actionforge/graph-runner/node_interfaces"
-	u "actionforge/graph-runner/utils"
 	"bytes"
 	_ "embed"
 	"errors"
+	"strings"
 
 	"gopkg.in/yaml.v2"
 )
@@ -14,14 +13,13 @@ import (
 //go:embed group@v1.yml
 var subgraphDefinition string
 
+var DefaultExec core.OutputId = "exec"
+
 type GroupNode struct {
 	core.NodeBaseComponent
 	core.Inputs
 	core.Outputs
 	core.Executions
-
-	ag    core.ActionGraph
-	start core.NodeExecutionInterface
 }
 
 func (n *GroupNode) OutputValueById(c core.ExecutionContext, outputId core.OutputId) (interface{}, error) {
@@ -35,11 +33,10 @@ func (n *GroupNode) OutputValueById(c core.ExecutionContext, outputId core.Outpu
 }
 
 func (n *GroupNode) ExecuteImpl(c core.ExecutionContext) error {
-	err := n.Execute(n.Executions[ni.Subgraph_v1_Output_exec], c)
+	err := n.Execute(n.GetExecutionPort("exec"), c)
 	if err != nil {
-		return u.Throw(err)
+		return err
 	}
-
 	return nil
 }
 
@@ -57,54 +54,51 @@ func init() {
 			return nil, err
 		}
 
-		subStart, err := ag.FindNode(ag.Entry)
-		if err != nil {
-			return nil, errors.New("group has no entry")
-		}
-
-		subStartExec, ok := subStart.(core.NodeExecutionInterface)
-		if !ok {
-			return nil, errors.New("group entry is not an executable node")
-		}
-
 		group := GroupNode{
-			ag:    ag,
-			start: subStartExec,
+			NodeBaseComponent: core.NodeBaseComponent{
+				Subgraph: &ag,
+			},
 		}
-
-		group.Executions = make(map[core.OutputId]core.NodeExecutionInterface)
-		group.Executions[ni.Subgraph_v1_Output_exec] = subStartExec
 
 		if ag.Inputs != nil {
 			group.SetInputDefs(ag.Inputs)
 
-			subStartInputs, ok := subStart.(core.HasInputsInterface)
+			groupStart, err := ag.FindNode(ag.Entry)
+			if err != nil {
+				return nil, errors.New("group has no entry")
+			}
+
+			groupStartOutputs, ok := groupStart.(core.HasInputsInterface)
 			if ok {
 				for k := range ag.Inputs {
-					subStartInputs.ConnectDataPort(k, core.DataSource{
-						Output:  core.OutputId(k),
+					groupStartOutputs.ConnectDataPort(k, core.DataSource{
 						SrcNode: &group,
+						Output:  core.OutputId(k),
 					})
 				}
-				subStartInputs.SetInputDefs(ag.Inputs)
+				groupStartOutputs.SetInputDefs(ag.Inputs)
 			}
 		}
 
 		if ag.Outputs != nil {
 			group.SetOutputDefs(ag.Outputs)
 
-			groupStartOutputs, ok := subStart.(core.HasOutputsInterface)
+			var groupEnd core.NodeRef
+			for _, node := range ag.GetNodes() {
+				if strings.HasPrefix(node.GetNodeType(), "group-output@") {
+					groupEnd = node
+					break
+				}
+			}
+
+			groupEndInputs, ok := groupEnd.(core.HasOutputsInterface)
 			if ok {
-				// TODO: (Seb)
-				/*
-					for k := range ag.Inputs {
-						subStartInputs.ConnectDataPort(k, core.DataSource{
-							Output:  core.OutputId(k),
-							SrcNode: &group,
-						})
-					}
-				*/
-				groupStartOutputs.SetOutputDefs(ag.Outputs)
+				for k := range ag.Outputs {
+					group.ConnectDataPort(core.InputId(k), core.DataSource{
+						SrcNode: groupEndInputs,
+						Output:  k,
+					})
+				}
 			}
 		}
 
