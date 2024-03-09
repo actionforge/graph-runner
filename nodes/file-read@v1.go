@@ -32,7 +32,7 @@ func (n *ReadFileNode) ExecuteImpl(c core.ExecutionContext) error {
 		return err
 	}
 
-	err = n.Execute(n.Executions[ni.File_read_v1_Output_exec], c)
+	err = n.Execute(n.GetExecutionPort(ni.File_read_v1_Output_exec), c)
 	if err != nil {
 		return err
 	}
@@ -41,7 +41,7 @@ func (n *ReadFileNode) ExecuteImpl(c core.ExecutionContext) error {
 }
 
 func init() {
-	err := core.RegisterNodeFactory(fileReadStreamDefinition, func(context interface{}) (core.NodeRef, error) {
+	err := core.RegisterNodeFactory(fileReadStreamDefinition, func(ctx interface{}, nodeDef map[string]any) (core.NodeRef, error) {
 		return &ReadFileNode{}, nil
 	})
 	if err != nil {

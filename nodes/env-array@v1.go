@@ -29,7 +29,7 @@ func (n *EnvArrayNode) OutputValueById(c core.ExecutionContext, outputId core.Ou
 }
 
 func init() {
-	err := core.RegisterNodeFactory(envArrayDefinition, func(ctx interface{}, nodeDef map[any]any) (core.NodeRef, error) {
+	err := core.RegisterNodeFactory(envArrayDefinition, func(ctx interface{}, nodeDef map[string]any) (core.NodeRef, error) {
 		return &EnvArrayNode{}, nil
 	})
 	if err != nil {

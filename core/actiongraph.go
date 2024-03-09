@@ -96,13 +96,11 @@ func LoadGraph(graphContent []byte) (ActionGraph, error) {
 
 	ag := NewActionGraph()
 
-	graphYaml := make(map[any]any)
+	graphYaml := make(map[string]any)
 	err := yaml.Unmarshal(graphContent, &graphYaml)
 	if err != nil {
 		return ActionGraph{}, u.Throw(err)
 	}
-
-	ag := NewActionGraph()
 
 	// Load Nodes
 	err = loadNodes(&ag, graphYaml)
@@ -171,7 +169,7 @@ func anyToPortDefinition[T any](o any) (T, error) {
 	return ret, err
 }
 
-func loadNodes(ag *ActionGraph, nodesYaml map[any]interface{}) error {
+func loadNodes(ag *ActionGraph, nodesYaml map[string]interface{}) error {
 	nodesList, err := u.GetItem[[]any](nodesYaml, "nodes")
 	if err != nil {
 		return u.Throw(err)
@@ -210,13 +208,12 @@ func loadNodes(ag *ActionGraph, nodesYaml map[any]interface{}) error {
 			// If node has inputs defined in yaml, set them
 			inputs, hasInputs := node.(HasInputsInterface)
 			if hasInputs {
-				is, err := u.GetItem[map[any]any](nodeI, "inputs")
+				is, err := u.GetItem[map[string]any](nodeI, "inputs")
 				if err != nil {
 					return u.Throw(err)
 				}
 
 				for key, value := range is {
-
 					err = inputs.SetInputValue(InputId(key), value)
 					if err != nil {
 						return u.Throw(err)

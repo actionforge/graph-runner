@@ -52,7 +52,7 @@ func (n *RunExecNode) ExecuteImpl(c core.ExecutionContext) error {
 	}
 
 	for i, env := range envs {
-		envs[i] = ReplaceContextVariables(env, n.GetInputValues())
+		envs[i] = ReplaceContextVariables(env)
 	}
 
 	env := append(envs, os.Environ()...)
@@ -105,12 +105,12 @@ func (n *RunExecNode) ExecuteImpl(c core.ExecutionContext) error {
 	}
 
 	if cmd.ProcessState.ExitCode() == 0 {
-		err = n.Execute(n.Executions[ni.Run_exec_v1_Output_exec_success], c)
+		err = n.Execute(n.GetExecutionPort(ni.Run_exec_v1_Output_exec_success), c)
 		if err != nil {
 			return err
 		}
 	} else {
-		execErr := n.Executions[ni.Run_exec_v1_Output_exec_err]
+		execErr := n.GetExecutionPort(ni.Run_exec_v1_Output_exec_err)
 
 		// If the error output is not connected, we can safely fail here
 		if execErr == nil {
@@ -127,7 +127,7 @@ func (n *RunExecNode) ExecuteImpl(c core.ExecutionContext) error {
 }
 
 func init() {
-	err := core.RegisterNodeFactory(execDefinition, func(context interface{}) (core.NodeRef, error) {
+	err := core.RegisterNodeFactory(execDefinition, func(ctx interface{}, nodeDef map[string]any) (core.NodeRef, error) {
 		return &RunExecNode{}, nil
 	})
 	if err != nil {

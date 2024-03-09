@@ -103,7 +103,7 @@ func (n *HttpNode) ExecuteImpl(c core.ExecutionContext) error {
 		return err
 	}
 
-	exec := n.Executions[core.OutputId(ni.Http_v1_Output_exec)]
+	exec := n.GetExecutionPort(ni.Http_v1_Output_exec)
 	if exec != nil {
 		err = n.Execute(exec, c)
 		if err != nil {
@@ -115,7 +115,7 @@ func (n *HttpNode) ExecuteImpl(c core.ExecutionContext) error {
 }
 
 func init() {
-	err := core.RegisterNodeFactory(httpDefinition, func(context interface{}) (core.NodeRef, error) {
+	err := core.RegisterNodeFactory(httpDefinition, func(ctx interface{}, nodeDef map[string]any) (core.NodeRef, error) {
 		return &HttpNode{}, nil
 	})
 	if err != nil {

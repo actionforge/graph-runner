@@ -55,9 +55,9 @@ func (n *FileWriteNode) ExecuteImpl(c core.ExecutionContext) error {
 	cleanup()
 
 	if err == nil {
-		err = n.Execute(n.Executions[ni.File_write_v1_Output_exec], c)
+		err = n.Execute(n.GetExecutionPort(ni.File_write_v1_Output_exec), c)
 	} else {
-		err = n.Execute(n.Executions[ni.File_write_v1_Output_exec_err], c)
+		err = n.Execute(n.GetExecutionPort(ni.File_write_v1_Output_exec_err), c)
 	}
 
 	if err != nil {
@@ -68,7 +68,7 @@ func (n *FileWriteNode) ExecuteImpl(c core.ExecutionContext) error {
 }
 
 func init() {
-	err := core.RegisterNodeFactory(fileWriteDefinition, func(context interface{}) (core.NodeRef, error) {
+	err := core.RegisterNodeFactory(fileWriteDefinition, func(ctx interface{}, nodeDef map[string]any) (core.NodeRef, error) {
 		return &FileWriteNode{}, nil
 	})
 	if err != nil {

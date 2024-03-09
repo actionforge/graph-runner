@@ -47,7 +47,7 @@ func (n *WalkNode) ExecuteImpl(ti core.ExecutionContext) error {
 		return err
 	}
 
-	err = n.Execute(n.Executions[ni.Dirwalk_v1_Output_exec], ti)
+	err = n.Execute(n.GetExecutionPort(ni.Dirwalk_v1_Output_exec), ti)
 	if err != nil {
 		return err
 	}
@@ -87,7 +87,7 @@ func walk(root string, pattern []string, items map[string]struct{}) error {
 }
 
 func init() {
-	err := core.RegisterNodeFactory(walkDefinition, func(context interface{}) (core.NodeRef, error) {
+	err := core.RegisterNodeFactory(walkDefinition, func(ctx interface{}, nodeDef map[string]any) (core.NodeRef, error) {
 		return &WalkNode{}, nil
 	})
 	if err != nil {

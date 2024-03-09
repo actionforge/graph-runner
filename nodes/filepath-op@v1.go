@@ -50,7 +50,7 @@ func (n *FilepathOp) OutputValueById(c core.ExecutionContext, outputId core.Outp
 }
 
 func init() {
-	err := core.RegisterNodeFactory(filepathOpDefinition, func(context interface{}) (core.NodeRef, error) {
+	err := core.RegisterNodeFactory(filepathOpDefinition, func(ctx interface{}, nodeDef map[string]any) (core.NodeRef, error) {
 		return &FilepathOp{}, nil
 	})
 	if err != nil {

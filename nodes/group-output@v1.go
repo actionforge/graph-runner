@@ -34,7 +34,7 @@ func (n *GroupOutputNode) ExecuteImpl(c core.ExecutionContext) error {
 }
 
 func init() {
-	err := core.RegisterNodeFactory(groupOutputDefinition, func(ctx interface{}, nodeDef map[any]any) (core.NodeRef, error) {
+	err := core.RegisterNodeFactory(groupOutputDefinition, func(ctx interface{}, nodeDef map[string]any) (core.NodeRef, error) {
 		return &GroupOutputNode{}, nil
 	})
 	if err != nil {

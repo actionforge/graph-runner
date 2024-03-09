@@ -27,7 +27,7 @@ func (n *FilepathJoin) OutputValueById(c core.ExecutionContext, outputId core.Ou
 }
 
 func init() {
-	err := core.RegisterNodeFactory(filepathJoinDefinition, func(context interface{}) (core.NodeRef, error) {
+	err := core.RegisterNodeFactory(filepathJoinDefinition, func(ctx interface{}, nodeDef map[string]any) (core.NodeRef, error) {
 		return &FilepathJoin{}, nil
 	})
 	if err != nil {

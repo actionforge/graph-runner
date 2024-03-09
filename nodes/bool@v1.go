@@ -48,7 +48,7 @@ func (n *BoolNode) OutputValueById(c core.ExecutionContext, outputId core.Output
 
 func init() {
 	// OR
-	err := core.RegisterNodeFactory(boolOrDefinition, func(ctx interface{}, nodeDef map[any]any) (core.NodeRef, error) {
+	err := core.RegisterNodeFactory(boolOrDefinition, func(ctx interface{}, nodeDef map[string]any) (core.NodeRef, error) {
 		return &BoolNode{
 			op: func(a bool, b bool) bool {
 				return a || b
@@ -61,7 +61,7 @@ func init() {
 	}
 
 	// AND
-	err = core.RegisterNodeFactory(boolAndDefinition, func(ctx interface{}, nodeDef map[any]any) (core.NodeRef, error) {
+	err = core.RegisterNodeFactory(boolAndDefinition, func(ctx interface{}, nodeDef map[string]any) (core.NodeRef, error) {
 		return &BoolNode{
 			op: func(a bool, b bool) bool {
 				return a && b
@@ -74,7 +74,7 @@ func init() {
 	}
 
 	// XOR
-	err = core.RegisterNodeFactory(boolXorDefinition, func(ctx interface{}, nodeDef map[any]any) (core.NodeRef, error) {
+	err = core.RegisterNodeFactory(boolXorDefinition, func(ctx interface{}, nodeDef map[string]any) (core.NodeRef, error) {
 		return &BoolNode{
 			op: func(a bool, b bool) bool {
 				return a != b
@@ -87,7 +87,7 @@ func init() {
 	}
 
 	// XAND
-	err = core.RegisterNodeFactory(boolXandDefinition, func(ctx interface{}, nodeDef map[any]any) (core.NodeRef, error) {
+	err = core.RegisterNodeFactory(boolXandDefinition, func(ctx interface{}, nodeDef map[string]any) (core.NodeRef, error) {
 		return &BoolNode{
 			op: func(a bool, b bool) bool {
 				return a == b

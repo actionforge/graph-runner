@@ -49,7 +49,7 @@ func (n *ParallelMultiQueueNode) ExecuteImpl(ti core.ExecutionContext) error {
 			}
 		}
 
-		err = n.Execute(n.Executions[ni.Parallel_multi_queue_v1_Output_exec_body], nti)
+		err = n.Execute(n.GetExecutionPort(ni.Parallel_multi_queue_v1_Output_exec_body), nti)
 		if err != nil {
 			errors = append(errors, err)
 			return
@@ -110,7 +110,7 @@ func (tp *ThreadPool) AdjustWorkerCount(newWorkerCount int) {
 }
 
 func init() {
-	err := core.RegisterNodeFactory(parallelMultiQueueDefinition, func(context interface{}) (core.NodeRef, error) {
+	err := core.RegisterNodeFactory(parallelMultiQueueDefinition, func(ctx interface{}, nodeDef map[string]any) (core.NodeRef, error) {
 		pool := NewThreadPool(runtime.NumCPU())
 		return &ParallelMultiQueueNode{
 			pool: pool,

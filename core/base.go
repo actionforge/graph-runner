@@ -119,7 +119,7 @@ type DataSource struct {
 	Output  OutputId
 }
 
-type nodeFactoryFunc func(ctx interface{}, nodeDef map[any]any) (NodeRef, error)
+type nodeFactoryFunc func(ctx interface{}, nodeDef map[string]any) (NodeRef, error)
 
 var registries = make(map[string]NodeTypeDefinitionFull)
 
@@ -283,7 +283,7 @@ func NewGhActionNode(nodeType string) (NodeRef, error) {
 	return node, nil
 }
 
-func NewNodeInstance(nodeType string, nodeDef map[any]any) (NodeRef, error) {
+func NewNodeInstance(nodeType string, nodeDef map[string]any) (NodeRef, error) {
 	var (
 		node NodeRef
 		err  error

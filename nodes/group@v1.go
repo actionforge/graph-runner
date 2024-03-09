@@ -7,7 +7,7 @@ import (
 	"errors"
 	"strings"
 
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 //go:embed group@v1.yml
@@ -41,7 +41,7 @@ func (n *GroupNode) ExecuteImpl(c core.ExecutionContext) error {
 }
 
 func init() {
-	err := core.RegisterNodeFactory(subgraphDefinition, func(ctx interface{}, nodeDef map[any]any) (core.NodeRef, error) {
+	err := core.RegisterNodeFactory(subgraphDefinition, func(ctx interface{}, nodeDef map[string]any) (core.NodeRef, error) {
 
 		var yamlDef bytes.Buffer
 		err := yaml.NewEncoder(&yamlDef).Encode(nodeDef["graph"])

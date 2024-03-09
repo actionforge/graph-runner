@@ -30,7 +30,7 @@ func (n *StringFmt) OutputValueById(c core.ExecutionContext, outputId core.Outpu
 }
 
 func init() {
-	err := core.RegisterNodeFactory(stringFmtDefinition, func(ctx interface{}, nodeDef map[any]any) (core.NodeRef, error) {
+	err := core.RegisterNodeFactory(stringFmtDefinition, func(ctx interface{}, nodeDef map[string]any) (core.NodeRef, error) {
 		return &StringFmt{}, nil
 	})
 	if err != nil {

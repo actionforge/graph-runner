@@ -32,7 +32,7 @@ func (n *IteratorNode) ExecuteImpl(ti core.ExecutionContext) error {
 			return err
 		}
 
-		err = n.Execute(n.Executions[ni.Iterator_v1_Output_exec], ti)
+		err = n.Execute(n.GetExecutionPort(ni.Iterator_v1_Output_exec), ti)
 		if err != nil {
 			return u.Throw(err)
 		}
@@ -77,7 +77,7 @@ func (n *IteratorNode) ExecuteImpl(ti core.ExecutionContext) error {
 }
 
 func init() {
-	err := core.RegisterNodeFactory(iteratorDefinition, func(context interface{}) (core.NodeRef, error) {
+	err := core.RegisterNodeFactory(iteratorDefinition, func(ctx interface{}, nodeDef map[string]any) (core.NodeRef, error) {
 		return &IteratorNode{}, nil
 	})
 	if err != nil {

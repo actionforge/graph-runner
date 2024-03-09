@@ -65,7 +65,7 @@ func (n *AwsS3ListNode) ExecuteImpl(c core.ExecutionContext) error {
 		return err
 	}
 
-	err = n.Execute(n.Executions[ni.Aws_s3_list_v1_Output_exec], c)
+	err = n.Execute(n.GetExecutionPort(ni.Aws_s3_list_v1_Output_exec), c)
 	if err != nil {
 		return err
 	}
@@ -74,7 +74,7 @@ func (n *AwsS3ListNode) ExecuteImpl(c core.ExecutionContext) error {
 }
 
 func init() {
-	err := core.RegisterNodeFactory(awsS3ListDefinition, func(context interface{}) (core.NodeRef, error) {
+	err := core.RegisterNodeFactory(awsS3ListDefinition, func(ctx interface{}, nodeDef map[string]any) (core.NodeRef, error) {
 		return &AwsS3ListNode{}, nil
 	})
 	if err != nil {
