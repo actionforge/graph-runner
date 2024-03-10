@@ -61,6 +61,11 @@ func (n *ParallelMultiQueueNode) ExecuteImpl(ti core.ExecutionContext) error {
 		return fmt.Errorf("parallel execution errors: %v", errors)
 	}
 
+	err = n.Execute(n.GetExecutionPort(ni.Parallel_multi_queue_v1_Output_exec_finish), ti)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
