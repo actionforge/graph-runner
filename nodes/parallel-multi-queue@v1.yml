@@ -15,7 +15,7 @@ outputs:
     exec: true
     index: 0
   context:
-    name: Context
+    name: Array
     type: unknown
     index: 1
   exec-finish:
