@@ -19,53 +19,54 @@ type HasOutputsInterface interface {
 	IncrementConnectionCounter(outputId OutputId)
 }
 
-type Executions struct {
-	Executions  map[OutputId]NodeExecutionInterface
-	PortMapping map[OutputId]InputId
+type ExecutionTarget struct {
+	Target NodeExecutionInterface
+	Port   InputId
 }
 
-func (n *Executions) Execute(t NodeExecutionInterface, ec ExecutionContext) error {
+type Executions struct {
+	Executions map[OutputId]ExecutionTarget
+}
+
+func (n *Executions) GetExecutionTargets() map[OutputId]ExecutionTarget {
+	return n.Executions
+}
+
+func (n *Executions) Execute(outputPort OutputId, ec ExecutionContext) error {
+
+	t := n.Executions[outputPort]
 	// nothing to execute
-	if t == nil {
+	if t.Target == nil {
 		return nil
 	}
 
 	if os.Getenv("GITHUB_EVENT_NAME") != "" {
 		utils.LoggerBase.Printf("🟢 Execute '%s (%s)'\n",
-			t.GetName(),
-			t.GetId(),
+			t.Target.GetName(),
+			t.Target.GetId(),
 		)
 	}
 
-	err := t.ExecuteImpl(ec)
+	err := t.Target.ExecuteImpl(ec, t.Port)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (e *Executions) GetAllExecutionPorts() map[OutputId]NodeExecutionInterface {
-	return e.Executions
-}
-
-func (e *Executions) GetTargetNode(portName OutputId) NodeExecutionInterface {
-	return e.Executions[portName]
-}
-
-func (e *Executions) GetTargetPort(portName OutputId) InputId {
-	return e.PortMapping[portName]
+func (e *Executions) GetExecutionTarget(outputId OutputId) (ExecutionTarget, bool) {
+	t, ok := e.Executions[OutputId(outputId)]
+	return t, ok
 }
 
 func (e *Executions) ConnectExecutionPort(portName OutputId, target NodeExecutionInterface, targetPortId InputId) {
 	if e.Executions == nil {
-		e.Executions = make(map[OutputId]NodeExecutionInterface)
+		e.Executions = make(map[OutputId]ExecutionTarget)
 	}
-	if e.PortMapping == nil {
-		e.PortMapping = make(map[OutputId]InputId)
+	e.Executions[portName] = ExecutionTarget{
+		Target: target,
+		Port:   targetPortId,
 	}
-
-	e.PortMapping[portName] = targetPortId
-	e.Executions[portName] = target
 }
 
 type Outputs struct {

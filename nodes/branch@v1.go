@@ -17,19 +17,19 @@ type BranchNode struct {
 	core.Executions
 }
 
-func (n *BranchNode) ExecuteImpl(c core.ExecutionContext) error {
+func (n *BranchNode) ExecuteImpl(c core.ExecutionContext, inputId core.InputId) error {
 	condition, err := core.InputValueById[bool](c, n.Inputs, ni.Branch_v1_Input_condition)
 	if err != nil {
 		return err
 	}
 
 	if condition {
-		err = n.Execute(n.GetTargetNode(ni.Branch_v1_Output_exec_then), c)
+		err = n.Execute(ni.Branch_v1_Output_exec_then, c)
 		if err != nil {
 			return u.Throw(err)
 		}
 	} else {
-		err = n.Execute(n.GetTargetNode(ni.Branch_v1_Output_exec_otherwise), c)
+		err = n.Execute(ni.Branch_v1_Output_exec_otherwise, c)
 		if err != nil {
 			return u.Throw(err)
 		}

@@ -17,7 +17,7 @@ type ReadFileNode struct {
 	core.Outputs
 }
 
-func (n *ReadFileNode) ExecuteImpl(c core.ExecutionContext) error {
+func (n *ReadFileNode) ExecuteImpl(c core.ExecutionContext, inputId core.InputId) error {
 	path, err := core.InputValueById[string](c, n.Inputs, ni.File_read_v1_Input_path)
 	if err != nil {
 		return err
@@ -32,7 +32,7 @@ func (n *ReadFileNode) ExecuteImpl(c core.ExecutionContext) error {
 		return err
 	}
 
-	err = n.Execute(n.GetTargetNode(ni.File_read_v1_Output_exec), c)
+	err = n.Execute(ni.File_read_v1_Output_exec, c)
 	if err != nil {
 		return err
 	}

@@ -21,14 +21,14 @@ type WalkNode struct {
 	core.Executions
 }
 
-func (n *WalkNode) ExecuteImpl(ti core.ExecutionContext) error {
+func (n *WalkNode) ExecuteImpl(c core.ExecutionContext, inputId core.InputId) error {
 
-	glob, err := core.InputValueById[string](ti, n.Inputs, ni.Dirwalk_v1_Input_glob)
+	glob, err := core.InputValueById[string](c, n.Inputs, ni.Dirwalk_v1_Input_glob)
 	if err != nil {
 		return err
 	}
 
-	dir, err := core.InputValueById[string](ti, n.Inputs, ni.Dirwalk_v1_Input_dir)
+	dir, err := core.InputValueById[string](c, n.Inputs, ni.Dirwalk_v1_Input_dir)
 	if err != nil {
 		return err
 	}
@@ -41,12 +41,12 @@ func (n *WalkNode) ExecuteImpl(ti core.ExecutionContext) error {
 		return err
 	}
 
-	err = n.Outputs.SetOutputValue(ti, "items", maps.Keys(items))
+	err = n.Outputs.SetOutputValue(c, "items", maps.Keys(items))
 	if err != nil {
 		return err
 	}
 
-	err = n.Execute(n.GetTargetNode(ni.Dirwalk_v1_Output_exec), ti)
+	err = n.Execute(ni.Dirwalk_v1_Output_exec, c)
 	if err != nil {
 		return err
 	}

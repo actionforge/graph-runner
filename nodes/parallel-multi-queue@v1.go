@@ -5,7 +5,9 @@ import (
 	ni "actionforge/graph-runner/node_interfaces"
 	_ "embed"
 	"fmt"
+	"reflect"
 	"runtime"
+	"sync"
 )
 
 //go:embed parallel-multi-queue@v1.yml
@@ -20,14 +22,13 @@ type ParallelMultiQueueNode struct {
 	pool *ThreadPool
 }
 
-func (n *ParallelMultiQueueNode) ExecuteImpl(ti core.ExecutionContext) error {
-
-	workerCount, err := core.InputValueById[int](ti, n.Inputs, ni.Parallel_multi_queue_v1_Input_worker_count)
+func (n *ParallelMultiQueueNode) ExecuteImpl(c core.ExecutionContext, inputId core.InputId) error {
+	workerCount, err := core.InputValueById[int](c, n.Inputs, ni.Parallel_multi_queue_v1_Input_worker_count)
 	if err != nil {
 		return err
 	}
 
-	context, err := core.InputValueById[any](ti, n.Inputs, ni.Parallel_multi_queue_v1_Input_context)
+	context, err := core.InputValueById[any](c, n.Inputs, ni.Parallel_multi_queue_v1_Input_context)
 	if err != nil {
 		return err
 	}
@@ -36,32 +37,35 @@ func (n *ParallelMultiQueueNode) ExecuteImpl(ti core.ExecutionContext) error {
 
 	var errors []error
 
-	ti.Wg.Add(1)
-	n.pool.AddTask(func() {
-		defer ti.Wg.Done()
-		nti := ti.PushNewExecutionContext()
+	wg := sync.WaitGroup{}
 
-		if context != nil {
-			err := n.Outputs.SetOutputValue(nti, ni.Parallel_multi_queue_v1_Output_context, context)
-			if err != nil {
-				errors = append(errors, err)
-				return
-			}
-		}
-
-		err = n.Execute(n.GetTargetNode(ni.Parallel_multi_queue_v1_Output_exec_body), nti)
+	s := reflect.ValueOf(context)
+	for i := 0; i < s.Len(); i++ {
+		nti := c.PushNewExecutionContext()
+		err = n.Outputs.SetOutputValue(nti, ni.Parallel_multi_queue_v1_Output_context, s.Index(i).Interface())
 		if err != nil {
 			errors = append(errors, err)
-			return
+			continue
 		}
-	})
+
+		wg.Add(1)
+		n.pool.AddTask(func() {
+			defer wg.Done()
+			err := n.Execute(ni.Parallel_multi_queue_v1_Output_exec_body, nti)
+			if err != nil {
+				errors = append(errors, err)
+			}
+		})
+	}
 
 	if len(errors) > 0 {
 		// Combine all errors into a single error, or handle them as needed
 		return fmt.Errorf("parallel execution errors: %v", errors)
 	}
 
-	err = n.Execute(n.GetTargetNode(ni.Parallel_multi_queue_v1_Output_exec_finish), ti)
+	wg.Wait()
+
+	err = n.Execute(ni.Parallel_multi_queue_v1_Output_exec_finish, c)
 	if err != nil {
 		return err
 	}

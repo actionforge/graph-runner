@@ -32,7 +32,7 @@ type RunNode struct {
 	core.Executions
 }
 
-func (n *RunNode) ExecuteImpl(c core.ExecutionContext) error {
+func (n *RunNode) ExecuteImpl(c core.ExecutionContext, inputId core.InputId) error {
 	shell, err := core.InputValueById[string](c, n.Inputs, ni.Run_v1_Input_shell)
 	if err != nil {
 		return err
@@ -190,19 +190,18 @@ func (n *RunNode) ExecuteImpl(c core.ExecutionContext) error {
 	}
 
 	if cmd.ProcessState.ExitCode() == 0 {
-		err = n.Execute(n.GetTargetNode(ni.Run_v1_Output_exec_success), c)
+		err = n.Execute(ni.Run_v1_Output_exec_success, c)
 		if err != nil {
 			return err
 		}
 	} else {
-		execErr := n.GetTargetNode(ni.Run_v1_Output_exec_err)
-
+		_, ok := n.GetExecutionTarget(ni.Run_v1_Output_exec_err)
 		// If the error output is not connected, we can safely fail here
-		if execErr == nil {
+		if !ok {
 			return utils.Throw(cmdErr)
 		}
 
-		err = n.Execute(execErr, c)
+		err = n.Execute(ni.Run_v1_Output_exec_err, c)
 		if err != nil {
 			return err
 		}

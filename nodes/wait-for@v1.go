@@ -21,7 +21,7 @@ type WaitForNode struct {
 	CurrentCounter int
 }
 
-func (n *WaitForNode) ExecuteImpl(c core.ExecutionContext) error {
+func (n *WaitForNode) ExecuteImpl(c core.ExecutionContext, inputId core.InputId) error {
 
 	n.Lock.Lock()
 
@@ -59,7 +59,7 @@ func (n *WaitForNode) ExecuteImpl(c core.ExecutionContext) error {
 
 	n.Lock.Unlock()
 
-	err = n.Execute(n.GetTargetNode(ni.Wait_for_v1_Output_exec), c)
+	err = n.Execute(ni.Wait_for_v1_Output_exec, c)
 	if err != nil {
 		return err
 	}

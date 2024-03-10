@@ -19,24 +19,23 @@ type ParallelExecNode struct {
 	core.Executions
 }
 
-func (n *ParallelExecNode) ExecuteImpl(ti core.ExecutionContext) error {
+func (n *ParallelExecNode) ExecuteImpl(c core.ExecutionContext, inputId core.InputId) error {
 	wg := sync.WaitGroup{}
 
 	var mutex sync.Mutex
 	var errors []error
 
-	for _, e := range n.GetAllExecutionPorts() {
-		if e == nil {
+	for outputId, t := range n.GetExecutionTargets() {
+		if t.Target == nil {
 			continue
 		}
 
-		exec := e
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
 
-			nti := ti.PushNewExecutionContext()
-			err := n.Execute(exec, nti)
+			nti := c.PushNewExecutionContext()
+			err := n.Execute(outputId, nti)
 			if err != nil {
 				mutex.Lock()
 				errors = append(errors, err)
@@ -53,7 +52,7 @@ func (n *ParallelExecNode) ExecuteImpl(ti core.ExecutionContext) error {
 		return fmt.Errorf("parallel execution errors: %v", errors)
 	}
 
-	err := n.Execute(n.GetTargetNode(ni.Parallel_for_v1_Output_exec_finish), ti)
+	err := n.Execute(ni.Parallel_for_v1_Output_exec_finish, c)
 	if err != nil {
 		return u.Throw(err)
 	}

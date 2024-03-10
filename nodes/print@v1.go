@@ -17,7 +17,7 @@ type PrintNode struct {
 	core.Inputs
 }
 
-func (n *PrintNode) ExecuteImpl(c core.ExecutionContext) error {
+func (n *PrintNode) ExecuteImpl(c core.ExecutionContext, inputId core.InputId) error {
 
 	value, err := core.InputValueById[any](c, n.Inputs, ni.Print_v1_Input_value)
 	if err != nil {
@@ -26,7 +26,7 @@ func (n *PrintNode) ExecuteImpl(c core.ExecutionContext) error {
 
 	fmt.Printf("%v\n", value)
 
-	err = n.Execute(n.GetTargetNode(ni.Print_v1_Output_exec), c)
+	err = n.Execute(ni.Print_v1_Output_exec, c)
 	if err != nil {
 		return u.Throw(err)
 	}

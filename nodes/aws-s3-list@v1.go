@@ -22,7 +22,7 @@ type AwsS3ListNode struct {
 	core.Outputs
 }
 
-func (n *AwsS3ListNode) ExecuteImpl(c core.ExecutionContext) error {
+func (n *AwsS3ListNode) ExecuteImpl(c core.ExecutionContext, inputId core.InputId) error {
 	bucket, err := core.InputValueById[string](c, n.Inputs, ni.Aws_s3_list_v1_Input_bucket)
 	if err != nil {
 		return err
@@ -65,7 +65,7 @@ func (n *AwsS3ListNode) ExecuteImpl(c core.ExecutionContext) error {
 		return err
 	}
 
-	err = n.Execute(n.GetTargetNode(ni.Aws_s3_list_v1_Output_exec), c)
+	err = n.Execute(ni.Aws_s3_list_v1_Output_exec, c)
 	if err != nil {
 		return err
 	}

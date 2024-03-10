@@ -21,7 +21,7 @@ func (n *StartNode) ExecuteEntry(inputValues map[core.OutputId]any) error {
 	defer cancel()
 	c := core.NewExecutionContext(ctx)
 
-	err := n.Execute(n, c)
+	err := n.Execute(ni.Start_v1_Output_exec, c)
 	if err != nil {
 		return err
 	}
@@ -30,8 +30,8 @@ func (n *StartNode) ExecuteEntry(inputValues map[core.OutputId]any) error {
 	return nil
 }
 
-func (n *StartNode) ExecuteImpl(c core.ExecutionContext) error {
-	err := n.Execute(n.GetTargetNode(ni.Start_v1_Output_exec), c)
+func (n *StartNode) ExecuteImpl(c core.ExecutionContext, inputId core.InputId) error {
+	err := n.Execute(ni.Start_v1_Output_exec, c)
 	if err != nil {
 		return err
 	}

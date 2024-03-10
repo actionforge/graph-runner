@@ -48,7 +48,7 @@ func Test_RunNode_Simple(t *testing.T) {
 	outputs.IncrementConnectionCounter(ni.Run_v1_Output_output)
 	outputs.IncrementConnectionCounter(ni.Run_v1_Output_exit_code)
 
-	err := nei.ExecuteImpl(c)
+	err := nei.ExecuteImpl(c, ni.Run_v1_Input_exec)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -92,7 +92,7 @@ func Test_RunNode_Env(t *testing.T) {
 	outputs.IncrementConnectionCounter(ni.Run_v1_Output_output)
 	outputs.IncrementConnectionCounter(ni.Run_v1_Output_exit_code)
 
-	err := nei.ExecuteImpl(c)
+	err := nei.ExecuteImpl(c, ni.Run_v1_Input_exec)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -130,7 +130,7 @@ func Test_RunNode_ExitCode(t *testing.T) {
 	outputs.IncrementConnectionCounter(ni.Run_v1_Output_output)
 	outputs.IncrementConnectionCounter(ni.Run_v1_Output_exit_code)
 
-	err := nei.ExecuteImpl(c)
+	err := nei.ExecuteImpl(c, ni.Run_v1_Input_exec)
 	if err == nil {
 		t.Error("expected error")
 		return
@@ -175,7 +175,7 @@ func Test_RunNode_NoInput1(t *testing.T) {
 	outputs.IncrementConnectionCounter(ni.Run_v1_Output_output)
 	outputs.IncrementConnectionCounter(ni.Run_v1_Output_exit_code)
 
-	err := nei.ExecuteImpl(c)
+	err := nei.ExecuteImpl(c, ni.Run_v1_Input_exec)
 	if err != nil {
 		t.Fatal(err)
 	}

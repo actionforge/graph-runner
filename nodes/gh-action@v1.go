@@ -50,7 +50,7 @@ type GhActionNode struct {
 	actionRunJsPath string
 }
 
-func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
+func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext, inputId core.InputId) error {
 	workspace := os.Getenv("GITHUB_WORKSPACE")
 	if workspace == "" {
 		return fmt.Errorf("GITHUB_WORKSPACE not set")
@@ -92,14 +92,13 @@ func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
 		return fmt.Errorf("unsupported action type: %v", n.actionType)
 	}
 	if err != nil {
-		execErr := n.GetTargetNode(ni.Gh_action_v1_Output_exec_err)
-
+		_, ok := n.GetExecutionTarget(ni.Gh_action_v1_Output_exec_err)
 		// If the error output is not connected, we can safely fail here
-		if execErr == nil {
+		if !ok {
 			return utils.Throw(err)
 		}
 
-		err = n.Execute(execErr, c)
+		err = n.Execute(ni.Gh_action_v1_Output_exec_err, c)
 		if err != nil {
 			return err
 		}
@@ -155,7 +154,7 @@ func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
 		}
 	}
 
-	err = n.Execute(n.GetTargetNode(ni.Gh_action_v1_Output_exec), c)
+	err = n.Execute(ni.Gh_action_v1_Output_exec, c)
 	if err != nil {
 		return err
 	}

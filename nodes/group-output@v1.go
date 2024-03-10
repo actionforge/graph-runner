@@ -24,8 +24,8 @@ func (n *GroupOutputNode) OutputValueById(c core.ExecutionContext, outputId core
 	return v, nil
 }
 
-func (n *GroupOutputNode) ExecuteImpl(c core.ExecutionContext) error {
-	err := n.Execute(n.GetTargetNode("exec"), c)
+func (n *GroupOutputNode) ExecuteImpl(c core.ExecutionContext, inputId core.InputId) error {
+	err := n.Execute(core.OutputId(inputId), c)
 	if err != nil {
 		return err
 	}

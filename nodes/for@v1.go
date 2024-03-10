@@ -17,7 +17,7 @@ type ForNode struct {
 	core.Executions
 }
 
-func (n *ForNode) ExecuteImpl(c core.ExecutionContext) error {
+func (n *ForNode) ExecuteImpl(c core.ExecutionContext, inputId core.InputId) error {
 	firstIndex, err := core.InputValueById[int](c, n.Inputs, ni.For_v1_Input_first_index)
 	if err != nil {
 		return err
@@ -33,9 +33,8 @@ func (n *ForNode) ExecuteImpl(c core.ExecutionContext) error {
 		return nil
 	}
 
-	body := n.GetTargetNode(ni.For_v1_Output_exec_body)
-	if body != nil {
-
+	_, ok := n.GetExecutionTarget(ni.For_v1_Output_exec_body)
+	if ok {
 		for i := firstIndex; i <= lastIndex; i++ {
 
 			err = n.Outputs.SetOutputValue(c, ni.For_v1_Output_index, i)
@@ -43,19 +42,16 @@ func (n *ForNode) ExecuteImpl(c core.ExecutionContext) error {
 				return err
 			}
 
-			err = n.Execute(body, c)
+			err = n.Execute(ni.For_v1_Output_exec_body, c)
 			if err != nil {
 				return u.Throw(err)
 			}
 		}
 	}
 
-	finish := n.GetTargetNode(ni.For_v1_Output_exec_finish)
-	if finish != nil {
-		err = n.Execute(finish, c)
-		if err != nil {
-			return u.Throw(err)
-		}
+	err = n.Execute(ni.For_v1_Output_exec_finish, c)
+	if err != nil {
+		return u.Throw(err)
 	}
 
 	return nil

@@ -19,27 +19,27 @@ type IteratorNode struct {
 	core.Executions
 }
 
-func (n *IteratorNode) ExecuteImpl(ti core.ExecutionContext) error {
+func (n *IteratorNode) ExecuteImpl(c core.ExecutionContext, inputId core.InputId) error {
 
 	iter := func(key any, value any) error {
-		err := n.Outputs.SetOutputValue(ti, ni.Iterator_v1_Output_key, key)
+		err := n.Outputs.SetOutputValue(c, ni.Iterator_v1_Output_key, key)
 		if err != nil {
 			return err
 		}
 
-		err = n.Outputs.SetOutputValue(ti, ni.Iterator_v1_Output_value, value)
+		err = n.Outputs.SetOutputValue(c, ni.Iterator_v1_Output_value, value)
 		if err != nil {
 			return err
 		}
 
-		err = n.Execute(n.GetTargetNode(ni.Iterator_v1_Output_exec), ti)
+		err = n.Execute(ni.Iterator_v1_Output_exec, c)
 		if err != nil {
 			return u.Throw(err)
 		}
 		return nil
 	}
 
-	iterable, err := core.InputValueById[interface{}](ti, n.Inputs, ni.Iterator_v1_Input_array)
+	iterable, err := core.InputValueById[interface{}](c, n.Inputs, ni.Iterator_v1_Input_array)
 	if err != nil {
 		return err
 	}

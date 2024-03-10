@@ -17,17 +17,17 @@ type ArchSwitchNode struct {
 	core.Executions
 }
 
-func (n *ArchSwitchNode) ExecuteImpl(c core.ExecutionContext) error {
+func (n *ArchSwitchNode) ExecuteImpl(c core.ExecutionContext, inputId core.InputId) error {
 
 	var err error
 
 	switch runtime.GOARCH {
 	case "amd64":
-		err = n.Execute(n.GetTargetNode(ni.Switch_arch_v1_Output_exec_x64), c)
+		err = n.Execute(ni.Switch_arch_v1_Output_exec_x64, c)
 	case "arm64":
-		err = n.Execute(n.GetTargetNode(ni.Switch_arch_v1_Output_exec_arm64), c)
+		err = n.Execute(ni.Switch_arch_v1_Output_exec_arm64, c)
 	case "arm":
-		err = n.Execute(n.GetTargetNode(ni.Switch_arch_v1_Output_exec_arm32), c)
+		err = n.Execute(ni.Switch_arch_v1_Output_exec_arm32, c)
 	default:
 		return fmt.Errorf("unsupported platform: %s", runtime.GOOS)
 	}

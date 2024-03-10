@@ -31,103 +31,116 @@ func (n *GhActionStartNode) ExecuteEntry(inputValues map[core.OutputId]any) erro
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	c := core.NewExecutionContext(ctx)
-	return n.Execute(n, c)
+	exec, err := n.GetStartOutput()
+	if err != nil {
+		return err
+	}
+	return n.Execute(exec, c)
 }
 
-func (n *GhActionStartNode) ExecuteImpl(c core.ExecutionContext) error {
-
-	event := os.Getenv("GITHUB_EVENT_NAME")
-
-	var exec core.NodeExecutionInterface
-
-	// All trigger events are listed here:
-	// https://docs.github.com/en/actions/reference/events-that-trigger-workflows
-	switch event {
-	case "branch_protection_rule":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_branch_protection_rule)
-	case "check_run":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_check_run)
-	case "check_suite":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_check_suite)
-	case "create":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_create)
-	case "delete":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_delete)
-	case "deployment":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_deployment)
-	case "deployment_status":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_deployment_status)
-	case "discussion":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_discussion)
-	case "discussion_comment":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_discussion_comment)
-	case "fork":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_fork)
-	case "gollum":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_gollum)
-	// it looks like pull_request_comment is deprecated and substituted with 'issue_comment'
-	case "issue_comment", "pull_request_comment":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_issue_comment)
-	case "issues":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_issues)
-	case "label":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_label)
-	case "merge_group":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_merge_group)
-	case "milestone":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_milestone)
-	case "page_build":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_page_build)
-	case "project":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_project)
-	case "project_card":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_project_card)
-	case "project_column":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_project_column)
-	case "public":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_public)
-	case "pull_request":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_pull_request)
-	case "pull_request_review":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_pull_request_review)
-	case "pull_request_review_comment":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_pull_request_review_comment)
-	case "pull_request_target":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_pull_request_target)
-	case "push":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_push)
-	case "registry_package":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_registry_package)
-	case "release":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_release)
-	case "repository_dispatch":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_repository_dispatch)
-	case "schedule":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_schedule)
-	case "status":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_status)
-	case "watch":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_watch)
-	case "workflow_call":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_workflow_call)
-	case "workflow_dispatch":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_workflow_dispatch)
-	case "workflow_run":
-		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_workflow_run)
-	default:
-		return fmt.Errorf("unknown event name: %s", event)
+func (n *GhActionStartNode) ExecuteImpl(c core.ExecutionContext, inputId core.InputId) error {
+	exec, err := n.GetStartOutput()
+	if err != nil {
+		return err
 	}
 
-	if exec == nil {
-		return fmt.Errorf(unexpectedEventErrorStr, event, event)
-	}
-
-	err := n.Execute(exec, c)
+	err = n.Execute(exec, c)
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (n *GhActionStartNode) GetStartOutput() (core.OutputId, error) {
+	event := os.Getenv("GITHUB_EVENT_NAME")
+
+	var exec core.OutputId
+
+	// All trigger events are listed here:
+	// https://docs.github.com/en/actions/reference/events-that-trigger-workflows
+	switch event {
+	case "branch_protection_rule":
+		exec = ni.Gh_start_v1_Output_exec_on_branch_protection_rule
+	case "check_run":
+		exec = ni.Gh_start_v1_Output_exec_on_check_run
+	case "check_suite":
+		exec = ni.Gh_start_v1_Output_exec_on_check_suite
+	case "create":
+		exec = ni.Gh_start_v1_Output_exec_on_create
+	case "delete":
+		exec = ni.Gh_start_v1_Output_exec_on_delete
+	case "deployment":
+		exec = ni.Gh_start_v1_Output_exec_on_deployment
+	case "deployment_status":
+		exec = ni.Gh_start_v1_Output_exec_on_deployment_status
+	case "discussion":
+		exec = ni.Gh_start_v1_Output_exec_on_discussion
+	case "discussion_comment":
+		exec = ni.Gh_start_v1_Output_exec_on_discussion_comment
+	case "fork":
+		exec = ni.Gh_start_v1_Output_exec_on_fork
+	case "gollum":
+		exec = ni.Gh_start_v1_Output_exec_on_gollum
+	// it looks like pull_request_comment is deprecated and substituted with 'issue_comment'
+	case "issue_comment", "pull_request_comment":
+		exec = ni.Gh_start_v1_Output_exec_on_issue_comment
+	case "issues":
+		exec = ni.Gh_start_v1_Output_exec_on_issues
+	case "label":
+		exec = ni.Gh_start_v1_Output_exec_on_label
+	case "merge_group":
+		exec = ni.Gh_start_v1_Output_exec_on_merge_group
+	case "milestone":
+		exec = ni.Gh_start_v1_Output_exec_on_milestone
+	case "page_build":
+		exec = ni.Gh_start_v1_Output_exec_on_page_build
+	case "project":
+		exec = ni.Gh_start_v1_Output_exec_on_project
+	case "project_card":
+		exec = ni.Gh_start_v1_Output_exec_on_project_card
+	case "project_column":
+		exec = ni.Gh_start_v1_Output_exec_on_project_column
+	case "public":
+		exec = ni.Gh_start_v1_Output_exec_on_public
+	case "pull_request":
+		exec = ni.Gh_start_v1_Output_exec_on_pull_request
+	case "pull_request_review":
+		exec = ni.Gh_start_v1_Output_exec_on_pull_request_review
+	case "pull_request_review_comment":
+		exec = ni.Gh_start_v1_Output_exec_on_pull_request_review_comment
+	case "pull_request_target":
+		exec = ni.Gh_start_v1_Output_exec_on_pull_request_target
+	case "push":
+		exec = ni.Gh_start_v1_Output_exec_on_push
+	case "registry_package":
+		exec = ni.Gh_start_v1_Output_exec_on_registry_package
+	case "release":
+		exec = ni.Gh_start_v1_Output_exec_on_release
+	case "repository_dispatch":
+		exec = ni.Gh_start_v1_Output_exec_on_repository_dispatch
+	case "schedule":
+		exec = ni.Gh_start_v1_Output_exec_on_schedule
+	case "status":
+		exec = ni.Gh_start_v1_Output_exec_on_status
+	case "watch":
+		exec = ni.Gh_start_v1_Output_exec_on_watch
+	case "workflow_call":
+		exec = ni.Gh_start_v1_Output_exec_on_workflow_call
+	case "workflow_dispatch":
+		exec = ni.Gh_start_v1_Output_exec_on_workflow_dispatch
+	case "workflow_run":
+		exec = ni.Gh_start_v1_Output_exec_on_workflow_run
+	default:
+		return "", fmt.Errorf("unknown event name: %s", event)
+	}
+
+	_, ok := n.GetExecutionTarget(exec)
+	if !ok {
+		return "", fmt.Errorf(unexpectedEventErrorStr, event, event)
+	}
+
+	return exec, nil
 }
 
 func init() {

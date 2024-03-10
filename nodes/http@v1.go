@@ -35,7 +35,7 @@ var allowedMethods = map[string]struct{}{
 	"CONNECT": {},
 }
 
-func (n *HttpNode) ExecuteImpl(c core.ExecutionContext) error {
+func (n *HttpNode) ExecuteImpl(c core.ExecutionContext, inputId core.InputId) error {
 
 	method, err := core.InputValueById[string](c, n.Inputs, ni.Http_v1_Input_method)
 	if err != nil {
@@ -103,12 +103,9 @@ func (n *HttpNode) ExecuteImpl(c core.ExecutionContext) error {
 		return err
 	}
 
-	exec := n.GetTargetNode(ni.Http_v1_Output_exec)
-	if exec != nil {
-		err = n.Execute(exec, c)
-		if err != nil {
-			return u.Throw(err)
-		}
+	err = n.Execute(ni.Http_v1_Output_exec, c)
+	if err != nil {
+		return u.Throw(err)
 	}
 
 	return nil

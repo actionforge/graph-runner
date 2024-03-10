@@ -29,7 +29,7 @@ func getExecNameRegex() *regexp.Regexp {
 
 // An interface for nodes that execute their logic.
 type NodeExecutionInterface interface {
-	ExecuteImpl(c ExecutionContext) error
+	ExecuteImpl(c ExecutionContext, inputId InputId) error
 	GetName() string
 	GetId() string
 

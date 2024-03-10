@@ -25,7 +25,7 @@ type AwsS3Node struct {
 	core.Outputs
 }
 
-func (n *AwsS3Node) ExecuteImpl(c core.ExecutionContext) error {
+func (n *AwsS3Node) ExecuteImpl(c core.ExecutionContext, inputId core.InputId) error {
 	input, err := core.InputValueById[any](c, n.Inputs, ni.Aws_s3_upload_v1_Input_content)
 	if err != nil {
 		return err
@@ -69,7 +69,7 @@ func (n *AwsS3Node) ExecuteImpl(c core.ExecutionContext) error {
 		return err
 	}
 
-	err = n.Execute(n.GetTargetNode(ni.Aws_s3_upload_v1_Output_exec), c)
+	err = n.Execute(ni.Aws_s3_upload_v1_Output_exec, c)
 	if err != nil {
 		return err
 	}

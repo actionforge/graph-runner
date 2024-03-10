@@ -19,13 +19,13 @@ type ParallelForNode struct {
 	core.Executions
 }
 
-func (n *ParallelForNode) ExecuteImpl(ti core.ExecutionContext) error {
-	firstIndex, err := core.InputValueById[int](ti, n.Inputs, ni.Parallel_for_v1_Input_first_index)
+func (n *ParallelForNode) ExecuteImpl(c core.ExecutionContext, inputId core.InputId) error {
+	firstIndex, err := core.InputValueById[int](c, n.Inputs, ni.Parallel_for_v1_Input_first_index)
 	if err != nil {
 		return err
 	}
 
-	lastIndex, err := core.InputValueById[int](ti, n.Inputs, ni.Parallel_for_v1_Input_last_index)
+	lastIndex, err := core.InputValueById[int](c, n.Inputs, ni.Parallel_for_v1_Input_last_index)
 	if err != nil {
 		return err
 	}
@@ -46,12 +46,12 @@ func (n *ParallelForNode) ExecuteImpl(ti core.ExecutionContext) error {
 	var mutex sync.Mutex
 	var errors []error
 
-	body := n.GetTargetNode(ni.Parallel_for_v1_Output_exec_body)
-	if body != nil {
+	_, ok := n.GetExecutionTarget(ni.Parallel_for_v1_Output_exec_body)
+	if ok {
 
 		for i := firstIndex; i <= lastIndex; i++ {
 
-			nti := ti.PushNewExecutionContext()
+			nti := c.PushNewExecutionContext()
 			err = n.Outputs.SetOutputValue(nti, ni.For_v1_Output_index, i)
 			if err != nil {
 				return err
@@ -61,7 +61,7 @@ func (n *ParallelForNode) ExecuteImpl(ti core.ExecutionContext) error {
 			go func() {
 				defer wg.Done()
 
-				err = n.Execute(body, nti)
+				err = n.Execute(ni.Parallel_for_v1_Output_exec_body, nti)
 				if err != nil {
 					mutex.Lock()
 					errors = append(errors, err)
@@ -79,12 +79,9 @@ func (n *ParallelForNode) ExecuteImpl(ti core.ExecutionContext) error {
 		return fmt.Errorf("parallel execution errors: %v", errors)
 	}
 
-	finish := n.GetTargetNode(ni.Parallel_for_v1_Output_exec_finish)
-	if finish != nil {
-		err = n.Execute(finish, ti)
-		if err != nil {
-			return u.Throw(err)
-		}
+	err = n.Execute(ni.Parallel_for_v1_Output_exec_finish, c)
+	if err != nil {
+		return u.Throw(err)
 	}
 
 	return nil
