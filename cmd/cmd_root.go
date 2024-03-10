@@ -29,7 +29,16 @@ func Execute() {
 
 	var filename string
 	if len(os.Args) > 1 {
-		if strings.HasSuffix(os.Args[1], ".yml") {
+		subcmd := false
+		// check if the first argument is a subcommand,
+		// otherwise assume it's a filename
+		for _, cmd := range cmdRoot.Commands() {
+			if strings.HasPrefix(cmd.Use, os.Args[1]) {
+				subcmd = true
+				break
+			}
+		}
+		if !subcmd {
 			filename = os.Args[1]
 		}
 	}

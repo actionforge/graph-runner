@@ -130,22 +130,28 @@ func LoadGraph(graphContent []byte) (ActionGraph, error) {
 	inputs, ok := graphYaml["inputs"]
 	if ok {
 		idefs := make(map[InputId]InputDefinition)
-		odefs := make(map[OutputId]OutputDefinition)
-		for k, v := range inputs.(map[any]any) {
+		for k, v := range inputs.(map[string]any) {
 			idef, err := anyToPortDefinition[InputDefinition](v)
 			if err != nil {
 				return ActionGraph{}, err
 			}
 
+			idefs[InputId(k)] = idef
+		}
+		ag.Inputs = idefs
+	}
+
+	outputs, ok := graphYaml["outputs"]
+	if ok {
+		odefs := make(map[OutputId]OutputDefinition)
+		for k, v := range outputs.(map[string]any) {
 			odef, err := anyToPortDefinition[OutputDefinition](v)
 			if err != nil {
 				return ActionGraph{}, err
 			}
 
-			idefs[InputId(k.(string))] = idef
-			odefs[OutputId(k.(string))] = odef
+			odefs[OutputId(k)] = odef
 		}
-		ag.Inputs = idefs
 		ag.Outputs = odefs
 	}
 

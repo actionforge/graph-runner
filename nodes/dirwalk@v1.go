@@ -23,18 +23,17 @@ type WalkNode struct {
 
 func (n *WalkNode) ExecuteImpl(ti core.ExecutionContext) error {
 
-	glob, err := core.InputValueById[string](ti, n.Inputs, "glob")
+	glob, err := core.InputValueById[string](ti, n.Inputs, ni.Dirwalk_v1_Input_glob)
 	if err != nil {
 		return err
 	}
 
-	dir, err := core.InputValueById[string](ti, n.Inputs, "dir")
+	dir, err := core.InputValueById[string](ti, n.Inputs, ni.Dirwalk_v1_Input_dir)
 	if err != nil {
 		return err
 	}
 
 	pattern := strings.Split(glob, ";")
-	pattern = append(pattern, ".DS_Store")
 
 	items := make(map[string]struct{})
 	err = walk(dir, pattern, items)
@@ -65,22 +64,22 @@ func walk(root string, pattern []string, items map[string]struct{}) error {
 			return nil
 		}
 
-		matchIgnore := false
+		include := false
 
 		for _, p := range pattern {
-			matched, err := filepath.Match("!"+p, filepath.Base(path))
+			matched, err := filepath.Match(p, filepath.Base(path))
 			if err != nil {
 				return err
 			}
-
-			matchIgnore = matchIgnore || matched
+			include = include || matched
+			if matched {
+				break
+			}
 		}
 
-		if matchIgnore {
-			return nil
+		if include {
+			items[path] = struct{}{}
 		}
-
-		items[path] = struct{}{}
 
 		return nil
 	})
