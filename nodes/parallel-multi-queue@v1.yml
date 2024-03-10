@@ -15,7 +15,7 @@ outputs:
     exec: true
     index: 0
   context:
-    name: Array
+    name: Array Element
     type: unknown
     index: 1
   exec-finish:
@@ -34,6 +34,6 @@ inputs:
     required: true
     step: 1
   context:
-    name: Array Element
+    name: Array
     type: unknown
     index: 2
