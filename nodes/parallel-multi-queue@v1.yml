@@ -34,6 +34,6 @@ inputs:
     required: true
     step: 1
   context:
-    name: Context
+    name: Array Element
     type: unknown
     index: 2
