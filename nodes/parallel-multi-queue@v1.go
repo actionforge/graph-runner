@@ -35,6 +35,7 @@ func (n *ParallelMultiQueueNode) ExecuteImpl(c core.ExecutionContext, inputId co
 
 	n.pool.AdjustWorkerCount(workerCount)
 
+	var mutex sync.Mutex
 	var errors []error
 
 	wg := sync.WaitGroup{}
@@ -44,16 +45,19 @@ func (n *ParallelMultiQueueNode) ExecuteImpl(c core.ExecutionContext, inputId co
 		nti := c.PushNewExecutionContext()
 		err = n.Outputs.SetOutputValue(nti, ni.Parallel_multi_queue_v1_Output_context, s.Index(i).Interface())
 		if err != nil {
-			errors = append(errors, err)
-			continue
+			return err
 		}
 
 		wg.Add(1)
+		c.Wg.Add(1)
 		n.pool.AddTask(func() {
 			defer wg.Done()
+			defer c.Wg.Done()
 			err := n.Execute(ni.Parallel_multi_queue_v1_Output_exec_body, nti)
 			if err != nil {
+				mutex.Lock()
 				errors = append(errors, err)
+				mutex.Unlock()
 			}
 		})
 	}
