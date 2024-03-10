@@ -65,7 +65,7 @@ func (n *AwsS3ListNode) ExecuteImpl(c core.ExecutionContext) error {
 		return err
 	}
 
-	err = n.Execute(n.GetExecutionPort(ni.Aws_s3_list_v1_Output_exec), c)
+	err = n.Execute(n.GetTargetNode(ni.Aws_s3_list_v1_Output_exec), c)
 	if err != nil {
 		return err
 	}

@@ -46,7 +46,7 @@ func (n *WalkNode) ExecuteImpl(ti core.ExecutionContext) error {
 		return err
 	}
 
-	err = n.Execute(n.GetExecutionPort(ni.Dirwalk_v1_Output_exec), ti)
+	err = n.Execute(n.GetTargetNode(ni.Dirwalk_v1_Output_exec), ti)
 	if err != nil {
 		return err
 	}

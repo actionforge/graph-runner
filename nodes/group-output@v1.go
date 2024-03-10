@@ -25,7 +25,7 @@ func (n *GroupOutputNode) OutputValueById(c core.ExecutionContext, outputId core
 }
 
 func (n *GroupOutputNode) ExecuteImpl(c core.ExecutionContext) error {
-	err := n.Execute(n.GetExecutionPort("exec"), c)
+	err := n.Execute(n.GetTargetNode("exec"), c)
 	if err != nil {
 		return err
 	}

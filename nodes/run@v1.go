@@ -190,12 +190,12 @@ func (n *RunNode) ExecuteImpl(c core.ExecutionContext) error {
 	}
 
 	if cmd.ProcessState.ExitCode() == 0 {
-		err = n.Execute(n.GetExecutionPort(ni.Run_v1_Output_exec_success), c)
+		err = n.Execute(n.GetTargetNode(ni.Run_v1_Output_exec_success), c)
 		if err != nil {
 			return err
 		}
 	} else {
-		execErr := n.GetExecutionPort(ni.Run_v1_Output_exec_err)
+		execErr := n.GetTargetNode(ni.Run_v1_Output_exec_err)
 
 		// If the error output is not connected, we can safely fail here
 		if execErr == nil {

@@ -1,7 +1,9 @@
 package core
 
 import (
+	"actionforge/graph-runner/utils"
 	"fmt"
+	"os"
 	"reflect"
 	"sync"
 )
@@ -18,21 +20,51 @@ type HasOutputsInterface interface {
 }
 
 type Executions struct {
-	Executions map[OutputId]NodeExecutionInterface
+	Executions  map[OutputId]NodeExecutionInterface
+	PortMapping map[OutputId]InputId
+}
+
+func (n *Executions) Execute(t NodeExecutionInterface, ec ExecutionContext) error {
+	// nothing to execute
+	if t == nil {
+		return nil
+	}
+
+	if os.Getenv("GITHUB_EVENT_NAME") != "" {
+		utils.LoggerBase.Printf("🟢 Execute '%s (%s)'\n",
+			t.GetName(),
+			t.GetId(),
+		)
+	}
+
+	err := t.ExecuteImpl(ec)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (e *Executions) GetAllExecutionPorts() map[OutputId]NodeExecutionInterface {
 	return e.Executions
 }
 
-func (e *Executions) GetExecutionPort(portName OutputId) NodeExecutionInterface {
+func (e *Executions) GetTargetNode(portName OutputId) NodeExecutionInterface {
 	return e.Executions[portName]
 }
 
-func (e *Executions) ConnectExecutionPort(portName OutputId, target NodeExecutionInterface) {
+func (e *Executions) GetTargetPort(portName OutputId) InputId {
+	return e.PortMapping[portName]
+}
+
+func (e *Executions) ConnectExecutionPort(portName OutputId, target NodeExecutionInterface, targetPortId InputId) {
 	if e.Executions == nil {
 		e.Executions = make(map[OutputId]NodeExecutionInterface)
 	}
+	if e.PortMapping == nil {
+		e.PortMapping = make(map[OutputId]InputId)
+	}
+
+	e.PortMapping[portName] = targetPortId
 	e.Executions[portName] = target
 }
 

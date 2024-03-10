@@ -103,7 +103,7 @@ func (n *HttpNode) ExecuteImpl(c core.ExecutionContext) error {
 		return err
 	}
 
-	exec := n.GetExecutionPort(ni.Http_v1_Output_exec)
+	exec := n.GetTargetNode(ni.Http_v1_Output_exec)
 	if exec != nil {
 		err = n.Execute(exec, c)
 		if err != nil {

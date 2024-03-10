@@ -32,7 +32,7 @@ func (n *ReadFileNode) ExecuteImpl(c core.ExecutionContext) error {
 		return err
 	}
 
-	err = n.Execute(n.GetExecutionPort(ni.File_read_v1_Output_exec), c)
+	err = n.Execute(n.GetTargetNode(ni.File_read_v1_Output_exec), c)
 	if err != nil {
 		return err
 	}

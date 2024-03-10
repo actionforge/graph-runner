@@ -92,7 +92,7 @@ func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
 		return fmt.Errorf("unsupported action type: %v", n.actionType)
 	}
 	if err != nil {
-		execErr := n.GetExecutionPort(ni.Gh_action_v1_Output_exec_err)
+		execErr := n.GetTargetNode(ni.Gh_action_v1_Output_exec_err)
 
 		// If the error output is not connected, we can safely fail here
 		if execErr == nil {
@@ -155,7 +155,7 @@ func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
 		}
 	}
 
-	err = n.Execute(n.GetExecutionPort(ni.Gh_action_v1_Output_exec), c)
+	err = n.Execute(n.GetTargetNode(ni.Gh_action_v1_Output_exec), c)
 	if err != nil {
 		return err
 	}

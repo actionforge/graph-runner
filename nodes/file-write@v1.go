@@ -55,9 +55,9 @@ func (n *FileWriteNode) ExecuteImpl(c core.ExecutionContext) error {
 	cleanup()
 
 	if err == nil {
-		err = n.Execute(n.GetExecutionPort(ni.File_write_v1_Output_exec), c)
+		err = n.Execute(n.GetTargetNode(ni.File_write_v1_Output_exec), c)
 	} else {
-		err = n.Execute(n.GetExecutionPort(ni.File_write_v1_Output_exec_err), c)
+		err = n.Execute(n.GetTargetNode(ni.File_write_v1_Output_exec_err), c)
 	}
 
 	if err != nil {

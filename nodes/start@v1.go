@@ -31,7 +31,7 @@ func (n *StartNode) ExecuteEntry(inputValues map[core.OutputId]any) error {
 }
 
 func (n *StartNode) ExecuteImpl(c core.ExecutionContext) error {
-	err := n.Execute(n.GetExecutionPort(ni.Start_v1_Output_exec), c)
+	err := n.Execute(n.GetTargetNode(ni.Start_v1_Output_exec), c)
 	if err != nil {
 		return err
 	}

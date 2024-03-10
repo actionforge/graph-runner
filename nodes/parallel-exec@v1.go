@@ -53,7 +53,7 @@ func (n *ParallelExecNode) ExecuteImpl(ti core.ExecutionContext) error {
 		return fmt.Errorf("parallel execution errors: %v", errors)
 	}
 
-	err := n.Execute(n.GetExecutionPort(ni.Parallel_for_v1_Output_exec_finish), ti)
+	err := n.Execute(n.GetTargetNode(ni.Parallel_for_v1_Output_exec_finish), ti)
 	if err != nil {
 		return u.Throw(err)
 	}

@@ -44,76 +44,76 @@ func (n *GhActionStartNode) ExecuteImpl(c core.ExecutionContext) error {
 	// https://docs.github.com/en/actions/reference/events-that-trigger-workflows
 	switch event {
 	case "branch_protection_rule":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_branch_protection_rule)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_branch_protection_rule)
 	case "check_run":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_check_run)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_check_run)
 	case "check_suite":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_check_suite)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_check_suite)
 	case "create":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_create)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_create)
 	case "delete":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_delete)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_delete)
 	case "deployment":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_deployment)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_deployment)
 	case "deployment_status":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_deployment_status)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_deployment_status)
 	case "discussion":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_discussion)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_discussion)
 	case "discussion_comment":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_discussion_comment)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_discussion_comment)
 	case "fork":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_fork)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_fork)
 	case "gollum":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_gollum)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_gollum)
 	// it looks like pull_request_comment is deprecated and substituted with 'issue_comment'
 	case "issue_comment", "pull_request_comment":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_issue_comment)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_issue_comment)
 	case "issues":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_issues)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_issues)
 	case "label":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_label)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_label)
 	case "merge_group":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_merge_group)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_merge_group)
 	case "milestone":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_milestone)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_milestone)
 	case "page_build":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_page_build)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_page_build)
 	case "project":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_project)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_project)
 	case "project_card":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_project_card)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_project_card)
 	case "project_column":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_project_column)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_project_column)
 	case "public":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_public)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_public)
 	case "pull_request":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_pull_request)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_pull_request)
 	case "pull_request_review":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_pull_request_review)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_pull_request_review)
 	case "pull_request_review_comment":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_pull_request_review_comment)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_pull_request_review_comment)
 	case "pull_request_target":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_pull_request_target)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_pull_request_target)
 	case "push":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_push)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_push)
 	case "registry_package":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_registry_package)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_registry_package)
 	case "release":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_release)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_release)
 	case "repository_dispatch":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_repository_dispatch)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_repository_dispatch)
 	case "schedule":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_schedule)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_schedule)
 	case "status":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_status)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_status)
 	case "watch":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_watch)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_watch)
 	case "workflow_call":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_workflow_call)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_workflow_call)
 	case "workflow_dispatch":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_workflow_dispatch)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_workflow_dispatch)
 	case "workflow_run":
-		exec = n.GetExecutionPort(ni.Gh_start_v1_Output_exec_on_workflow_run)
+		exec = n.GetTargetNode(ni.Gh_start_v1_Output_exec_on_workflow_run)
 	default:
 		return fmt.Errorf("unknown event name: %s", event)
 	}

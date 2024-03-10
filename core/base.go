@@ -3,7 +3,6 @@ package core
 import (
 	"actionforge/graph-runner/utils"
 	"fmt"
-	"os"
 	"reflect"
 	"regexp"
 	"sync"
@@ -34,7 +33,7 @@ type NodeExecutionInterface interface {
 	GetName() string
 	GetId() string
 
-	ConnectExecutionPort(portName OutputId, target NodeExecutionInterface)
+	ConnectExecutionPort(portName OutputId, target NodeExecutionInterface, targetPortId InputId)
 }
 
 // An interface for nodes that can kick off an action graph.
@@ -87,26 +86,6 @@ func (n *NodeBaseComponent) GetName() string {
 
 func (n *NodeBaseComponent) SetName(name string) {
 	n.Name = name
-}
-
-func (n *NodeBaseComponent) Execute(t NodeExecutionInterface, ec ExecutionContext) error {
-	// nothing to execute
-	if t == nil {
-		return nil
-	}
-
-	if os.Getenv("GITHUB_EVENT_NAME") != "" {
-		utils.LoggerBase.Printf("🟢 Execute '%s (%s)'\n",
-			t.GetName(),
-			t.GetId(),
-		)
-	}
-
-	err := t.ExecuteImpl(ec)
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 type ExecutionSource struct {

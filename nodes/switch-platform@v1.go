@@ -23,11 +23,11 @@ func (n *PlatformSwitchNode) ExecuteImpl(c core.ExecutionContext) error {
 
 	switch runtime.GOOS {
 	case "windows":
-		err = n.Execute(n.GetExecutionPort(ni.Switch_platform_v1_Output_exec_win), c)
+		err = n.Execute(n.GetTargetNode(ni.Switch_platform_v1_Output_exec_win), c)
 	case "linux":
-		err = n.Execute(n.GetExecutionPort(ni.Switch_platform_v1_Output_exec_linux), c)
+		err = n.Execute(n.GetTargetNode(ni.Switch_platform_v1_Output_exec_linux), c)
 	case "darwin":
-		err = n.Execute(n.GetExecutionPort(ni.Switch_platform_v1_Output_exec_macos), c)
+		err = n.Execute(n.GetTargetNode(ni.Switch_platform_v1_Output_exec_macos), c)
 	default:
 		return fmt.Errorf("unsupported platform: %s", runtime.GOOS)
 	}

@@ -262,6 +262,11 @@ func loadExecutions(ag *ActionGraph, nodesYaml map[string]interface{}) error {
 			return u.Throw(err)
 		}
 
+		dstNodePortId, err := u.GetItem[string](e, "dst", "port")
+		if err != nil {
+			return u.Throw(err)
+		}
+
 		dstNode, err := ag.FindNode(dstNodeId)
 		if err != nil {
 			return fmt.Errorf("execution dst node does not exist")
@@ -314,8 +319,9 @@ func loadExecutions(ag *ActionGraph, nodesYaml map[string]interface{}) error {
 		ConnectExecutionPort := v.MethodByName("ConnectExecutionPort")
 
 		args := []reflect.Value{reflect.ValueOf(
-			OutputId(srcNodePortId)),
+			OutputId(OutputId(srcNodePortId))),
 			reflect.ValueOf(dstNode),
+			reflect.ValueOf(InputId(dstNodePortId)),
 		}
 		ConnectExecutionPort.Call(args)
 	}
