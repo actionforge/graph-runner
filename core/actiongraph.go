@@ -14,7 +14,6 @@ type ActionGraph struct {
 	Nodes   map[string]NodeRef
 	Inputs  map[InputId]InputDefinition   `yaml:"inputs" json:"inputs" bson:"inputs"`
 	Outputs map[OutputId]OutputDefinition `yaml:"outputs" json:"outputs" bson:"outputs"`
-	// Connections are handled within the nodes
 
 	Entry string
 }
@@ -278,7 +277,7 @@ func loadExecutions(ag *ActionGraph, nodesYaml map[string]interface{}) error {
 		}
 
 		if strings.HasPrefix(dstNode.GetNodeType(), "group@") {
-			subgraph := dstNode.GetSubGraph()
+			subgraph := dstNode.GetGraph()
 			if subgraph == nil {
 				return fmt.Errorf("group node has no sub graph")
 			}
@@ -291,7 +290,7 @@ func loadExecutions(ag *ActionGraph, nodesYaml map[string]interface{}) error {
 			dstNode = groupStart
 			// 'exec' stays the same
 		} else if strings.HasPrefix(srcNode.GetNodeType(), "group@") {
-			subgraph := srcNode.GetSubGraph()
+			subgraph := srcNode.GetGraph()
 			if subgraph == nil {
 				return fmt.Errorf("group node has no sub graph")
 			}

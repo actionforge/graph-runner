@@ -24,8 +24,8 @@ func (n *NegateNode) OutputValueById(c core.ExecutionContext, outputId core.Outp
 	ai := bool(input == true)
 	bi := bool(input != "")
 	ci := bool(input != nil)
-	di := bool(input != 0)
 	ei := bool(input != 0.0)
+	di := bool(input != nil && input != 0)
 
 	return !(ai || bi || ci || di || ei), nil
 }

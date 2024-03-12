@@ -48,7 +48,7 @@ type NodeBaseInterface interface {
 	GetName() string
 	GetId() string
 	SetName(name string)
-	GetSubGraph() *ActionGraph
+	GetGraph() *ActionGraph
 }
 
 // Base component for nodes that offer values from other nodes.
@@ -76,7 +76,7 @@ func (n *NodeBaseComponent) SetNodeType(name string) {
 	n.NodeType = name
 }
 
-func (n *NodeBaseComponent) GetSubGraph() *ActionGraph {
+func (n *NodeBaseComponent) GetGraph() *ActionGraph {
 	return n.Graph
 }
 
