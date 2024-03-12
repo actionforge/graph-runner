@@ -56,7 +56,7 @@ func init() {
 
 		group := GroupNode{
 			NodeBaseComponent: core.NodeBaseComponent{
-				Subgraph: &ag,
+				Graph: &ag,
 			},
 		}
 

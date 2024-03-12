@@ -57,7 +57,7 @@ type NodeBaseComponent struct {
 	Name     string // Human readable name of the node
 	Id       string // Unique identifier for the node
 	NodeType string // Node type of the node (e.g. run@v1 or github.com/actions/checkout@v3)
-	Subgraph *ActionGraph
+	Graph    *ActionGraph
 }
 
 func (n *NodeBaseComponent) SetId(id string) {
@@ -77,7 +77,7 @@ func (n *NodeBaseComponent) SetNodeType(name string) {
 }
 
 func (n *NodeBaseComponent) GetSubGraph() *ActionGraph {
-	return n.Subgraph
+	return n.Graph
 }
 
 func (n *NodeBaseComponent) GetName() string {
