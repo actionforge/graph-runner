@@ -18,10 +18,14 @@ outputs:
     name: Array Element
     type: unknown
     index: 1
+  index:
+    name: Array Index
+    type: number
+    index: 2
   exec-finish:
     name: Finish
     exec: true
-    index: 2
+    index: 3
 inputs:
   exec:
     exec: true

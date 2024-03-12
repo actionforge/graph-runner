@@ -48,6 +48,11 @@ func (n *ParallelMultiQueueNode) ExecuteImpl(c core.ExecutionContext, inputId co
 			return err
 		}
 
+		err = n.Outputs.SetOutputValue(nti, ni.Parallel_multi_queue_v1_Output_index, i)
+		if err != nil {
+			return err
+		}
+
 		wg.Add(1)
 		c.Wg.Add(1)
 		n.pool.AddTask(func() {

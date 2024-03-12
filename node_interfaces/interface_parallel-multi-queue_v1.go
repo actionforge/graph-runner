@@ -23,5 +23,7 @@ const Parallel_multi_queue_v1_Output_context core.OutputId = "context"
 const Parallel_multi_queue_v1_Output_exec_body core.OutputId = "exec-body"
 // 
 const Parallel_multi_queue_v1_Output_exec_finish core.OutputId = "exec-finish"
+// 
+const Parallel_multi_queue_v1_Output_index core.OutputId = "index"
 
 
