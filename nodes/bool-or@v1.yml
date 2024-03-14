@@ -7,7 +7,7 @@ description: Apply the OR operator on two or more boolean values.
 compact: true
 style:
   body:
-    background: linear-gradient(to right, rgb(90 52 34), rgb(106 41 13))
+    background: #215538
 inputs:
   input:
     type: bool
