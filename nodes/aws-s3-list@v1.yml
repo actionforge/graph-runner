@@ -4,6 +4,11 @@ id: aws-s3-list
 name: AWS S3 List
 version: 1
 description: Node to list objects in an S3 bucket directory.
+style:
+  header:
+    background: "#c45d0cb3"
+  body:
+    background: rgb(142 82 35 / 48%)
 outputs:
   exec:
     name: Exec

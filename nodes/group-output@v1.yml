@@ -7,6 +7,6 @@ description: Output of a group node
 entry: true
 style:
   header:
-    background: "linear-gradient(to left, #027867, rgb(21 69 130))"
+    background: "linear-gradient(to left, #027867, rgb(21, 69, 130))"
   body:
-    background: "linear-gradient(to left, #027867, rgb(21 69 130))"
+    background: "linear-gradient(to left, #02786799, rgb(21, 69, 130, 0.5))"

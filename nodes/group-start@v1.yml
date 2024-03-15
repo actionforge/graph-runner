@@ -7,6 +7,6 @@ description: Invocation point for a group
 entry: true
 style:
   header:
-    background: "linear-gradient(to right, #027867, rgb(21 69 130))"
+    background: "linear-gradient(to right, #027867, rgb(21, 69, 130))"
   body:
-    background: "linear-gradient(to right, #027867, rgb(21 69 130))"
+    background: "linear-gradient(to right, #02786799, rgb(21, 69, 130, 0.5))"

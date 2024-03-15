@@ -7,7 +7,7 @@ description: Apply the AND operator on two or more boolean values.
 compact: true
 style:
   body:
-    background: #215538
+    background: "#215538"
 inputs:
   input:
     type: bool

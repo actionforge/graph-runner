@@ -8,7 +8,7 @@ style:
   header:
     background: "#393836"
   body:
-    background: "#292929"
+    background: "#292929AA"
 outputs:
   exec-success:
     name: Success

@@ -159,7 +159,6 @@ type NodeTypeDefinitionBasic struct {
 	Compact     bool   `yaml:"compact,omitempty" json:"compact,omitempty" bson:"compact,omitempty"`
 	Icon        string `yaml:"icon" json:"icon" bson:"icon"`
 	Avatar      string `yaml:"avatar" json:"avatar" bson:"avatar"`
-	Registry    string `yaml:"registry,omitempty" json:"registry,omitempty" bson:"registry,omitempty"`
 }
 
 type NodeTypeDefinitionFull struct {

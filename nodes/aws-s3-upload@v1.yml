@@ -4,6 +4,11 @@ id: aws-s3-upload
 name: AWS S3 Upload
 version: 1
 description: Node to upload an object to an S3 bucket.
+style:
+  header:
+    background: "#c45d0cb3"
+  body:
+    background: rgb(142 82 35 / 48%)
 outputs:
   exec:
     name: Exec

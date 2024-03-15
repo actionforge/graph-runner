@@ -9,7 +9,7 @@ style:
   header:
     background: "linear-gradient(90deg, #2b8b81 0%, rgb(248, 156, 42) 100%)"
   body:
-    background: "#2b8b81"
+    background: rgb(45 140 129 / 64%)
 outputs:
   exec:
     exec: true
