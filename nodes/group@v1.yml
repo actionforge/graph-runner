@@ -6,6 +6,6 @@ version: 1
 description: Group Node
 style:
   header:
-    background: "#027867AA"
+    background: "#027867"
   body:
     background: "#027867AA"

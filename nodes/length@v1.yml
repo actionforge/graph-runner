@@ -1,0 +1,18 @@
+yaml-version: 3.0
+
+id: length
+name: len()
+version: 1
+description: Returns the length of the input
+compact: true
+style:
+  body:
+    background: seagreen
+inputs:
+  input:
+    type: any
+    index: 0
+outputs:
+  result:
+    type: number
+    index: 0

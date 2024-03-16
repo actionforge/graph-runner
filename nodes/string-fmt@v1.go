@@ -5,6 +5,7 @@ import (
 	ni "actionforge/graph-runner/node_interfaces"
 	_ "embed"
 	"fmt"
+	"strings"
 )
 
 //go:embed string-fmt@v1.yml
@@ -26,7 +27,12 @@ func (n *StringFmt) OutputValueById(c core.ExecutionContext, outputId core.Outpu
 	if err != nil {
 		return nil, err
 	}
-	return fmt.Sprintf(fmtString, input...), nil
+
+	if strings.Contains(fmtString, "%") && len(input) > 0 {
+		return fmt.Sprintf(fmtString, input...), nil
+	} else {
+		return fmtString, nil
+	}
 }
 
 func init() {

@@ -1,0 +1,19 @@
+yaml-version: 3.0
+
+id: const-string
+name: Const String
+version: 1
+description: Constant value of a string
+style:
+  header:
+    background: "#897024"
+  body:
+    background: "#755e19"
+inputs:
+  input:
+    type: string
+    index: 0
+outputs:
+  result:
+    type: string
+    index: 0

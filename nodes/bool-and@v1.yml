@@ -11,7 +11,7 @@ style:
 inputs:
   input:
     type: bool
-    index: 1
+    index: 0
     group: true
     group_initial: 2
 outputs:

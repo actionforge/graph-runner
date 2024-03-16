@@ -1,0 +1,19 @@
+yaml-version: 3.0
+
+id: const-number
+name: Const Number
+version: 1
+description: Constant value of a number
+style:
+  header:
+    background: "#897024"
+  body:
+    background: "#755e19"
+inputs:
+  input:
+    type: number
+    index: 0
+outputs:
+  result:
+    type: number
+    index: 0

@@ -1,0 +1,19 @@
+yaml-version: 3.0
+
+id: const-bool
+name: Const Bool
+version: 1
+description: Constant value of a bool
+style:
+  header:
+    background: "#897024"
+  body:
+    background: "#755e19"
+inputs:
+  input:
+    type: bool
+    index: 0
+outputs:
+  result:
+    type: bool
+    index: 0
