@@ -22,8 +22,6 @@ type HttpNode struct {
 	core.Executions
 	core.Inputs
 	core.Outputs
-
-	stream bool
 }
 
 var allowedMethods = map[string]struct{}{
