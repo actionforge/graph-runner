@@ -19,5 +19,6 @@ jobs:
       - name: Run Integration test
         uses: actionforge/action@465201105622356df741319f16d60ffbf90d0462
         with:
-          runner_path: ./graph-runner
+          # graph-runner in workdir directory
+          runner_path: ${{ github.workspace }}/graph-runner
           graph_file: test_env.yml
