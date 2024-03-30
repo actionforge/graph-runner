@@ -94,7 +94,6 @@ func buildFrozen(graphPath string) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
-	cmd.Env = utils.GetSanitizedEnviron()
 	cmd.Dir = utils.FindProjectRoot()
 
 	err := cmd.Run()
