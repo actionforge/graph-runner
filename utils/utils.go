@@ -352,14 +352,14 @@ func GetActionforgeDir() string {
 
 func GetEnvironMap() map[string]string {
 	env := os.Environ()
-	sanitizedEnv := map[string]string{}
+	envs := map[string]string{}
 	for _, e := range env {
 		kv := strings.SplitN(e, "=", 2)
 		if len(kv) == 2 {
-			sanitizedEnv[kv[0]] = kv[1]
+			envs[kv[0]] = kv[1]
 		}
 	}
-	return sanitizedEnv
+	return envs
 }
 
 func GetSha256OfBytes(data []byte) (string, error) {
