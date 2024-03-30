@@ -1,0 +1,66 @@
+entry: start
+executions:
+  - src:
+      node: start
+      port: exec
+    dst:
+      node: run-v1-apple-silver-lion
+      port: exec
+  - src:
+      node: run-v1-apple-silver-lion
+      port: exec-success
+    dst:
+      node: gh-actionforge-test-action-node-main-lemon-penguin-yellow
+      port: exec
+  - src:
+      node: gh-actionforge-test-action-node-main-lemon-penguin-yellow
+      port: exec
+    dst:
+      node: run-v1-giraffe-grape-zebra
+      port: exec
+connections:
+  - src:
+      node: start
+      port: env
+    dst:
+      node: run-v1-apple-silver-lion
+      port: env
+nodes:
+  - id: start
+    type: start@v1
+    position:
+      x: -10
+      y: 180
+    settings:
+      folded: false
+  - id: gh-actionforge-test-action-node-main-lemon-penguin-yellow
+    type: >-
+      github.com/actionforge/test-action-node@eca0771f2d806fb397816733445ef614374ad25a
+    position:
+      x: 830
+      y: -30
+    inputs:
+      input1: hello
+    settings:
+      folded: false
+  - id: run-v1-apple-silver-lion
+    type: run@v1
+    position:
+      x: 320
+      y: 110
+    inputs:
+      script: printenv baz
+    settings:
+      folded: false
+  - id: run-v1-giraffe-grape-zebra
+    type: run@v1
+    position:
+      x: 1460
+      y: -160
+    inputs:
+      script: printenv baz
+    settings:
+      folded: false
+registries:
+  - github.com/actionforge/test-action-node@main
+description: ""

@@ -1,0 +1,11 @@
+on: [push]
+
+jobs:
+  integration-tests:
+    runs-on: ubuntu-latest
+    name: My workflow
+    steps:
+      - name: Execute Action Graph
+        uses: actionforge/action@465201105622356df741319f16d60ffbf90d0462
+        with:
+          graph_file: test_env.yml
