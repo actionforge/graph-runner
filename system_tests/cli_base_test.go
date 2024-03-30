@@ -60,7 +60,6 @@ func Test_Freeze(t *testing.T) {
 	t.Log("Building frozen binary (1st run)")
 	err = buildFrozen("system_tests/test_freeze.yml")
 	if err != nil {
-		fmt.Println("frozen binary building failed")
 		t.Fatal(err)
 	}
 
