@@ -12,3 +12,12 @@ jobs:
         uses: actionforge/action@v0.8.30
         with:
           graph_file: build-and-publish.yml
+
+      - name: List
+        run: ls -lsa
+
+      - name: Run Integration test
+        uses: actionforge/action@465201105622356df741319f16d60ffbf90d0462
+        with:
+          runner_path: ./graph-runner
+          graph_file: test_env.yml
