@@ -44,25 +44,17 @@ func RemoveGhSecret(name string) {
 	delete(ghSecrets, name)
 }
 
-func decodeJsonFromEnv(e string, prefix string) (map[string]string, error) {
-	envMap := make(map[string]string, 0)
-	pair := strings.SplitN(e, "=", 2)
-	if len(pair) == 2 {
-		if pair[1] == "" {
-			return envMap, nil
-		}
-		var tmp map[string]string
-		err := json.NewDecoder(strings.NewReader(pair[1])).Decode(&tmp)
-		if err != nil {
-			return nil, err
-		}
-		for k, v := range tmp {
-			envMap[fmt.Sprintf("%s.%s", prefix, k)] = v
-		}
-		return envMap, nil
-	} else {
-		return nil, fmt.Errorf("Invalid %s: %s", prefix, pair[0])
+func decodeJsonFromEnvValue(envValue string, prefix string) (map[string]string, error) {
+	envMap := map[string]string{}
+	tmp := map[string]string{}
+	err := json.NewDecoder(strings.NewReader(envValue)).Decode(&tmp)
+	if err != nil {
+		return nil, err
 	}
+	for k, v := range tmp {
+		envMap[fmt.Sprintf("%s.%s", prefix, k)] = v
+	}
+	return envMap, nil
 }
 
 func initGhContexts() error {
@@ -108,33 +100,33 @@ func initGhContexts() error {
 	ghActionsRuntimeToken = os.Getenv("ACTIONS_RUNTIME_TOKEN")
 
 	for _, env := range os.Environ() {
-		if strings.HasPrefix(strings.ToUpper(env), "SECRET_") {
-			pair := strings.SplitN(env, "=", 2)
-			if len(pair) == 1 {
-				// empty secrets are valid
-				ghSecrets[pair[0]] = ""
-				os.Unsetenv(pair[0])
-			} else if len(pair) == 2 {
-				key := strings.TrimPrefix(strings.ToUpper(pair[0]), "SECRET_")
-				value := pair[1]
 
-				ghSecrets[key] = value
-				os.Unsetenv(pair[0])
-			} else {
-				return fmt.Errorf("Invalid secret: %s", pair[0])
-			}
-		} else if strings.HasPrefix(strings.ToUpper(env), "INPUT_MATRIX=") {
+		kv := strings.SplitN(env, "=", 2)
+		if len(kv) != 2 {
+			continue
+		}
+
+		envName := kv[0]
+		envValue := kv[1]
+
+		if strings.HasPrefix(envName, "SECRET_") {
+			key := strings.TrimPrefix(envName, "SECRET_")
+			ghSecrets[key] = envValue
+			os.Unsetenv(envName)
+		} else if envName == "INPUT_MATRIX" {
 			var err error
-			ghMatrix, err = decodeJsonFromEnv(env, "matrix")
+			ghMatrix, err = decodeJsonFromEnvValue(envValue, "matrix")
 			if err != nil {
 				return err
 			}
-		} else if strings.HasPrefix(strings.ToUpper(env), "INPUT_INPUTS=") {
+			os.Unsetenv(envName)
+		} else if envName == "INPUT_INPUTS" {
 			var err error
-			ghInputs, err = decodeJsonFromEnv(env, "inputs")
+			ghInputs, err = decodeJsonFromEnvValue(envValue, "inputs")
 			if err != nil {
 				return err
 			}
+			os.Unsetenv(envName)
 		}
 	}
 

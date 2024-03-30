@@ -19,7 +19,7 @@ type StartNode struct {
 func (n *StartNode) ExecuteEntry() error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	c := core.NewExecutionContext(ctx, utils.GetSanitizedEnvironMap())
+	c := core.NewExecutionContext(ctx, utils.GetEnvironMap())
 	return n.Execute(n, c)
 }
 

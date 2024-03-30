@@ -19,7 +19,7 @@ func Test_EmptyExecutionContext(t *testing.T) {
 }
 
 func Test_ExecutionContext(t *testing.T) {
-	root := core.NewExecutionContext(context.Background(), utils.GetSanitizedEnvironMap())
+	root := core.NewExecutionContext(context.Background(), utils.GetEnvironMap())
 
 	if len(root.GetContextKeysCopy(nil)) != 1 {
 		t.Error("root context must have a single key")

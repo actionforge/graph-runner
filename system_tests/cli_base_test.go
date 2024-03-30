@@ -20,7 +20,6 @@ func TestMain(m *testing.M) {
 		".",
 	)
 	cmd.Dir = utils.FindProjectRoot()
-	cmd.Env = utils.GetSanitizedEnviron()
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		fmt.Println(string(output))
@@ -42,14 +41,6 @@ func Test_Cli(t *testing.T) {
 }
 
 func Test_Freeze(t *testing.T) {
-	// Exclude test during local execution.
-	// The freeze command depends on the current
-	// commit being accessible as a zip archive on
-	// GitHub, which may not be the case for commits
-	// made locally but not yet pushed.
-	if os.Getenv("GITHUB_REF_NAME") == "" {
-		t.Skip("Skipping test locally")
-	}
 
 	actionHomeDir := utils.GetActionforgeDir()
 
@@ -61,6 +52,7 @@ func Test_Freeze(t *testing.T) {
 	t.Log("Building frozen binary (1st run)")
 	err = buildFrozen("system_tests/test_freeze.yml")
 	if err != nil {
+		fmt.Println("frozen binary building failed")
 		t.Fatal(err)
 	}
 

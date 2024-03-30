@@ -21,6 +21,8 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// Startup info
+var graphFileEnv string
 var envFileOnce sync.Once
 
 // Inline-if alternative in Go. Example:
@@ -150,12 +152,16 @@ type GetVariableOpts struct {
 	Optional     bool
 }
 
-func getEnvValue(parameterName, defaultValue string) string {
-	value := os.Getenv(parameterName)
-	if value == "" {
+func getEnvValue(envName, defaultValue string) (val string) {
+	if envName == "graph_file" {
+		val = graphFileEnv
+	} else {
+		val = os.Getenv(envName)
+	}
+	if val == "" {
 		return defaultValue
 	}
-	return value
+	return val
 }
 
 func GetVariable(name, desc string, opts GetVariableOpts) string {
@@ -344,25 +350,16 @@ func GetActionforgeDir() string {
 	return filepath.Join(home, ".actionforge")
 }
 
-func GetSanitizedEnvironMap() map[string]string {
+func GetEnvironMap() map[string]string {
 	env := os.Environ()
 	sanitizedEnv := map[string]string{}
 	for _, e := range env {
-
-		parts := strings.SplitN(e, "=", 2)
-		if len(parts) == 2 && !strings.HasPrefix(parts[0], "INPUT_") {
-			sanitizedEnv[parts[0]] = parts[1]
+		kv := strings.SplitN(e, "=", 2)
+		if len(kv) == 2 {
+			sanitizedEnv[kv[0]] = kv[1]
 		}
 	}
 	return sanitizedEnv
-}
-
-func GetSanitizedEnviron() []string {
-	envs := []string{}
-	for k, v := range GetSanitizedEnvironMap() {
-		envs = append(envs, fmt.Sprintf("%s=%s", k, v))
-	}
-	return envs
 }
 
 func GetSha256OfBytes(data []byte) (string, error) {
@@ -382,4 +379,23 @@ func GetSha256OfFile(filePath string) (string, error) {
 		return "", err
 	}
 	return GetSha256OfBytes(fc)
+}
+
+func init() {
+
+	for _, env := range os.Environ() {
+
+		kv := strings.SplitN(env, "=", 2)
+		if len(kv) != 2 {
+			continue
+		}
+
+		envName := kv[0]
+		envValue := kv[1]
+
+		if envName == "GRAPH_FILE" {
+			graphFileEnv = envValue
+			os.Unsetenv(envName)
+		}
+	}
 }
