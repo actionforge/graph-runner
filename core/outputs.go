@@ -22,7 +22,7 @@ type Outputs struct {
 	outputLock sync.RWMutex
 
 	outputDefs   map[OutputId]OutputDefinition
-	outputValues map[contextKey]map[OutputId]interface{}
+	outputValues map[string]map[OutputId]interface{}
 }
 
 func (n *Outputs) OutputDefsCopy() map[OutputId]OutputDefinition {
@@ -53,8 +53,8 @@ func (n *Outputs) OutputValueById(c ExecutionContext, outputId OutputId) (interf
 		return nil, fmt.Errorf("output '%v' doesn't exist", outputId)
 	}
 
-	for _, ck := range c.GetContextKeys(nil) {
-		threadValuePool, exists := n.outputValues[ck]
+	for _, ck := range c.GetContextKeysCopy(nil) {
+		threadValuePool, exists := n.outputValues[ck.Id]
 		if exists {
 			outputValue, exists := threadValuePool[outputId]
 			if exists {
@@ -92,7 +92,7 @@ func (n *Outputs) SetOutputValue(c ExecutionContext, outputId OutputId, value in
 	}
 
 	if n.outputValues == nil {
-		n.outputValues = make(map[contextKey]map[OutputId]interface{})
+		n.outputValues = make(map[string]map[OutputId]interface{})
 	}
 
 	if !isValidOutputType(value, output.Type) {
@@ -100,11 +100,11 @@ func (n *Outputs) SetOutputValue(c ExecutionContext, outputId OutputId, value in
 	}
 
 	ti := c.GetLastContextKey()
-	if n.outputValues[ti] == nil {
-		n.outputValues[ti] = make(map[OutputId]interface{})
+	if n.outputValues[ti.Id] == nil {
+		n.outputValues[ti.Id] = make(map[OutputId]interface{})
 	}
 
-	n.outputValues[ti][outputId] = value
+	n.outputValues[ti.Id][outputId] = value
 	return nil
 }
 

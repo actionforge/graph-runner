@@ -350,7 +350,7 @@ func GetSanitizedEnvironMap() map[string]string {
 	for _, e := range env {
 
 		parts := strings.SplitN(e, "=", 2)
-		if len(parts) == 2 && !strings.HasPrefix(parts[0], "INPUT_") && !strings.HasPrefix(parts[0], "GITHUB_") {
+		if len(parts) == 2 && !strings.HasPrefix(parts[0], "INPUT_") {
 			sanitizedEnv[parts[0]] = parts[1]
 		}
 	}
@@ -358,15 +358,11 @@ func GetSanitizedEnvironMap() map[string]string {
 }
 
 func GetSanitizedEnviron() []string {
-	env := os.Environ()
-	var sanitizedEnv []string
-	for _, e := range env {
-		if !strings.HasPrefix(e, "GRAPH_FILE=") &&
-			!strings.HasPrefix(e, "INPUT_") {
-			sanitizedEnv = append(sanitizedEnv, e)
-		}
+	envs := []string{}
+	for k, v := range GetSanitizedEnvironMap() {
+		envs = append(envs, fmt.Sprintf("%s=%s", k, v))
 	}
-	return sanitizedEnv
+	return envs
 }
 
 func GetSha256OfBytes(data []byte) (string, error) {

@@ -84,15 +84,7 @@ func ExecuteDockerCommand(ctx context.Context, command string, optionsString str
 	cmd := exec.Command("docker", cmdArgs...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	if workdir != "" {
-		cmd.Dir = workdir
-	} else {
-		workspace := os.Getenv("GITHUB_WORKSPACE")
-		if workspace == "" {
-			return -1, fmt.Errorf("GITHUB_WORKSPACE not set")
-		}
-		cmd.Dir = workspace
-	}
+	cmd.Dir = workdir
 	err = cmd.Run()
 	exitCode := 0
 	if err != nil {

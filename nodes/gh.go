@@ -32,6 +32,10 @@ var (
 	ghInputs = make(map[string]string)
 )
 
+func GetSecrets() map[string]string {
+	return ghSecrets
+}
+
 func AddGhSecret(name string, secret string) {
 	ghSecrets[name] = secret
 }

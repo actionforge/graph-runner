@@ -33,7 +33,7 @@ func (n *GhSecretsNode) OutputValueById(c core.ExecutionContext, outputId core.O
 	var secretValue string
 
 	var ok bool
-	secretValue, ok = ghSecrets[secretName]
+	secretValue, ok = c.GetContextSecret(secretName)
 	if !ok {
 		// return an empty string if the secret is not found
 		return "", nil

@@ -4,6 +4,8 @@ import (
 	"actionforge/graph-runner/core"
 	ni "actionforge/graph-runner/node_interfaces"
 	_ "embed"
+	"fmt"
+	"strings"
 )
 
 //go:embed env-array@v1.yml
@@ -15,17 +17,27 @@ type EnvArrayNode struct {
 	core.Outputs
 }
 
-func (n *EnvArrayNode) OutputValueById(c core.ExecutionContext, outputId core.OutputId) (interface{}, error) {
+func (n *EnvArrayNode) OutputValueById(c core.ExecutionContext, outputId core.OutputId) (any, error) {
 	envs, err := core.InputGroupValue[string](c, n.Inputs, ni.Env_array_v1_Input_env)
 	if err != nil {
 		return nil, err
 	}
 
-	for i, env := range envs {
-		envs[i] = ReplaceContextVariables(env)
+	contextEnvironMap := c.GetContextEnvironMapCopy()
+	for _, env := range envs {
+		kv := strings.SplitN(env, "=", 2)
+		if len(kv) == 2 {
+			contextEnvironMap[kv[0]] = ReplaceContextVariables(kv[1])
+		}
 	}
 
-	return envs, nil
+	return func() any {
+		envArray := []string{}
+		for k, v := range contextEnvironMap {
+			envArray = append(envArray, fmt.Sprintf("%s=%s", k, v))
+		}
+		return envArray
+	}(), nil
 }
 
 func init() {

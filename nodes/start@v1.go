@@ -3,6 +3,7 @@ package nodes
 import (
 	"actionforge/graph-runner/core"
 	ni "actionforge/graph-runner/node_interfaces"
+	"actionforge/graph-runner/utils"
 	"context"
 	_ "embed"
 )
@@ -18,7 +19,7 @@ type StartNode struct {
 func (n *StartNode) ExecuteEntry() error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	c := core.NewExecutionContext(ctx)
+	c := core.NewExecutionContext(ctx, utils.GetSanitizedEnvironMap(), nil)
 	return n.Execute(n, c)
 }
 

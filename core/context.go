@@ -2,15 +2,22 @@ package core
 
 import (
 	"context"
+	"maps"
 	"slices"
 
 	"github.com/google/uuid"
 )
 
+type contextStackItem struct {
+	Id      string
+	Env     map[string]string
+	Secrets map[string]string
+}
+
 type contextKey string
 
-// ExecutionContext is a structure whose main purpose is to provide the correct output values requested
-// by nodes that were executed in subsequent goroutines.
+// ExecutionContext is a structure whose main purpose is to provide the correct output values, secrets,
+// and environment variables requested by nodes that were executed in subsequent goroutines.
 //
 // Basically, it's a linear sequence of ids, each representing a goroutine in the execution stack
 //
@@ -27,19 +34,26 @@ type contextKey string
 // Without this approach, all nodes in subsequent goroutines would fetch the same value, which is the last.
 type ExecutionContext struct {
 	context.Context
-	contextKeys []contextKey
+	contextStack []contextStackItem
 }
 
 func EmptyExecutionContext() ExecutionContext {
 	c := ExecutionContext{Context: context.Background(),
-		contextKeys: []contextKey{""},
+		contextStack: []contextStackItem{{
+			Id:  "",
+			Env: make(map[string]string),
+		}},
 	}
 	return c
 }
 
-func NewExecutionContext(ctx context.Context) ExecutionContext {
+func NewExecutionContext(ctx context.Context, env map[string]string, secrets map[string]string) ExecutionContext {
 	c := ExecutionContext{Context: ctx,
-		contextKeys: []contextKey{""},
+		contextStack: []contextStackItem{{
+			Id:      uuid.New().String(),
+			Env:     env,
+			Secrets: secrets,
+		}},
 	}
 	return c
 }
@@ -48,7 +62,7 @@ func NewExecutionContext(ctx context.Context) ExecutionContext {
 // Should be used right before a new goroutine is created and called.
 //
 //		newEc := ti.PushNewExecutionContext()
-//		err = n.Outputs.SetOutputValue(newEc, [output-id], [output-value])
+//		err = n.Outputs.SetOutputValue(newEc, <output-id>, <output-value>)
 //		if err != nil {
 //		    return err
 //		}
@@ -58,30 +72,69 @@ func NewExecutionContext(ctx context.Context) ExecutionContext {
 //	        ...
 //		}();
 func (c *ExecutionContext) PushNewExecutionContext() ExecutionContext {
-	ti := uuid.Must(uuid.NewRandom()).String()
-	ck := contextKey(ti)
-	threadIds := append(c.contextKeys, ck)
+
+	contextEnv := make(map[string]string)
+	contextSecrets := make(map[string]string)
+
+	if len(c.contextStack) > 0 {
+		for k, v := range c.contextStack[len(c.contextStack)-1].Env {
+			contextEnv[k] = v
+		}
+	}
+
+	if len(c.contextStack) > 0 {
+		for k, v := range c.contextStack[len(c.contextStack)-1].Secrets {
+			contextSecrets[k] = v
+		}
+	}
+
+	ck := append(c.contextStack, contextStackItem{
+		Id:      uuid.New().String(),
+		Env:     contextEnv,
+		Secrets: contextSecrets,
+	})
 	return ExecutionContext{
-		Context:     context.WithValue(c.Context, ck, "random-value"),
-		contextKeys: threadIds,
+		Context:      context.WithValue(c.Context, contextKey("contextData"), ck),
+		contextStack: ck,
 	}
 }
 
 // GetLastContextKey returns the last context key for the current goroutine.
-func (c *ExecutionContext) GetLastContextKey() contextKey {
-	if len(c.contextKeys) == 0 {
-		return ""
+func (c *ExecutionContext) GetLastContextKey() contextStackItem {
+	if len(c.contextStack) == 0 {
+		return contextStackItem{}
 	}
-	return c.contextKeys[len(c.contextKeys)-1]
+	return c.contextStack[len(c.contextStack)-1]
 }
 
-// GetContextKeys returns all context keys for the current goroutine.
+// GetContextKeysCopy returns all context keys for the current goroutine.
 // The first key is the most recent one, the last key is the root context key.
 // @param recentFirst: If true, the order is reversed.
-func (c *ExecutionContext) GetContextKeys(recentLast *bool) []contextKey {
-	k := slices.Clone(c.contextKeys)
+func (c *ExecutionContext) GetContextKeysCopy(recentLast *bool) []contextStackItem {
+	k := slices.Clone(c.contextStack)
 	if recentLast == nil || !*recentLast {
 		slices.Reverse(k)
 	}
 	return k
+}
+
+// GetContextEnvironMapCopy returns the environment variables for the current and subsequent goroutines.
+func (c *ExecutionContext) GetContextEnvironMapCopy() map[string]string {
+	return maps.Clone(c.GetLastContextKey().Env)
+}
+
+// SetContextEnvironMap sets the environment variables for the current and subsequent goroutines.
+func (c *ExecutionContext) SetContextEnvironMap(env map[string]string) {
+	c.contextStack[len(c.contextStack)-1].Env = env
+}
+
+// GetContextSecretsMapCopy returns the secrets for the current and subsequent goroutines.
+func (c *ExecutionContext) GetContextSecret(secretName string) (string, bool) {
+	v, ok := c.GetLastContextKey().Secrets[secretName]
+	return v, ok
+}
+
+// SetContextSecretsMap sets the secrets for the current goroutine and subsequent goroutines.
+func (c *ExecutionContext) SetContextSecret(secretName string, secretValue string) {
+	c.contextStack[len(c.contextStack)-1].Secrets[secretName] = secretValue
 }

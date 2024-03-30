@@ -65,27 +65,19 @@ type EnvironArgs struct {
 }
 
 func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
-	executionEnviron := make(map[string]string, 0)
-	for _, env := range utils.GetSanitizedEnviron() {
-		parts := strings.SplitN(env, "=", 2)
-		if len(parts) == 2 {
-			executionEnviron[parts[0]] = parts[1]
-		} else {
-			return fmt.Errorf("invalid environment variable: %s", env)
-		}
-	}
+	contextEnvironMap := c.GetContextEnvironMapCopy()
 
-	sysRunnerTempDir := executionEnviron["RUNNER_TEMP"]
+	sysRunnerTempDir := contextEnvironMap["RUNNER_TEMP"]
 	if sysRunnerTempDir == "" {
 		return fmt.Errorf("RUNNER_TEMP not set")
 	}
 
-	sysWorkspaceDir := executionEnviron["GITHUB_WORKSPACE"]
+	sysWorkspaceDir := contextEnvironMap["GITHUB_WORKSPACE"]
 	if sysWorkspaceDir == "" {
 		return fmt.Errorf("GITHUB_WORKSPACE not set")
 	}
 
-	runnerToolCache := executionEnviron["RUNNER_TOOL_CACHE"]
+	runnerToolCache := contextEnvironMap["RUNNER_TOOL_CACHE"]
 	if runnerToolCache == "" {
 		return fmt.Errorf("RUNNER_TOOL_CACHE not set")
 	}
@@ -98,7 +90,7 @@ func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
 			return u.Throw(err)
 		}
 		v = ReplaceContextVariables(v)
-		executionEnviron[fmt.Sprintf("INPUT_%v", strings.ToUpper(string(inputName)))] = v
+		contextEnvironMap[fmt.Sprintf("INPUT_%v", strings.ToUpper(string(inputName)))] = v
 		withInputs += fmt.Sprintf(" %s: %s\n", inputName, v)
 	}
 
@@ -111,15 +103,18 @@ func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
 	)
 
 	// Fetch environment variables from the inputs and add them to the command
-	e, err := core.InputValueById[[]string](c, n.Inputs, "env")
-	if err == nil {
-		for _, env := range e {
-			parts := strings.SplitN(env, "=", 2)
-			if len(parts) == 2 {
-				executionEnviron[parts[0]] = parts[1]
-			} else {
-				return fmt.Errorf("invalid environment variable: %s", env)
-			}
+	envs, err := core.InputValueById[[]string](c, n.Inputs, "env")
+	if err != nil {
+		_, ok := err.(*u.ErrNoInputValue)
+		if !ok {
+			return u.Throw(err)
+		}
+	}
+
+	for _, env := range envs {
+		kv := strings.SplitN(env, "=", 2)
+		if len(kv) == 2 {
+			contextEnvironMap[kv[0]] = ReplaceContextVariables(kv[1])
 		}
 	}
 
@@ -132,24 +127,24 @@ func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
 		if err != nil {
 			return u.Throw(err)
 		}
-		executionEnviron[envName] = path
+		contextEnvironMap[envName] = path
 	}
 
 	// https://github.com/actions/runner/blob/f467e9e1255530d3bf2e33f580d041925ab01951/src/Runner.Common/HostContext.cs#L288
-	if executionEnviron["AGENT_TOOLSDIRECTORY"] == "" {
-		executionEnviron["AGENT_TOOLSDIRECTORY"] = executionEnviron["RUNNER_TOOL_CACHE"]
+	if contextEnvironMap["AGENT_TOOLSDIRECTORY"] == "" {
+		contextEnvironMap["AGENT_TOOLSDIRECTORY"] = contextEnvironMap["RUNNER_TOOL_CACHE"]
 	}
-	if executionEnviron["RUNNER_TOOLSDIRECTORY"] == "" {
-		executionEnviron["RUNNER_TOOLSDIRECTORY"] = executionEnviron["RUNNER_TOOL_CACHE"]
+	if contextEnvironMap["RUNNER_TOOLSDIRECTORY"] == "" {
+		contextEnvironMap["RUNNER_TOOLSDIRECTORY"] = contextEnvironMap["RUNNER_TOOL_CACHE"]
 	}
 
 	if n.actionType == Docker {
 		err = n.ExecuteDocker(c, sysWorkspaceDir, EnvironArgs{
-			ExecutionEnviron: executionEnviron,
+			ExecutionEnviron: contextEnvironMap,
 		})
 	} else if n.actionType == Node {
 		err = n.ExecuteNode(c, sysWorkspaceDir, EnvironArgs{
-			ExecutionEnviron: executionEnviron,
+			ExecutionEnviron: contextEnvironMap,
 		})
 	} else {
 		return fmt.Errorf("unsupported action type: %v", n.actionType)
@@ -177,7 +172,7 @@ func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
 		}
 	}
 
-	githubPath := executionEnviron["GITHUB_PATH"]
+	githubPath := contextEnvironMap["GITHUB_PATH"]
 	// load all paths from the github path file and append them to the PATH
 	if githubPath != "" {
 		p, err := os.ReadFile(githubPath)
@@ -196,7 +191,7 @@ func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
 		}
 
 		if len(newPaths) > 0 {
-			executionEnviron["PATH"] = strings.Join(newPaths, string(os.PathListSeparator)) + string(os.PathListSeparator) + executionEnviron["PATH"]
+			contextEnvironMap["PATH"] = strings.Join(newPaths, string(os.PathListSeparator)) + string(os.PathListSeparator) + contextEnvironMap["PATH"]
 		}
 
 		err = os.Remove(githubPath)
@@ -206,7 +201,7 @@ func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
 	}
 
 	// Transfer the output values from the github action to the node output values
-	githubOutput := executionEnviron["GITHUB_OUTPUT"]
+	githubOutput := contextEnvironMap["GITHUB_OUTPUT"]
 	if githubOutput != "" {
 		b, err := os.ReadFile(githubOutput)
 		if err != nil {
@@ -229,6 +224,8 @@ func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
 			return u.Throw(err)
 		}
 	}
+
+	c.SetContextEnvironMap(contextEnvironMap)
 
 	err = n.Execute(n.Executions[ni.Gh_action_v1_Output_exec], c)
 	if err != nil {
@@ -451,8 +448,8 @@ func init() {
 		// https://github.com/actions/runner/blob/a4c57f27477077e57545af79851551ff7f5632bd/src/Runner.Worker/ActionManifestManager.cs#L430-L453
 		switch action.Runs.Using {
 		case "docker":
-			workspace := os.Getenv("GITHUB_WORKSPACE")
-			if workspace == "" {
+			sysWorkspaceDir := os.Getenv("GITHUB_WORKSPACE")
+			if sysWorkspaceDir == "" {
 				return nil, fmt.Errorf("GITHUB_WORKSPACE not set")
 			}
 
@@ -467,7 +464,7 @@ func init() {
 				}
 
 				node.Data.Image = dockerUrl
-				exitCode, err := DockerPull(context.Background(), dockerUrl, workspace)
+				exitCode, err := DockerPull(context.Background(), dockerUrl, sysWorkspaceDir)
 				if err != nil {
 					return nil, err
 				}
