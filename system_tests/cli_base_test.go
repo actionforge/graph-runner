@@ -41,6 +41,14 @@ func Test_Cli(t *testing.T) {
 }
 
 func Test_Freeze(t *testing.T) {
+	// Exclude test during local execution.
+	// The freeze command depends on the current
+	// commit being accessible as a zip archive on
+	// GitHub, which may not be the case for commits
+	// made locally but not yet pushed.
+	if os.Getenv("GITHUB_REF_NAME") == "" {
+		t.Skip("Skipping test locally")
+	}
 
 	actionHomeDir := utils.GetActionforgeDir()
 
