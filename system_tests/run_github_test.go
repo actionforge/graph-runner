@@ -23,7 +23,7 @@ func Test_Secret(t *testing.T) {
 	defer nodes.RemoveGhSecret("API_KEY_123")
 
 	// Test the run node, env node, and string format node.
-	err := runGraphFile("system_tests/test_secret.yml")
+	err := RunGraphFile("system_tests/test_secret.yml")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -35,7 +35,7 @@ func Test_Secret(t *testing.T) {
 THIS_IS_A_SECRET
 `
 
-	if !diffStrings(actual, expectedString) {
+	if !DiffStrings(actual, expectedString) {
 		t.Fatal()
 	}
 }
@@ -50,7 +50,7 @@ func Test_StartAction(t *testing.T) {
 		t.Setenv("GITHUB_EVENT_NAME", event)
 
 		// Test the run node, env node, and string format node.
-		err := runGraphFile("system_tests/test_gh-start.yml")
+		err := RunGraphFile("system_tests/test_gh-start.yml")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -62,7 +62,7 @@ func Test_StartAction(t *testing.T) {
 Triggered by %s
 `, event, event)
 
-		if !diffStrings(actual, expectedString) {
+		if !DiffStrings(actual, expectedString) {
 			t.Fatal()
 		}
 	}
