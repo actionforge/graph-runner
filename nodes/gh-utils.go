@@ -77,7 +77,7 @@ func SplitAtCommas(s string) []string {
 func ExecuteDockerCommand(ctx context.Context, command string, optionsString string, workdir string, stdoutDataReceived chan string, stderrDataReceived chan string) (int, error) {
 	args, err := shlex.Split(optionsString)
 	if err != nil {
-		fmt.Println(err)
+		return 1, err
 	}
 	cmdArgs := append([]string{command}, args...)
 
