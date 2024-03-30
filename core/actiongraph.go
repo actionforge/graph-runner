@@ -300,8 +300,13 @@ func loadConnections(ag *ActionGraph, nodesYaml map[any]any) error {
 		v := reflect.ValueOf(dstNode)
 		ConnectPort := v.MethodByName("ConnectPort")
 
+		srcOutputNode, ok := srcNode.(HasOuputsInterface)
+		if !ok {
+			return fmt.Errorf("src node '%s' does not have outputs", srcNodeId)
+		}
+
 		source := reflect.ValueOf(SourceNode{
-			Src:  srcNode.(HasOuputsInterface),
+			Src:  srcOutputNode,
 			Name: OutputId(srcPort),
 		})
 
