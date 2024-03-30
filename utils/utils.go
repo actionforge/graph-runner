@@ -4,6 +4,7 @@ import (
 	"archive/tar"
 	"archive/zip"
 	"compress/gzip"
+	"crypto/sha256"
 	"flag"
 	"fmt"
 	"io"
@@ -343,6 +344,19 @@ func GetActionforgeDir() string {
 	return filepath.Join(home, ".actionforge")
 }
 
+func GetSanitizedEnvironMap() map[string]string {
+	env := os.Environ()
+	sanitizedEnv := map[string]string{}
+	for _, e := range env {
+
+		parts := strings.SplitN(e, "=", 2)
+		if len(parts) == 2 && !strings.HasPrefix(parts[0], "INPUT_") && !strings.HasPrefix(parts[0], "GITHUB_") {
+			sanitizedEnv[parts[0]] = parts[1]
+		}
+	}
+	return sanitizedEnv
+}
+
 func GetSanitizedEnviron() []string {
 	env := os.Environ()
 	var sanitizedEnv []string
@@ -353,4 +367,23 @@ func GetSanitizedEnviron() []string {
 		}
 	}
 	return sanitizedEnv
+}
+
+func GetSha256OfBytes(data []byte) (string, error) {
+	h := sha256.New()
+	_, err := h.Write(data)
+	if err != nil {
+		return "", err
+	}
+
+	bs := h.Sum(nil)
+	return fmt.Sprintf("%x\n", bs), nil
+}
+
+func GetSha256OfFile(filePath string) (string, error) {
+	fc, err := os.ReadFile(filePath)
+	if err != nil {
+		return "", err
+	}
+	return GetSha256OfBytes(fc)
 }
