@@ -7,16 +7,34 @@ executions:
       node: run-v1-apple-silver-lion
       port: exec
   - src:
-      node: run-v1-apple-silver-lion
-      port: exec-success
-    dst:
-      node: gh-actionforge-test-action-node-main-lemon-penguin-yellow
-      port: exec
-  - src:
       node: gh-actionforge-test-action-node-main-lemon-penguin-yellow
       port: exec
     dst:
       node: run-v1-giraffe-grape-zebra
+      port: exec
+  - src:
+      node: run-v1-apple-silver-lion
+      port: exec-success
+    dst:
+      node: parallel-exec-v1-blackberry-orange-coconut
+      port: exec
+  - src:
+      node: parallel-exec-v1-blackberry-orange-coconut
+      port: exec[0]
+    dst:
+      node: gh-actionforge-test-action-node-main-lemon-penguin-yellow
+      port: exec
+  - src:
+      node: parallel-exec-v1-blackberry-orange-coconut
+      port: exec[1]
+    dst:
+      node: gh-actionforge-test-action-node-main-blueberry-monkey-plum
+      port: exec
+  - src:
+      node: gh-actionforge-test-action-node-main-blueberry-monkey-plum
+      port: exec
+    dst:
+      node: run-v1-pink-brown-kangaroo
       port: exec
 connections:
   - src:
@@ -35,12 +53,12 @@ nodes:
       folded: false
   - id: gh-actionforge-test-action-node-main-lemon-penguin-yellow
     type: >-
-      github.com/actionforge/test-action-node@eca0771f2d806fb397816733445ef614374ad25a
+      github.com/actionforge/test-action-node@92ddef547c2e51dced1d1f44631634963819e4c7
     position:
-      x: 830
-      y: -30
+      x: 980
+      y: -70
     inputs:
-      input1: hello
+      input1: lorem
     settings:
       folded: false
   - id: run-v1-apple-silver-lion
@@ -49,16 +67,49 @@ nodes:
       x: 320
       y: 110
     inputs:
-      script: printenv baz
+      script: printenv MY_ENV
     settings:
       folded: false
   - id: run-v1-giraffe-grape-zebra
     type: run@v1
     position:
-      x: 1460
-      y: -160
+      x: 1600
+      y: -170
     inputs:
-      script: printenv baz
+      script: >-
+        [ "$MY_VAR" = "lorem" ] || { echo "Error: BAZ does not have the expected
+        value:" $MY_VAR >&2; exit 1; }
+    settings:
+      folded: false
+  - id: gh-actionforge-test-action-node-main-blueberry-monkey-plum
+    type: >-
+      github.com/actionforge/test-action-node@92ddef547c2e51dced1d1f44631634963819e4c7
+    position:
+      x: 1070
+      y: 320
+    inputs:
+      input1: ipsum
+    settings:
+      folded: false
+  - id: parallel-exec-v1-blackberry-orange-coconut
+    type: parallel-exec@v1
+    position:
+      x: 690
+      y: 150
+    outputs:
+      exec[0]: ""
+      exec[1]: ""
+    settings:
+      folded: false
+  - id: run-v1-pink-brown-kangaroo
+    type: run@v1
+    position:
+      x: 1570
+      y: 230
+    inputs:
+      script: >-
+        [ "$MY_VAR" = "ipsum" ] || { echo "Error: BAZ does not have the expected
+        value:" $MY_VAR >&2; exit 1; }
     settings:
       folded: false
 registries:

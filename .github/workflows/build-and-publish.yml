@@ -23,4 +23,4 @@ jobs:
           runner_path: ${{ github.workspace }}/graph-runner
           graph_file: test_env.yml
         env:
-          baz: "hello world"
+          MY_ENV: "hello world"
