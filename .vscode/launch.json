@@ -12,7 +12,7 @@
       "hideSystemGoroutines": true,
       "env": {
         "LOAD_ENV_FILE": "true",
-        "GITHUB_EVENT_NAME": "push"
+        "GITHUB_ACTIONS": "true"
       }
     },
     {

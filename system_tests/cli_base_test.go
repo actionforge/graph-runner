@@ -46,7 +46,7 @@ func Test_Freeze(t *testing.T) {
 	// commit being accessible as a zip archive on
 	// GitHub, which may not be the case for commits
 	// made locally but not yet pushed.
-	if os.Getenv("GITHUB_REF_NAME") == "" {
+	if os.Getenv("FREEZE_TEST") == "" {
 		t.Skip("Skipping test locally")
 	}
 
