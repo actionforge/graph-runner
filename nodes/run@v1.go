@@ -4,11 +4,14 @@ import (
 	"actionforge/graph-runner/core"
 	ni "actionforge/graph-runner/node_interfaces"
 	"actionforge/graph-runner/utils"
+	u "actionforge/graph-runner/utils"
 	_ "embed"
 	"errors"
+	"fmt"
 	"os"
 	"os/exec"
 	"runtime"
+	"strings"
 	"sync"
 
 	"golang.org/x/text/encoding"
@@ -52,11 +55,29 @@ func (n *RunNode) ExecuteImpl(c core.ExecutionContext) error {
 		return err
 	}
 
-	for i, env := range envs {
-		envs[i] = ReplaceContextVariables(env)
+	contextEnvironMap := c.GetContextEnvironMapCopy()
+	for _, env := range envs {
+		kv := strings.SplitN(env, "=", 2)
+		if len(kv) == 2 {
+			contextEnvironMap[kv[0]] = ReplaceContextVariables(kv[1])
+		}
 	}
 
-	env := append(envs, utils.GetSanitizedEnviron()...)
+	ghContextParser := GhContextParser{}
+	if contextEnvironMap["GITHUB_ACTIONS"] != "" {
+		sysRunnerTempDir := contextEnvironMap["RUNNER_TEMP"]
+		if sysRunnerTempDir == "" {
+			return fmt.Errorf("RUNNER_TEMP not set")
+		}
+		ctxEnvs, err := ghContextParser.Init(sysRunnerTempDir)
+		if err != nil {
+			return u.Throw(err)
+		}
+		for envName, path := range ctxEnvs {
+			// Set GITHUB_PATH, GITHUB_ENV, etc.
+			contextEnvironMap[envName] = path
+		}
+	}
 
 	tmpfilePath := "run-script-*"
 	if runtime.GOOS == "windows" {
@@ -137,7 +158,13 @@ func (n *RunNode) ExecuteImpl(c core.ExecutionContext) error {
 
 	cmd := exec.Command(shell)
 	cmd.Args = cmdArgs
-	cmd.Env = env
+	cmd.Env = func() []string {
+		env := make([]string, 0, len(contextEnvironMap))
+		for k, v := range contextEnvironMap {
+			env = append(env, fmt.Sprintf("%s=%s", k, v))
+		}
+		return env
+	}()
 
 	var (
 		output []byte
@@ -180,6 +207,19 @@ func (n *RunNode) ExecuteImpl(c core.ExecutionContext) error {
 	}
 
 	if cmd.ProcessState.ExitCode() == 0 {
+
+		if contextEnvironMap["GITHUB_ACTIONS"] != "" {
+			// Get the context vars from GITHUB_ENV and GITHUB_PATH
+			ctxEnvs, err := ghContextParser.Parse(contextEnvironMap)
+			if err != nil {
+				return u.Throw(err)
+			}
+			for envName, envValue := range ctxEnvs {
+				contextEnvironMap[envName] = envValue
+			}
+			c.SetContextEnvironMap(contextEnvironMap)
+		}
+
 		err = n.Execute(n.Executions[ni.Run_v1_Output_exec_success], c)
 		if err != nil {
 			return err

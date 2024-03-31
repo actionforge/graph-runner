@@ -30,7 +30,7 @@ your GitHub Action workflow file and consult the documentation:
 func (n *GhActionStartNode) ExecuteEntry() error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	c := core.NewExecutionContext(ctx)
+	c := core.NewExecutionContext(ctx, utils.GetEnvironMap())
 	return n.Execute(n, c)
 }
 

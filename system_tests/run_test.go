@@ -3,16 +3,11 @@
 package system_tests
 
 import (
-	"actionforge/graph-runner/cmd"
 	"actionforge/graph-runner/utils"
-	"fmt"
-	"path/filepath"
 	"regexp"
 	"sort"
 	"strings"
 	"testing"
-
-	"github.com/sergi/go-diff/diffmatchpatch"
 
 	// initialize all nodes
 	_ "actionforge/graph-runner/nodes"
@@ -24,7 +19,7 @@ func Test_Simple(t *testing.T) {
 	defer utils.LoggerString.Clear()
 
 	// Test the run node
-	err := runGraphFile("system_tests/test_simple.yml")
+	err := RunGraphFile("system_tests/test_simple.yml")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -38,7 +33,7 @@ Hello World!
 Success
 `
 
-	if !diffStrings(actual, expectedString) {
+	if !DiffStrings(actual, expectedString) {
 		t.Fatal()
 	}
 }
@@ -49,7 +44,7 @@ func Test_Simple2(t *testing.T) {
 	defer utils.LoggerString.Clear()
 
 	// Test the run node, env node, and string format node.
-	err := runGraphFile("system_tests/test_simple2.yml")
+	err := RunGraphFile("system_tests/test_simple2.yml")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -65,7 +60,7 @@ Hello World!
 Hello 1234!
 `
 
-	if !diffStrings(actual, expectedString) {
+	if !DiffStrings(actual, expectedString) {
 		t.Fatal()
 	}
 }
@@ -78,7 +73,7 @@ func Test_Simple3(t *testing.T) {
 	t.Setenv("BAS", "Universe")
 
 	// Test the run node, env node, and string format node.
-	err := runGraphFile("system_tests/test_simple3.yml")
+	err := RunGraphFile("system_tests/test_simple3.yml")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -96,7 +91,7 @@ Hello 1234!
 Hello Universe!
 `
 
-	if !diffStrings(actual, expectedString) {
+	if !DiffStrings(actual, expectedString) {
 		t.Fatal()
 	}
 }
@@ -126,14 +121,14 @@ No
 		t.Setenv("FOO", env)
 
 		// Test the run node, env node, and string format node.
-		err := runGraphFile("system_tests/test_if.yml")
+		err := RunGraphFile("system_tests/test_if.yml")
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		actual := utils.LoggerString.String()
 
-		if !diffStrings(actual, expectedString) {
+		if !DiffStrings(actual, expectedString) {
 			t.Fatal()
 		}
 	}
@@ -144,7 +139,7 @@ func Test_For(t *testing.T) {
 	defer utils.LoggerString.Clear()
 
 	// Test the run node, env node, and string format node.
-	err := runGraphFile("system_tests/test_for.yml")
+	err := RunGraphFile("system_tests/test_for.yml")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -166,7 +161,7 @@ func Test_For(t *testing.T) {
 🟢 Execute 'Run (run-v1-cherry-banana-brown)'
 Done
 `
-	if !diffStrings(actual, expectedString) {
+	if !DiffStrings(actual, expectedString) {
 		t.Fatal()
 	}
 }
@@ -176,7 +171,7 @@ func Test_Bool(t *testing.T) {
 	defer utils.LoggerString.Clear()
 
 	// Test the run node, env node, and string format node.
-	err := runGraphFile("system_tests/test_bool.yml")
+	err := RunGraphFile("system_tests/test_bool.yml")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -191,7 +186,7 @@ XOR 0&&0=false 1&&0=true 0&&1=true 1&&1=false
 XAND 0&&0=true 1&&0=false 0&&1=false 1&&1=true
 `
 
-	if !diffStrings(actual, expectedString) {
+	if !DiffStrings(actual, expectedString) {
 		t.Fatal()
 	}
 }
@@ -202,7 +197,7 @@ func Test_Option(t *testing.T) {
 	defer utils.LoggerString.Clear()
 
 	// Test the run node, env node, and string format node.
-	err := runGraphFile("system_tests/test_option.yml")
+	err := RunGraphFile("system_tests/test_option.yml")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -216,7 +211,7 @@ python
 Hello World!
 `
 
-	if !diffStrings(actual, expectedString) {
+	if !DiffStrings(actual, expectedString) {
 		t.Fatal()
 	}
 }
@@ -226,7 +221,7 @@ func Test_Parallel(t *testing.T) {
 	defer utils.LoggerString.Clear()
 
 	// Test the run node, env node, and string format node.
-	err := runGraphFile("system_tests/test_parallel.yml")
+	err := RunGraphFile("system_tests/test_parallel.yml")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -252,45 +247,7 @@ func Test_Parallel(t *testing.T) {
 
 	expectedString := `1 2 3 4 5 Done`
 
-	if !diffStrings(actual, expectedString) {
+	if !DiffStrings(actual, expectedString) {
 		t.Fatal()
 	}
-}
-
-func runGraphFile(graphFileName string) error {
-	root := utils.FindProjectRoot()
-	graphFile := filepath.Join(root, graphFileName)
-
-	err := cmd.ExecuteRun(graphFile)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func diffStrings(actual string, expected string) bool {
-	dmp := diffmatchpatch.New()
-
-	actual = utils.NormalizeLineEndings(actual)
-	expected = utils.NormalizeLineEndings(expected)
-
-	diffs := dmp.DiffMain(actual, expected, false)
-
-	different := false
-	for _, d := range diffs {
-		if d.Type != diffmatchpatch.DiffEqual {
-			different = true
-			break
-		}
-	}
-	if different {
-		fmt.Println("\n\n-----------\nExpected output vs actual output (inline-diff):")
-		fmt.Println(dmp.DiffPrettyText(diffs))
-	}
-	return !different
-}
-
-func init() {
-	utils.EnableStringLogging(true)
 }

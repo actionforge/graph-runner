@@ -1,0 +1,244 @@
+entry: start
+executions:
+  - src:
+      node: start
+      port: exec
+    dst:
+      node: gh-actionforge-test-action-node-main-lemon-penguin-yellow
+      port: exec
+  - src:
+      node: gh-actionforge-test-action-node-main-lemon-penguin-yellow
+      port: exec
+    dst:
+      node: run-v1-yellow-gray-pear
+      port: exec
+  - src:
+      node: run-v1-yellow-gray-pear
+      port: exec-success
+    dst:
+      node: gh-actionforge-test-action-registry-main-cat-purple-watermelon
+      port: exec
+  - src:
+      node: gh-actionforge-test-action-registry-main-cat-purple-watermelon
+      port: exec
+    dst:
+      node: run-v1-snake-cranberry-pineapple
+      port: exec
+  - src:
+      node: run-v1-snake-cranberry-pineapple
+      port: exec-success
+    dst:
+      node: gh-actionforge-test-action-dockerfile-main-purple-pear-kangaroo
+      port: exec
+  - src:
+      node: gh-actionforge-test-action-dockerfile-main-purple-pear-kangaroo
+      port: exec
+    dst:
+      node: run-v1-watermelon-green-shark
+      port: exec
+connections:
+  - src:
+      node: env-array-v1-cherry-blackberry-grape
+      port: env
+    dst:
+      node: run-v1-yellow-gray-pear
+      port: env
+  - src:
+      node: string-fmt-v1-pineapple-banana-green
+      port: result
+    dst:
+      node: env-array-v1-cherry-blackberry-grape
+      port: env[0]
+  - src:
+      node: string-fmt-v1-banana-parrot-raspberry
+      port: result
+    dst:
+      node: env-array-v1-orange-blueberry-penguin
+      port: env[0]
+  - src:
+      node: gh-actionforge-test-action-registry-main-cat-purple-watermelon
+      port: output1
+    dst:
+      node: string-fmt-v1-banana-parrot-raspberry
+      port: input[0]
+  - src:
+      node: env-array-v1-orange-blueberry-penguin
+      port: env
+    dst:
+      node: run-v1-snake-cranberry-pineapple
+      port: env
+  - src:
+      node: string-fmt-v1-lemon-kiwi-peach
+      port: result
+    dst:
+      node: env-array-v1-gold-gold-blackberry
+      port: env[0]
+  - src:
+      node: env-array-v1-gold-gold-blackberry
+      port: env
+    dst:
+      node: run-v1-watermelon-green-shark
+      port: env
+  - src:
+      node: gh-actionforge-test-action-node-main-lemon-penguin-yellow
+      port: output1
+    dst:
+      node: string-fmt-v1-pineapple-banana-green
+      port: input[0]
+  - src:
+      node: gh-actionforge-test-action-dockerfile-main-purple-pear-kangaroo
+      port: output2
+    dst:
+      node: string-fmt-v1-lemon-kiwi-peach
+      port: input[0]
+nodes:
+  - id: start
+    type: start@v1
+    position:
+      x: 10
+      y: 620
+    settings:
+      folded: false
+  - id: gh-actionforge-test-action-node-main-lemon-penguin-yellow
+    type: >-
+      github.com/actionforge/test-action-node@22db00979573158856d37b2a91c05deccde3b41b
+    position:
+      x: 220
+      y: 560
+    inputs:
+      input1: lorem
+      input2: ipsum
+      environment: "false"
+    settings:
+      folded: false
+  - id: string-fmt-v1-pineapple-banana-green
+    type: string-fmt@v1
+    position:
+      x: 530
+      y: 630
+    inputs:
+      input[0]: null
+      fmt: OUTPUT1=%v
+    settings:
+      folded: false
+  - id: run-v1-yellow-gray-pear
+    type: run@v1
+    position:
+      x: 1130
+      y: 430
+    inputs:
+      script: |
+        if [ "$OUTPUT1" == "this output1 is set by test-action-node" ]; then
+          echo "output2 correctly set"
+        else
+          echo "output2 is not correctly set"
+           exit 1
+        fi
+    settings:
+      folded: false
+  - id: env-array-v1-cherry-blackberry-grape
+    type: env-array@v1
+    position:
+      x: 880
+      y: 610
+    inputs:
+      env[0]: ""
+    settings:
+      folded: false
+  - id: gh-actionforge-test-action-registry-main-cat-purple-watermelon
+    type: >-
+      github.com/actionforge/test-action-registry@38500ad5460fb89a91edf900398b8153897f1b90
+    position:
+      x: 1430
+      y: 370
+    inputs:
+      input1: ipsum
+      input2: lorem
+    settings:
+      folded: false
+  - id: env-array-v1-orange-blueberry-penguin
+    type: env-array@v1
+    position:
+      x: 2090
+      y: 410
+    inputs:
+      env[0]: ""
+    settings:
+      folded: false
+  - id: string-fmt-v1-banana-parrot-raspberry
+    type: string-fmt@v1
+    position:
+      x: 1740
+      y: 430
+    inputs:
+      input[0]: null
+      fmt: OUTPUT1=%v
+    settings:
+      folded: false
+  - id: run-v1-snake-cranberry-pineapple
+    type: run@v1
+    position:
+      x: 2340
+      y: 230
+    inputs:
+      script: |
+        if [ "$OUTPUT1" == "this output1 is set by test-action-registry" ]; then
+          echo "output2 correctly set"
+        else
+          echo "output2 is not correctly set"
+          exit 1
+        fi
+    settings:
+      folded: false
+  - id: gh-actionforge-test-action-dockerfile-main-purple-pear-kangaroo
+    type: >-
+      github.com/actionforge/test-action-dockerfile@40ca5791f36ebecf4d2db92645d3da2b0197d439
+    position:
+      x: 2630
+      y: 150
+    inputs:
+      input1: dolor
+      input2: ipsum
+      environment: "false"
+    settings:
+      folded: false
+  - id: string-fmt-v1-lemon-kiwi-peach
+    type: string-fmt@v1
+    position:
+      x: 2960
+      y: 220
+    inputs:
+      input[0]: null
+      fmt: OUTPUT2=%v
+    settings:
+      folded: false
+  - id: env-array-v1-gold-gold-blackberry
+    type: env-array@v1
+    position:
+      x: 3310
+      y: 190
+    inputs:
+      env[0]: ""
+    settings:
+      folded: false
+  - id: run-v1-watermelon-green-shark
+    type: run@v1
+    position:
+      x: 3550
+      y: 10
+    inputs:
+      script: >
+        if [ "$OUTPUT2" == "this output2 is set by test-action-dockerfile" ];
+        then
+            echo "output2 correctly set"
+        else
+            echo "output2 is not correctly set"
+            exit 1
+        fi
+    settings:
+      folded: false
+registries:
+  - github.com/actionforge/test-action-node@main
+  - github.com/actionforge/test-action-dockerfile@main
+  - github.com/actionforge/test-action-registry@main
+description: ""

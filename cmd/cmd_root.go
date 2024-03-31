@@ -29,7 +29,7 @@ func Execute() {
 
 	var filename string
 	if len(os.Args) > 1 {
-		if strings.HasSuffix(os.Args[1], ".yml") {
+		if strings.HasSuffix(os.Args[1], ".yml") || strings.HasSuffix(os.Args[1], ".yaml") {
 			filename = os.Args[1]
 		}
 	}

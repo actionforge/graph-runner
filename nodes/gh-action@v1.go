@@ -13,8 +13,9 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
-	"regexp"
+	"runtime"
 	"strings"
 
 	"github.com/Masterminds/semver/v3"
@@ -23,9 +24,10 @@ import (
 )
 
 var (
-	// Defined by GitHub, all actions can expect the repository being mounted at /github/workspace
-	// https://docs.github.com/en/actions/creating-actions/creating-a-docker-container-action#accessing-files-created-by-a-container-action
-	defaultWorkspaceMount = "/github/workspace"
+	dockerGithubWorkspace    = "/github/workspace"
+	dockerGithubWorkflow     = "/github/workflow"
+	dockerGithubFileCommands = "/github/file_commands"
+	dockerGithubHome         = "/github/home"
 
 	//go:embed gh-action@v1.yml
 	ghActionNodeDefinition string
@@ -38,6 +40,12 @@ const (
 	Node
 )
 
+type DockerData struct {
+	Image               string
+	DockerInstanceLabel string
+	ExecutionContextId  string
+}
+
 type GhActionNode struct {
 	core.NodeBaseComponent
 	core.Inputs
@@ -48,25 +56,41 @@ type GhActionNode struct {
 	actionType      ActionType // docker or node
 	actionRuns      ActionRuns
 	actionRunJsPath string
+
+	Data DockerData
+}
+
+type EnvironArgs struct {
+	ExecutionEnviron map[string]string
 }
 
 func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
-	workspace := os.Getenv("GITHUB_WORKSPACE")
-	if workspace == "" {
+	contextEnvironMap := c.GetContextEnvironMapCopy()
+
+	sysRunnerTempDir := contextEnvironMap["RUNNER_TEMP"]
+	if sysRunnerTempDir == "" {
+		return fmt.Errorf("RUNNER_TEMP not set")
+	}
+
+	sysWorkspaceDir := contextEnvironMap["GITHUB_WORKSPACE"]
+	if sysWorkspaceDir == "" {
 		return fmt.Errorf("GITHUB_WORKSPACE not set")
 	}
 
-	environ := utils.GetSanitizedEnviron()
+	runnerToolCache := contextEnvironMap["RUNNER_TOOL_CACHE"]
+	if runnerToolCache == "" {
+		return fmt.Errorf("RUNNER_TOOL_CACHE not set")
+	}
+
 	withInputs := ""
 
 	for inputName := range n.Inputs.GetInputDefs() {
 		v, err := core.InputValueById[string](c, n.Inputs, inputName)
 		if err != nil {
-			return err
+			return u.Throw(err)
 		}
 		v = ReplaceContextVariables(v)
-		environ = append(environ, fmt.Sprintf("INPUT_%v=%v", strings.ToUpper(string(inputName)), v))
-
+		contextEnvironMap[fmt.Sprintf("INPUT_%v", strings.ToUpper(string(inputName)))] = v
 		withInputs += fmt.Sprintf(" %s: %s\n", inputName, v)
 	}
 
@@ -79,15 +103,47 @@ func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
 	)
 
 	// Fetch environment variables from the inputs and add them to the command
-	e, err := core.InputValueById[[]string](c, n.Inputs, "env")
-	if err == nil {
-		environ = append(environ, e...)
+	envs, err := core.InputValueById[[]string](c, n.Inputs, "env")
+	if err != nil {
+		_, ok := err.(*u.ErrNoInputValue)
+		if !ok {
+			return u.Throw(err)
+		}
+	}
+
+	for _, env := range envs {
+		kv := strings.SplitN(env, "=", 2)
+		if len(kv) == 2 {
+			contextEnvironMap[kv[0]] = ReplaceContextVariables(kv[1])
+		}
+	}
+
+	ghContextParser := GhContextParser{}
+	ctxEnvs, err := ghContextParser.Init(sysRunnerTempDir)
+	if err != nil {
+		return u.Throw(err)
+	}
+	for envName, path := range ctxEnvs {
+		// Set GITHUB_PATH, GITHUB_ENV, etc.
+		contextEnvironMap[envName] = path
+	}
+
+	// https://github.com/actions/runner/blob/f467e9e1255530d3bf2e33f580d041925ab01951/src/Runner.Common/HostContext.cs#L288
+	if contextEnvironMap["AGENT_TOOLSDIRECTORY"] == "" {
+		contextEnvironMap["AGENT_TOOLSDIRECTORY"] = contextEnvironMap["RUNNER_TOOL_CACHE"]
+	}
+	if contextEnvironMap["RUNNER_TOOLSDIRECTORY"] == "" {
+		contextEnvironMap["RUNNER_TOOLSDIRECTORY"] = contextEnvironMap["RUNNER_TOOL_CACHE"]
 	}
 
 	if n.actionType == Docker {
-		err = n.ExecuteDocker(c, workspace, environ)
+		err = n.ExecuteDocker(c, sysWorkspaceDir, EnvironArgs{
+			ExecutionEnviron: contextEnvironMap,
+		})
 	} else if n.actionType == Node {
-		err = n.ExecuteNode(c, workspace, environ)
+		err = n.ExecuteNode(c, sysWorkspaceDir, EnvironArgs{
+			ExecutionEnviron: contextEnvironMap,
+		})
 	} else {
 		return fmt.Errorf("unsupported action type: %v", n.actionType)
 	}
@@ -101,12 +157,30 @@ func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
 
 		err = n.Execute(execErr, c)
 		if err != nil {
-			return err
+			return u.Throw(err)
 		}
 	}
 
+	// Set the output values to empty strings. If an action didn't set an output,
+	// it will evaluate to an empty string in a subsequent action if result wasn't set.
+	for outputId := range n.OutputDefsCopy() {
+		err = n.SetOutputValue(c, outputId, "")
+		if err != nil {
+			return u.Throw(err)
+		}
+	}
+
+	// Get the context vars from GITHUB_ENV and GITHUB_PATH
+	ctxEnvs, err = ghContextParser.Parse(contextEnvironMap)
+	if err != nil {
+		return u.Throw(err)
+	}
+	for envName, envValue := range ctxEnvs {
+		contextEnvironMap[envName] = envValue
+	}
+
 	// Transfer the output values from the github action to the node output values
-	githubOutput := os.Getenv("GITHUB_OUTPUT")
+	githubOutput := contextEnvironMap["GITHUB_OUTPUT"]
 	if githubOutput != "" {
 		b, err := os.ReadFile(githubOutput)
 		if err != nil {
@@ -118,67 +192,38 @@ func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
 			return u.Throw(err)
 		}
 		for key, value := range outputs {
-			err = n.SetOutputValue(c, core.OutputId(key), value)
+			err = n.SetOutputValue(c, core.OutputId(key), strings.TrimRight(value, "\t\n"))
 			if err != nil {
 				return u.Throw(err)
 			}
 		}
 
-		// empty output file for the next run
-		err = os.WriteFile(githubOutput, []byte(""), 0644)
+		err = os.Remove(githubOutput)
 		if err != nil {
 			return u.Throw(err)
 		}
 	}
 
-	githubPath := os.Getenv("GITHUB_PATH")
-	if githubPath != "" {
-		p, err := os.ReadFile(githubPath)
-		if err != nil {
-			return u.Throw(err)
-		}
-
-		path := ""
-
-		lines := strings.Split(string(p), "\n")
-		for _, line := range lines {
-			if line == "" {
-				continue
-			}
-			path += line + string(os.PathListSeparator)
-		}
-
-		path += os.Getenv("PATH")
-		err = os.Setenv("PATH", path)
-		if err != nil {
-			return u.Throw(err)
-		}
-	}
+	c.SetContextEnvironMap(contextEnvironMap)
 
 	err = n.Execute(n.Executions[ni.Gh_action_v1_Output_exec], c)
 	if err != nil {
-		return err
+		return u.Throw(err)
 	}
 
 	return nil
 }
 
-func (n *GhActionNode) ExecuteNode(c core.ExecutionContext, workspace string, environ []string) error {
+func (n *GhActionNode) ExecuteNode(c core.ExecutionContext, workspace string, envs EnvironArgs) error {
 
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return err
-	}
-
-	var nodeBin string
-	// TODO: (Seb) This is a hack to find the node binary as it relies on the latest
-	// runner version, that might not even be the correct runner. Find a way on how
-	// to extract the build constant from the runner.
-	runnerVersion, err := findHighestVersionDir(filepath.Join(home, "runners"))
-	if err != nil {
-		nodeBin = "node" // use default node-version
-	} else {
-		nodeBin = filepath.Join(home, "runners", runnerVersion, "externals", n.actionRuns.Using, "bin", "node")
+	nodeBin := "node"
+	runners, err := getRunnersDir()
+	if err == nil {
+		externalNodeBin := filepath.Join(runners, "externals", n.actionRuns.Using, "bin", "node")
+		_, err := os.Stat(nodeBin)
+		if err == nil {
+			nodeBin = externalNodeBin
+		}
 	}
 
 	fmt.Printf("Use node binary: %s\n", nodeBin)
@@ -187,7 +232,13 @@ func (n *GhActionNode) ExecuteNode(c core.ExecutionContext, workspace string, en
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = nil
-	cmd.Env = environ
+	cmd.Env = func() []string {
+		env := make([]string, 0)
+		for k, v := range envs.ExecutionEnviron {
+			env = append(env, fmt.Sprintf("%s=%s", k, v))
+		}
+		return env
+	}()
 	cmd.Dir = workspace
 	err = cmd.Run()
 	if err != nil {
@@ -196,19 +247,40 @@ func (n *GhActionNode) ExecuteNode(c core.ExecutionContext, workspace string, en
 	return nil
 }
 
-func (n *GhActionNode) ExecuteDocker(c core.ExecutionContext, workspace string, environ []string) error {
+func (n *GhActionNode) ExecuteDocker(c core.ExecutionContext, workingDirectory string, envs EnvironArgs) error {
+	sysRunnerTempDir := envs.ExecutionEnviron["RUNNER_TEMP"]
+	if sysRunnerTempDir == "" {
+		return u.Throw(fmt.Errorf("RUNNER_TEMP not set"))
+	}
 
-	ContainerDisplayName := fmt.Sprintf("%s_%s", sanitize(n.actionRuns.Image, false), uuid.Must(uuid.NewRandom()).String()[:6])
+	sysRunnerWorkspace := envs.ExecutionEnviron["RUNNER_WORKSPACE"]
+	if sysRunnerTempDir == "" {
+		return u.Throw(fmt.Errorf("RUNNER_WORKSPACE not set"))
+	}
 
-	ContainerImage := strings.TrimPrefix(n.actionRuns.Image, "docker://")
-
-	ContainerEnvironmentVariables := make(map[string]string)
-	for _, env := range environ {
-		parts := strings.SplitN(env, "=", 2)
-		if len(parts) == 2 {
-			ContainerEnvironmentVariables[parts[0]] = parts[1]
+	// Only allow certain environment variables to be passed to the docker container
+	dockerEnviron := make(map[string]string)
+	for contextName := range contextEnvAllowList {
+		envName := fmt.Sprintf("GITHUB_%s", strings.ToUpper(contextName))
+		dockerEnviron[envName] = envs.ExecutionEnviron[envName]
+	}
+	for k, v := range envs.ExecutionEnviron {
+		if strings.HasPrefix(k, "RUNNER_") || strings.HasPrefix(k, "INPUT_") {
+			dockerEnviron[k] = v
 		}
 	}
+
+	// Update github context paths to the docker paths
+	for _, envName := range contextEnvList {
+		path := envs.ExecutionEnviron[envName]
+		if path == "" {
+			return u.Throw(fmt.Errorf("expected %s to be set in execution environment", envName))
+		}
+		dockerEnviron[envName] = filepath.Join(dockerGithubFileCommands, filepath.Base(path))
+	}
+
+	// Set new env vars for container
+	dockerEnviron["HOME"] = dockerGithubHome
 
 	ContainerEntryArgs := make([]string, 0)
 	for _, arg := range n.actionRuns.Args {
@@ -216,20 +288,49 @@ func (n *GhActionNode) ExecuteDocker(c core.ExecutionContext, workspace string, 
 	}
 
 	ci := ContainerInfo{
-		ContainerImage:                ContainerImage,
-		ContainerDisplayName:          ContainerDisplayName,
-		ContainerWorkDirectory:        defaultWorkspaceMount,
+		ContainerImage:                n.Data.Image,
+		ContainerDisplayName:          fmt.Sprintf("actionforge_%s_%s", n.Data.DockerInstanceLabel, uuid.New()),
+		ContainerWorkDirectory:        dockerGithubWorkspace,
 		ContainerEntryPointArgs:       strings.Join(ContainerEntryArgs, " "),
-		ContainerEnvironmentVariables: ContainerEnvironmentVariables,
-		MountVolumes: []Volume{
-			{
-				SourceVolumePath: workspace,
-				TargetVolumePath: defaultWorkspaceMount,
-				ReadOnly:         false,
-			},
-		},
+		ContainerEnvironmentVariables: dockerEnviron,
 	}
-	exitCode, err := DockerRun(context.Background(), ci, nil, nil)
+
+	if runtime.GOOS == "linux" || runtime.GOOS == "darwin" {
+		ci.MountVolumes = append(ci.MountVolumes, Volume{
+			SourceVolumePath: "/var/run/docker.sock",
+			TargetVolumePath: "/var/run/docker.sock",
+			ReadOnly:         false,
+		})
+	}
+
+	// All mounted volumes from the original runner are registered here:
+	// https://github.com/actions/runner/blob/f467e9e1255530d3bf2e33f580d041925ab01951/src/Runner.Worker/Handlers/ContainerActionHandler.cs#L193-L197
+
+	ci.MountVolumes = append(ci.MountVolumes, Volume{
+		SourceVolumePath: sysRunnerWorkspace,
+		TargetVolumePath: dockerGithubWorkspace,
+		ReadOnly:         false,
+	})
+
+	ci.MountVolumes = append(ci.MountVolumes, Volume{
+		SourceVolumePath: filepath.Join(sysRunnerTempDir, "_github_workflow"),
+		TargetVolumePath: dockerGithubWorkflow,
+		ReadOnly:         false,
+	})
+
+	ci.MountVolumes = append(ci.MountVolumes, Volume{
+		SourceVolumePath: filepath.Join(sysRunnerTempDir, "_github_home"),
+		TargetVolumePath: dockerGithubHome,
+		ReadOnly:         false,
+	})
+
+	ci.MountVolumes = append(ci.MountVolumes, Volume{
+		SourceVolumePath: filepath.Join(sysRunnerTempDir, "_runner_file_commands"),
+		TargetVolumePath: dockerGithubFileCommands,
+		ReadOnly:         false,
+	})
+
+	exitCode, err := DockerRun(context.Background(), n.Data.DockerInstanceLabel, ci, workingDirectory, nil, nil)
 	if err != nil {
 		return u.Throw(err)
 	}
@@ -276,7 +377,7 @@ func init() {
 		if os.IsNotExist(err) {
 			// Clone the entire repo but don't check out yet since HEAD might not be the requested ref.
 			cloneUrl := fmt.Sprintf("https://%s@github.com/%s/%s", ghActionsRuntimeToken, owner, name)
-			c := exec.Command("git", "clone", "--no-checkout", cloneUrl, actionFolder)
+			c := exec.Command("git", "clone", "--quiet", "--no-checkout", cloneUrl, actionFolder)
 			// c.Stdout = os.Stdout
 			c.Stderr = os.Stderr
 			err = c.Run()
@@ -295,7 +396,7 @@ func init() {
 			}
 		} else {
 			// reset in case something tampered with the directory
-			c := exec.Command("git", "reset", "--hard", u.If(ref == "", "HEAD", ref))
+			c := exec.Command("git", "reset", "--quiet", "--hard", u.If(ref == "", "HEAD", ref))
 			// c.Stdout = os.Stdout
 			c.Stderr = os.Stderr
 			c.Dir = actionFolder
@@ -325,20 +426,68 @@ func init() {
 		// https://github.com/actions/runner/blob/a4c57f27477077e57545af79851551ff7f5632bd/src/Runner.Worker/ActionManifestManager.cs#L430-L453
 		switch action.Runs.Using {
 		case "docker":
-			dockerUrl := strings.TrimPrefix(action.Runs.Image, "docker://")
-			if dockerUrl == "" {
-				return nil, fmt.Errorf("docker image not specified")
-			}
-
-			exitCode, err := DockerPull(context.Background(), dockerUrl)
-			if err != nil {
-				return nil, err
-			}
-			if exitCode != 0 {
-				return nil, fmt.Errorf("docker pull failed with exit code %d", exitCode)
+			sysWorkspaceDir := os.Getenv("GITHUB_WORKSPACE")
+			if sysWorkspaceDir == "" {
+				return nil, fmt.Errorf("GITHUB_WORKSPACE not set")
 			}
 
 			node.actionType = Docker
+
+			// The Docker image to use as the container to run the action.
+			// The value can be the Docker Hub image name or a registry name.
+			if strings.HasPrefix(action.Runs.Image, "docker://") {
+				dockerUrl := strings.TrimPrefix(action.Runs.Image, "docker://")
+				if dockerUrl == "" {
+					return nil, fmt.Errorf("docker image not specified")
+				}
+
+				node.Data.Image = dockerUrl
+				exitCode, err := DockerPull(context.Background(), dockerUrl, sysWorkspaceDir)
+				if err != nil {
+					return nil, err
+				}
+				if exitCode != 0 {
+					return nil, fmt.Errorf("docker pull failed with exit code %d", exitCode)
+				}
+			} else {
+				// TODO: (Seb) DockerInstanceLabel is part of the original actions/runner implementation.
+				// It's a sha256 of a json within the <version>/.runner directory.
+				// DockerInstanceLabel
+				executionContextId := uuid.New()
+
+				runnersDir, err := getRunnersDir()
+				if err != nil {
+					return nil, err
+				}
+
+				// https://github.com/actions/runner/blob/77e0bfbb8a8fde1f01fc1cf1ed2d7f0e81a0a407/src/Runner.Worker/Container/DockerCommandManager.cs#L48-L52
+				runnersSha256, err := u.GetSha256OfFile(filepath.Join(runnersDir, ".runner"))
+				if err != nil {
+					return nil, err
+				}
+				node.Data.DockerInstanceLabel = runnersSha256[:6]
+
+				// https://github.com/actions/runner/blob/77e0bfbb8a8fde1f01fc1cf1ed2d7f0e81a0a407/src/Runner.Worker/Handlers/ContainerActionHandler.cs#L68
+				imageName := fmt.Sprintf("%s:%s", node.Data.DockerInstanceLabel, executionContextId.String())
+				node.Data.Image = imageName
+				node.Data.ExecutionContextId = executionContextId.String()
+
+				u.LoggerBase.Printf("%sBuild container for action use '%s'.\n",
+					u.LogGhStartGroup,
+					"",
+				)
+
+				exitCode, err := DockerBuild(context.Background(), actionFolder, path.Join(actionFolder, action.Runs.Image), actionFolder, imageName)
+				if err != nil {
+					return nil, err
+				}
+
+				if exitCode != 0 {
+					return nil, fmt.Errorf("docker build failed with exit code %d", exitCode)
+				}
+
+				u.LoggerBase.Printf(u.LogGhEndGroup)
+			}
 		case "node12":
 			fallthrough
 		case "node14":
@@ -428,52 +577,19 @@ type ActionRuns struct {
 	Args  []string `json:"args"`
 }
 
-// parseOutputFile parses the GITHUB_OUTPUT file.
-func parseOutputFile(input string) (map[string]string, error) {
-	// Example content:
-	// ```
-	// go-version<<ghadelimiter_22f0e4a6-7c00-4420-bfa4-5b2c88ea9317
-	// 1.21.4
-	// ghadelimiter_22f0e4a6-7c00-4420-bfa4-5b2c88ea9317
-	// go-version<<ghadelimiter_df97302d-20ec-411d-9b03-531a7044b93a
-	// 1.21.4
-	// ghadelimiter_df97302d-20ec-411d-9b03-531a7044b93a
-	// ```
+// getRunnersDir returns the directory of the latest runner version.
+func getRunnersDir() (string, error) {
 
-	// This regex captures two groups: the key and the delimiter
-	re, err := regexp.Compile(`(.*?)<<ghadelimiter_([a-f0-9\-]+)`)
+	// TODO: (Seb) This function iterates over the different runner versions
+	// in the home folder to find the latest dir version. There is currently
+	// no other way to find the real runner version.
+
+	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
-	matches := re.FindAllStringSubmatch(input, -1)
-
-	kv := make(map[string]string)
-
-	for _, match := range matches {
-		if len(match) == 3 {
-			key := match[1]
-			delimiter := "ghadelimiter_" + match[2]
-
-			// Split the input on the delimiter to get the value
-			// go-version<<ghadelimiter_22f0e4a6-7c00-4420-bfa4-5b2c88ea9317
-			parts := strings.Split(input, delimiter)
-			if len(parts) > 1 {
-				value := strings.TrimSpace(parts[1])
-				// Split the delimiter, so the value is the first element of the second part
-				value = strings.TrimSpace(strings.SplitN(value, delimiter, 2)[0])
-				kv[key] = value
-			}
-		}
-	}
-
-	return kv, nil
-}
-
-// findHighestVersionDir finds the highest semantic version directory from a given path.
-// Used to find the highest runner version as I can't find the runner version anywhere.
-func findHighestVersionDir(path string) (string, error) {
-	files, err := os.ReadDir(path)
+	files, err := os.ReadDir(filepath.Join(homeDir, "runners"))
 	if err != nil {
 		return "", err
 	}
@@ -497,7 +613,7 @@ func findHighestVersionDir(path string) (string, error) {
 		return "", fmt.Errorf("no valid semantic version directories found")
 	}
 
-	return highestVersionDir, nil
+	return filepath.Join(homeDir, "runners", highestVersionDir), nil
 }
 
 func sanitize(name string, allowHyphens bool) string {
@@ -516,4 +632,45 @@ func sanitize(name string, allowHyphens bool) string {
 		}
 	}
 	return sb.String()
+}
+
+// https://github.com/actions/runner/blob/f467e9e1255530d3bf2e33f580d041925ab01951/src/Runner.Worker/GitHubContext.cs#L9
+var contextEnvAllowList = map[string]struct{}{
+	"action_path":         {},
+	"action_ref":          {},
+	"action_repository":   {},
+	"action":              {},
+	"actor":               {},
+	"actor_id":            {},
+	"api_url":             {},
+	"base_ref":            {},
+	"env":                 {},
+	"event_name":          {},
+	"event_path":          {},
+	"graphql_url":         {},
+	"head_ref":            {},
+	"job":                 {},
+	"output":              {},
+	"path":                {},
+	"ref_name":            {},
+	"ref_protected":       {},
+	"ref_type":            {},
+	"ref":                 {},
+	"repository":          {},
+	"repository_id":       {},
+	"repository_owner":    {},
+	"repository_owner_id": {},
+	"retention_days":      {},
+	"run_attempt":         {},
+	"run_id":              {},
+	"run_number":          {},
+	"server_url":          {},
+	"sha":                 {},
+	"state":               {},
+	"step_summary":        {},
+	"triggering_actor":    {},
+	"workflow":            {},
+	"workflow_ref":        {},
+	"workflow_sha":        {},
+	"workspace":           {},
 }

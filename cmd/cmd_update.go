@@ -9,12 +9,12 @@ import (
 	"log"
 
 	"actionforge/graph-runner/core"
+	"actionforge/graph-runner/utils"
 	u "actionforge/graph-runner/utils"
 
 	// initialize all nodes
 	_ "actionforge/graph-runner/nodes"
 
-	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -31,7 +31,7 @@ var cmdUpdate = &cobra.Command{
 }
 
 func init() {
-	_ = godotenv.Load()
+	utils.LoadEnvOnce()
 
 	cmdRoot.AddCommand(cmdUpdate)
 }

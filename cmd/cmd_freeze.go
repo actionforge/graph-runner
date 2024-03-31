@@ -148,6 +148,8 @@ func downloadAndExtractGraphRunner(dstDir string) (dir string, err error) {
 		if err != nil {
 			return "", errors.New("Error downloading graph-runner")
 		}
+	} else {
+		fmt.Printf("Using cached graph-runner (%s)\n", ref)
 	}
 
 	dir = filepath.Join(dstDir, fmt.Sprintf("graph-runner-%s", refName))

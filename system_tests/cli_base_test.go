@@ -20,7 +20,6 @@ func TestMain(m *testing.M) {
 		".",
 	)
 	cmd.Dir = utils.FindProjectRoot()
-	cmd.Env = utils.GetSanitizedEnviron()
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		fmt.Println(string(output))
@@ -47,7 +46,7 @@ func Test_Freeze(t *testing.T) {
 	// commit being accessible as a zip archive on
 	// GitHub, which may not be the case for commits
 	// made locally but not yet pushed.
-	if os.Getenv("GITHUB_REF_NAME") == "" {
+	if os.Getenv("FREEZE_TEST") == "" {
 		t.Skip("Skipping test locally")
 	}
 
@@ -94,7 +93,6 @@ func buildFrozen(graphPath string) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
-	cmd.Env = utils.GetSanitizedEnviron()
 	cmd.Dir = utils.FindProjectRoot()
 
 	err := cmd.Run()

@@ -3,6 +3,7 @@
 package nodes
 
 import (
+	u "actionforge/graph-runner/utils"
 	"context"
 	"fmt"
 	"os"
@@ -73,15 +74,17 @@ func SplitAtCommas(s string) []string {
 	return append(res, s[beg:])
 }
 
-func ExecuteDockerCommand(ctx context.Context, command string, optionsString string, stdoutDataReceived, stderrDataReceived chan string) (int, error) {
+func ExecuteDockerCommand(ctx context.Context, command string, optionsString string, workdir string, stdoutDataReceived chan string, stderrDataReceived chan string) (int, error) {
 	args, err := shlex.Split(optionsString)
 	if err != nil {
-		fmt.Println(err)
+		return 1, err
 	}
 	cmdArgs := append([]string{command}, args...)
+
 	cmd := exec.Command("docker", cmdArgs...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+	cmd.Dir = workdir
 	err = cmd.Run()
 	exitCode := 0
 	if err != nil {
@@ -119,12 +122,12 @@ func SanitizeOptionKeyValue(value string) string {
 	return value
 }
 
-func DockerRun(ctx context.Context, container ContainerInfo, stdoutDataReceived, stderrDataReceived chan string) (int, error) {
+func DockerRun(ctx context.Context, label string, container ContainerInfo, workingDirectory string, stdoutDataReceived, stderrDataReceived chan string) (int, error) {
 	var dockerOptions []string
 
 	dockerOptions = append(dockerOptions,
 		fmt.Sprintf("--name %s", container.ContainerDisplayName),
-		fmt.Sprintf("--label %s", "DockerInstanceLabel"),
+		fmt.Sprintf("--label %s", "actionforge"),
 		fmt.Sprintf("--workdir %s", container.ContainerWorkDirectory),
 		"--rm",
 	)
@@ -156,7 +159,7 @@ func DockerRun(ctx context.Context, container ContainerInfo, stdoutDataReceived,
 	dockerOptions = append(dockerOptions, container.ContainerEntryPointArgs)
 
 	optionsString := strings.Join(dockerOptions, " ")
-	return ExecuteDockerCommand(ctx, "run", optionsString, stdoutDataReceived, stderrDataReceived)
+	return ExecuteDockerCommand(ctx, "run", optionsString, workingDirectory, stdoutDataReceived, stderrDataReceived)
 }
 
 func formatMountArg(volume Volume) string {
@@ -176,8 +179,21 @@ func escapePath(path string) string {
 	return strings.ReplaceAll(path, "\"", "\\\"")
 }
 
-func DockerPull(ctx context.Context, image string) (int, error) {
-	return ExecuteDockerCommand(ctx, "pull", image, nil, nil)
+func DockerPull(ctx context.Context, image string, workingDirectory string) (int, error) {
+
+	u.LoggerBase.Printf("%sPull down action image '%s'.\n",
+		u.LogGhStartGroup,
+		image,
+	)
+
+	defer u.LoggerBase.Printf(u.LogGhEndGroup)
+
+	return ExecuteDockerCommand(ctx, "pull", image, workingDirectory, nil, nil)
+}
+
+func DockerBuild(ctx context.Context, workingDirectory string, dockerFile string, dockerContext string, tag string) (int, error) {
+	buildOptions := fmt.Sprintf("-t %s -f \"%s\" \"%s\"", tag, dockerFile, dockerContext)
+	return ExecuteDockerCommand(ctx, "build", buildOptions, workingDirectory, nil, nil)
 }
 
 func ReplaceContextVariables(input string) string {
