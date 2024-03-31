@@ -77,8 +77,8 @@ nodes:
       y: -170
     inputs:
       script: >-
-        [ "$MY_VAR" = "lorem" ] || { echo "Error: BAZ does not have the expected
-        value:" $MY_VAR >&2; exit 1; }
+        [ "$MY_ENV" = "lorem" ] || { echo "Error: MY_VAR does not have the
+        expected value:" $MY_VAR >&2; exit 1; }
     settings:
       folded: false
   - id: gh-actionforge-test-action-node-main-blueberry-monkey-plum
@@ -108,8 +108,8 @@ nodes:
       y: 230
     inputs:
       script: >-
-        [ "$MY_VAR" = "ipsum" ] || { echo "Error: BAZ does not have the expected
-        value:" $MY_VAR >&2; exit 1; }
+        [ "$MY_ENV" = "ipsum" ] || { echo "Error: MY_VAR does not have the
+        expected value:" $MY_VAR >&2; exit 1; }
     settings:
       folded: false
 registries:
