@@ -115,5 +115,7 @@ func (c *ExecutionContext) GetContextEnvironMapCopy() map[string]string {
 
 // SetContextEnvironMap sets the environment variables for the current and subsequent goroutines.
 func (c *ExecutionContext) SetContextEnvironMap(env map[string]string) {
-	c.contextStack[len(c.contextStack)-1].Env = env
+	if len(c.contextStack) > 0 {
+		c.contextStack[len(c.contextStack)-1].Env = env
+	}
 }
