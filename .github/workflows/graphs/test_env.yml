@@ -77,12 +77,14 @@ nodes:
       folded: false
   - id: gh-actionforge-test-action-node-main-lemon-penguin-yellow
     type: >-
-      github.com/actionforge/test-action-node@bbba31994bb85344bc7725ed195b4c44f10162b2
+      github.com/actionforge/test-action-node@22db00979573158856d37b2a91c05deccde3b41b
     position:
       x: 770
       y: 270
     inputs:
       input1: lorem
+      environment: "false"
+      input2: dolor
     settings:
       folded: false
   - id: run-v1-apple-silver-lion
@@ -123,12 +125,14 @@ nodes:
       folded: false
   - id: gh-actionforge-test-action-node-main-blueberry-monkey-plum
     type: >-
-      github.com/actionforge/test-action-node@bbba31994bb85344bc7725ed195b4c44f10162b2
+      github.com/actionforge/test-action-node@22db00979573158856d37b2a91c05deccde3b41b
     position:
       x: 770
       y: 600
     inputs:
       input1: ipsum
+      environment: "false"
+      input2: lorem
     settings:
       folded: false
   - id: parallel-exec-v1-blackberry-orange-coconut
