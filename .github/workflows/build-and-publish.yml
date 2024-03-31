@@ -12,6 +12,8 @@ jobs:
         uses: actionforge/action@v0.8.30
         with:
           graph_file: build-and-publish.yml
+        env:
+          FREEZE_TEST: true
 
       - name: List
         run: ls -lsa

@@ -13,6 +13,24 @@ executions:
       node: run-v1-giraffe-grape-zebra
       port: exec
   - src:
+      node: gh-actionforge-test-action-node-main-blueberry-monkey-plum
+      port: exec
+    dst:
+      node: run-v1-pink-brown-kangaroo
+      port: exec
+  - src:
+      node: run-v1-giraffe-grape-zebra
+      port: exec-success
+    dst:
+      node: run-v1-lemon-pineapple-brown
+      port: exec
+  - src:
+      node: run-v1-pink-brown-kangaroo
+      port: exec-success
+    dst:
+      node: run-v1-snake-squirrel-shark
+      port: exec
+  - src:
       node: run-v1-apple-silver-lion
       port: exec-success
     dst:
@@ -31,10 +49,16 @@ executions:
       node: gh-actionforge-test-action-node-main-blueberry-monkey-plum
       port: exec
   - src:
-      node: gh-actionforge-test-action-node-main-blueberry-monkey-plum
-      port: exec
+      node: run-v1-lemon-pineapple-brown
+      port: exec-success
     dst:
-      node: run-v1-pink-brown-kangaroo
+      node: run-v1-cranberry-orange-zebra
+      port: exec
+  - src:
+      node: run-v1-snake-squirrel-shark
+      port: exec-success
+    dst:
+      node: run-v1-yellow-squirrel-orange
       port: exec
 connections:
   - src:
@@ -48,7 +72,7 @@ nodes:
     type: start@v1
     position:
       x: 10
-      y: 430
+      y: 600
     settings:
       folded: false
   - id: gh-actionforge-test-action-node-main-lemon-penguin-yellow
@@ -56,7 +80,7 @@ nodes:
       github.com/actionforge/test-action-node@bbba31994bb85344bc7725ed195b4c44f10162b2
     position:
       x: 770
-      y: 100
+      y: 270
     inputs:
       input1: lorem
     settings:
@@ -65,7 +89,7 @@ nodes:
     type: run@v1
     position:
       x: 230
-      y: 310
+      y: 480
     inputs:
       script: |
         input1="hello world"
@@ -82,7 +106,7 @@ nodes:
     type: run@v1
     position:
       x: 1080
-      y: 10
+      y: 180
     inputs:
       script: >
         input1="lorem"
@@ -102,7 +126,7 @@ nodes:
       github.com/actionforge/test-action-node@bbba31994bb85344bc7725ed195b4c44f10162b2
     position:
       x: 770
-      y: 430
+      y: 600
     inputs:
       input1: ipsum
     settings:
@@ -111,7 +135,7 @@ nodes:
     type: parallel-exec@v1
     position:
       x: 540
-      y: 270
+      y: 440
     outputs:
       exec[0]: ""
       exec[1]: ""
@@ -121,7 +145,7 @@ nodes:
     type: run@v1
     position:
       x: 1080
-      y: 340
+      y: 520
     inputs:
       script: >
         input1="ipsum"
@@ -129,6 +153,84 @@ nodes:
 
         if [ "$MY_ENV" == "this env modified by test-action-node and input1
         value is '$input1'" ]; then
+            echo "MY_ENV correctly contains $input1"
+        else
+            echo "MY_ENV is not correctly set, got: '$MY_ENV'"
+            exit 1
+        fi
+    settings:
+      folded: false
+  - id: run-v1-snake-squirrel-shark
+    type: run@v1
+    position:
+      x: 1390
+      y: 430
+    inputs:
+      script: >-
+        input1="ipsum"
+
+
+        if [ "$MY_ENV" == "this env modified by test-action-node and input1
+        value is '$input1'" ]; then
+            echo "MY_ENV correctly contains $input1"
+        else
+            echo "MY_ENV is not correctly set, got: '$MY_ENV'"
+            exit 1
+        fi
+
+
+        echo "MY_ENV=modified by run node '$input1'" >> "$GITHUB_ENV"
+    settings:
+      folded: false
+  - id: run-v1-lemon-pineapple-brown
+    type: run@v1
+    position:
+      x: 1390
+      y: 100
+    inputs:
+      script: >-
+        input1="lorem"
+
+
+        if [ "$MY_ENV" == "this env modified by test-action-node and input1
+        value is '$input1'" ]; then
+            echo "MY_ENV correctly contains $input1"
+        else
+            echo "MY_ENV is not correctly set, got: '$MY_ENV'"
+            exit 1
+        fi
+
+
+        echo "MY_ENV=modified by run node '$input1'" >> "$GITHUB_ENV"
+    settings:
+      folded: false
+  - id: run-v1-yellow-squirrel-orange
+    type: run@v1
+    position:
+      x: 1690
+      y: 340
+    inputs:
+      script: |-
+        input1="ipsum"
+
+        if [ "$MY_ENV" == "modified by run node '$input1'" ]; then
+            echo "MY_ENV correctly contains $input1"
+        else
+            echo "MY_ENV is not correctly set, got: '$MY_ENV'"
+            exit 1
+        fi
+    settings:
+      folded: false
+  - id: run-v1-cranberry-orange-zebra
+    type: run@v1
+    position:
+      x: 1690
+      y: 10
+    inputs:
+      script: |-
+        input1="lorem"
+
+        if [ "$MY_ENV" == "modified by run node '$input1'" ]; then
             echo "MY_ENV correctly contains $input1"
         else
             echo "MY_ENV is not correctly set, got: '$MY_ENV'"
