@@ -47,16 +47,16 @@ nodes:
   - id: start
     type: start@v1
     position:
-      x: -10
-      y: 180
+      x: 10
+      y: 430
     settings:
       folded: false
   - id: gh-actionforge-test-action-node-main-lemon-penguin-yellow
     type: >-
-      github.com/actionforge/test-action-node@92ddef547c2e51dced1d1f44631634963819e4c7
+      github.com/actionforge/test-action-node@bbba31994bb85344bc7725ed195b4c44f10162b2
     position:
-      x: 980
-      y: -70
+      x: 770
+      y: 100
     inputs:
       input1: lorem
     settings:
@@ -64,29 +64,45 @@ nodes:
   - id: run-v1-apple-silver-lion
     type: run@v1
     position:
-      x: 320
-      y: 110
+      x: 230
+      y: 310
     inputs:
-      script: printenv MY_ENV
+      script: |
+        input1="hello world"
+
+        if [ "$MY_ENV" == "$input1" ]; then
+            echo "MY_ENV correctly set to $input1"
+        else
+            echo "MY_ENV is not correctly set, got: '$MY_ENV'"
+            exit 1
+        fi
     settings:
       folded: false
   - id: run-v1-giraffe-grape-zebra
     type: run@v1
     position:
-      x: 1600
-      y: -170
+      x: 1080
+      y: 10
     inputs:
-      script: >-
-        [ "$MY_ENV" = "lorem" ] || { echo "Error: MY_VAR does not have the
-        expected value:" $MY_VAR >&2; exit 1; }
+      script: >
+        input1="lorem"
+
+
+        if [ "$MY_ENV" == "this env modified by test-action-node and input1
+        value is '$input1'" ]; then
+            echo "MY_ENV correctly contains $input1"
+        else
+            echo "MY_ENV is not correctly set, got: '$MY_ENV'"
+            exit 1
+        fi
     settings:
       folded: false
   - id: gh-actionforge-test-action-node-main-blueberry-monkey-plum
     type: >-
-      github.com/actionforge/test-action-node@92ddef547c2e51dced1d1f44631634963819e4c7
+      github.com/actionforge/test-action-node@bbba31994bb85344bc7725ed195b4c44f10162b2
     position:
-      x: 1070
-      y: 320
+      x: 770
+      y: 430
     inputs:
       input1: ipsum
     settings:
@@ -94,8 +110,8 @@ nodes:
   - id: parallel-exec-v1-blackberry-orange-coconut
     type: parallel-exec@v1
     position:
-      x: 690
-      y: 150
+      x: 540
+      y: 270
     outputs:
       exec[0]: ""
       exec[1]: ""
@@ -104,12 +120,20 @@ nodes:
   - id: run-v1-pink-brown-kangaroo
     type: run@v1
     position:
-      x: 1570
-      y: 230
+      x: 1080
+      y: 340
     inputs:
-      script: >-
-        [ "$MY_ENV" = "ipsum" ] || { echo "Error: MY_VAR does not have the
-        expected value:" $MY_VAR >&2; exit 1; }
+      script: >
+        input1="ipsum"
+
+
+        if [ "$MY_ENV" == "this env modified by test-action-node and input1
+        value is '$input1'" ]; then
+            echo "MY_ENV correctly contains $input1"
+        else
+            echo "MY_ENV is not correctly set, got: '$MY_ENV'"
+            exit 1
+        fi
     settings:
       folded: false
 registries:

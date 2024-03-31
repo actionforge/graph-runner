@@ -200,6 +200,21 @@ func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
 		}
 	}
 
+	githubEnv := contextEnvironMap["GITHUB_ENV"]
+	if githubEnv != "" {
+		b, err := os.ReadFile(githubEnv)
+		if err != nil {
+			return u.Throw(err)
+		}
+		envs, err := parseOutputFile(string(b))
+		if err != nil {
+			return u.Throw(err)
+		}
+		for envName, envValue := range envs {
+			contextEnvironMap[envName] = strings.TrimRight(envValue, "\t\n")
+		}
+	}
+
 	// Transfer the output values from the github action to the node output values
 	githubOutput := contextEnvironMap["GITHUB_OUTPUT"]
 	if githubOutput != "" {
