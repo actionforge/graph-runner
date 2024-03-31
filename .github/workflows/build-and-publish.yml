@@ -1,7 +1,7 @@
 on: [push]
 
 jobs:
-  build-and-publish:
+  build-test-and-publish:
     runs-on: ubuntu-latest
     name: Build and Publish
     permissions:
@@ -11,12 +11,9 @@ jobs:
       - name: Execute Action Graph
         uses: actionforge/action@v0.8.30
         with:
-          graph_file: build-and-publish.yml
+          graph_file: build.yml
         env:
           FREEZE_TEST: true
-
-      - name: List
-        run: ls -lsa
 
       - name: Run Integration test
         uses: actionforge/action@6667acfef5cfb69d413683a8a87c1aa15412f649
@@ -26,3 +23,10 @@ jobs:
           graph_file: test_env.yml
         env:
           MY_ENV: "hello world"
+
+      #- name: Build and Publish
+      #  uses: actionforge/action@v0.8.30
+      #  with:
+      #    graph_file: publish.yml
+      #  env:
+      #    FREEZE_TEST: true
