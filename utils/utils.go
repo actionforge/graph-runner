@@ -153,7 +153,7 @@ type GetVariableOpts struct {
 }
 
 func getEnvValue(envName, defaultValue string) (val string) {
-	if envName == "graph_file" {
+	if envName == "GRAPH_FILE" {
 		val = graphFileEnv
 	} else {
 		val = os.Getenv(envName)
@@ -382,6 +382,8 @@ func GetSha256OfFile(filePath string) (string, error) {
 }
 
 func init() {
+
+	LoadEnvOnce()
 
 	for _, env := range os.Environ() {
 
