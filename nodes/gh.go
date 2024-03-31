@@ -42,13 +42,15 @@ func RemoveGhSecret(name string) {
 
 func decodeJsonFromEnvValue(envValue string, prefix string) (map[string]string, error) {
 	envMap := map[string]string{}
-	tmp := map[string]string{}
-	err := json.NewDecoder(strings.NewReader(envValue)).Decode(&tmp)
-	if err != nil {
-		return nil, err
-	}
-	for k, v := range tmp {
-		envMap[fmt.Sprintf("%s.%s", prefix, k)] = v
+	if envValue != "" {
+		tmp := map[string]string{}
+		err := json.NewDecoder(strings.NewReader(envValue)).Decode(&tmp)
+		if err != nil {
+			return nil, err
+		}
+		for k, v := range tmp {
+			envMap[fmt.Sprintf("%s.%s", prefix, k)] = v
+		}
 	}
 	return envMap, nil
 }
