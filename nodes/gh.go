@@ -109,7 +109,9 @@ func initGhContexts() error {
 
 		if strings.HasPrefix(envName, "SECRET_") {
 			key := strings.TrimPrefix(envName, "SECRET_")
-			ghSecrets[key] = envValue
+			if key != "" {
+				ghSecrets[fmt.Sprintf("secrets.%s", key)] = envValue
+			}
 			os.Unsetenv(envName)
 		} else if envName == "INPUT_MATRIX" {
 			var err error
