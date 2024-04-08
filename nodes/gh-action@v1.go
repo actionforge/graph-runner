@@ -62,6 +62,7 @@ type GhActionNode struct {
 
 type EnvironArgs struct {
 	ExecutionEnviron map[string]string
+	CustomEnvs       map[string]bool
 }
 
 func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
@@ -111,9 +112,12 @@ func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
 		}
 	}
 
+	customEnvs := map[string]bool{}
+
 	for _, env := range envs {
 		kv := strings.SplitN(env, "=", 2)
 		if len(kv) == 2 {
+			customEnvs[kv[0]] = true
 			contextEnvironMap[kv[0]] = ReplaceContextVariables(kv[1])
 		}
 	}
@@ -139,6 +143,7 @@ func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
 	if n.actionType == Docker {
 		err = n.ExecuteDocker(c, sysWorkspaceDir, EnvironArgs{
 			ExecutionEnviron: contextEnvironMap,
+			CustomEnvs:       customEnvs,
 		})
 	} else if n.actionType == Node {
 		err = n.ExecuteNode(c, sysWorkspaceDir, EnvironArgs{
@@ -256,6 +261,10 @@ func (n *GhActionNode) ExecuteDocker(c core.ExecutionContext, workingDirectory s
 	sysRunnerWorkspace := envs.ExecutionEnviron["RUNNER_WORKSPACE"]
 	if sysRunnerTempDir == "" {
 		return u.Throw(fmt.Errorf("RUNNER_WORKSPACE not set"))
+}
+
+	if envs.CustomEnvs == nil {
+		envs.CustomEnvs = make(map[string]bool)
 	}
 
 	// Only allow certain environment variables to be passed to the docker container
@@ -264,8 +273,9 @@ func (n *GhActionNode) ExecuteDocker(c core.ExecutionContext, workingDirectory s
 		envName := fmt.Sprintf("GITHUB_%s", strings.ToUpper(contextName))
 		dockerEnviron[envName] = envs.ExecutionEnviron[envName]
 	}
+
 	for k, v := range envs.ExecutionEnviron {
-		if strings.HasPrefix(k, "RUNNER_") || strings.HasPrefix(k, "INPUT_") {
+		if strings.HasPrefix(k, "RUNNER_") || strings.HasPrefix(k, "INPUT_") || envs.CustomEnvs[k] {
 			dockerEnviron[k] = v
 		}
 	}
