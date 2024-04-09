@@ -73,8 +73,8 @@ func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
 		return fmt.Errorf("RUNNER_TEMP not set")
 	}
 
-	sysWorkspaceDir := contextEnvironMap["GITHUB_WORKSPACE"]
-	if sysWorkspaceDir == "" {
+	sysGhWorkspaceDir := contextEnvironMap["GITHUB_WORKSPACE"]
+	if sysGhWorkspaceDir == "" {
 		return fmt.Errorf("GITHUB_WORKSPACE not set")
 	}
 
@@ -141,12 +141,12 @@ func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
 	}
 
 	if n.actionType == Docker {
-		err = n.ExecuteDocker(c, sysWorkspaceDir, EnvironArgs{
+		err = n.ExecuteDocker(c, sysGhWorkspaceDir, EnvironArgs{
 			ExecutionEnviron: contextEnvironMap,
 			CustomEnvs:       customEnvs,
 		})
 	} else if n.actionType == Node {
-		err = n.ExecuteNode(c, sysWorkspaceDir, EnvironArgs{
+		err = n.ExecuteNode(c, sysGhWorkspaceDir, EnvironArgs{
 			ExecutionEnviron: contextEnvironMap,
 		})
 	} else {
@@ -258,10 +258,10 @@ func (n *GhActionNode) ExecuteDocker(c core.ExecutionContext, workingDirectory s
 		return u.Throw(fmt.Errorf("RUNNER_TEMP not set"))
 	}
 
-	sysRunnerWorkspace := envs.ExecutionEnviron["RUNNER_WORKSPACE"]
-	if sysRunnerTempDir == "" {
-		return u.Throw(fmt.Errorf("RUNNER_WORKSPACE not set"))
-}
+	sysGithubWorkspace := envs.ExecutionEnviron["GITHUB_WORKSPACE"]
+	if sysGithubWorkspace == "" {
+		return u.Throw(fmt.Errorf("GITHUB_WORKSPACE not set"))
+	}
 
 	if envs.CustomEnvs == nil {
 		envs.CustomEnvs = make(map[string]bool)
@@ -317,7 +317,7 @@ func (n *GhActionNode) ExecuteDocker(c core.ExecutionContext, workingDirectory s
 	// https://github.com/actions/runner/blob/f467e9e1255530d3bf2e33f580d041925ab01951/src/Runner.Worker/Handlers/ContainerActionHandler.cs#L193-L197
 
 	ci.MountVolumes = append(ci.MountVolumes, Volume{
-		SourceVolumePath: sysRunnerWorkspace,
+		SourceVolumePath: sysGithubWorkspace,
 		TargetVolumePath: dockerGithubWorkspace,
 		ReadOnly:         false,
 	})
