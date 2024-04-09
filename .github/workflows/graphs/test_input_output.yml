@@ -147,7 +147,7 @@ nodes:
       folded: false
   - id: gh-actionforge-test-action-registry-main-cat-purple-watermelon
     type: >-
-      github.com/actionforge/test-action-registry@38500ad5460fb89a91edf900398b8153897f1b90
+      github.com/actionforge/test-action-registry@6075e108fe3a7edd08d11178b02d96f5eef3e835
     position:
       x: 1430
       y: 370
@@ -194,7 +194,7 @@ nodes:
       folded: false
   - id: gh-actionforge-test-action-dockerfile-main-purple-pear-kangaroo
     type: >-
-      github.com/actionforge/test-action-dockerfile@40ca5791f36ebecf4d2db92645d3da2b0197d439
+      github.com/actionforge/test-action-dockerfile@c3bd2754b38ec3500b786a3cca9279322d6ee5dd
     position:
       x: 2630
       y: 150
