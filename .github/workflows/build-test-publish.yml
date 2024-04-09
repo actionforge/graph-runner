@@ -15,14 +15,14 @@ jobs:
         env:
           FREEZE_TEST: true
 
-      - name: Run Integration test
+      - name: Test test_input_output.yml
         uses: actionforge/action@6667acfef5cfb69d413683a8a87c1aa15412f649
         with:
           # Use graph-runner in workdir directory
           runner_path: ${{ github.workspace }}/graph-runner
           graph_file: test_input_output.yml
 
-      - name: Run Integration test
+      - name: Test test_env.yml
         uses: actionforge/action@6667acfef5cfb69d413683a8a87c1aa15412f649
         with:
           # Use graph-runner in workdir directory

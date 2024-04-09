@@ -62,6 +62,7 @@ type GhActionNode struct {
 
 type EnvironArgs struct {
 	ExecutionEnviron map[string]string
+	CustomEnvs       map[string]bool
 }
 
 func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
@@ -72,8 +73,8 @@ func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
 		return fmt.Errorf("RUNNER_TEMP not set")
 	}
 
-	sysWorkspaceDir := contextEnvironMap["GITHUB_WORKSPACE"]
-	if sysWorkspaceDir == "" {
+	sysGhWorkspaceDir := contextEnvironMap["GITHUB_WORKSPACE"]
+	if sysGhWorkspaceDir == "" {
 		return fmt.Errorf("GITHUB_WORKSPACE not set")
 	}
 
@@ -111,9 +112,12 @@ func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
 		}
 	}
 
+	customEnvs := map[string]bool{}
+
 	for _, env := range envs {
 		kv := strings.SplitN(env, "=", 2)
 		if len(kv) == 2 {
+			customEnvs[kv[0]] = true
 			contextEnvironMap[kv[0]] = ReplaceContextVariables(kv[1])
 		}
 	}
@@ -137,11 +141,12 @@ func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
 	}
 
 	if n.actionType == Docker {
-		err = n.ExecuteDocker(c, sysWorkspaceDir, EnvironArgs{
+		err = n.ExecuteDocker(c, sysGhWorkspaceDir, EnvironArgs{
 			ExecutionEnviron: contextEnvironMap,
+			CustomEnvs:       customEnvs,
 		})
 	} else if n.actionType == Node {
-		err = n.ExecuteNode(c, sysWorkspaceDir, EnvironArgs{
+		err = n.ExecuteNode(c, sysGhWorkspaceDir, EnvironArgs{
 			ExecutionEnviron: contextEnvironMap,
 		})
 	} else {
@@ -164,7 +169,7 @@ func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
 	// Set the output values to empty strings. If an action didn't set an output,
 	// it will evaluate to an empty string in a subsequent action if result wasn't set.
 	for outputId := range n.OutputDefsCopy() {
-		err = n.SetOutputValue(c, outputId, "")
+		err = n.SetOutputValue(c, outputId, "", core.SetOutputValueOpts{})
 		if err != nil {
 			return u.Throw(err)
 		}
@@ -192,7 +197,11 @@ func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
 			return u.Throw(err)
 		}
 		for key, value := range outputs {
-			err = n.SetOutputValue(c, core.OutputId(key), strings.TrimRight(value, "\t\n"))
+			err = n.SetOutputValue(c, core.OutputId(key), strings.TrimRight(value, "\t\n"), core.SetOutputValueOpts{
+				// Some actions could have accidentally set an output that is not defined in the action.yml
+				// https://github.com/getsentry/action-release/blob/e769183448303de84c5a06aaaddf9da7be26d6c7/src/main.ts#L83
+				NotExistsIsNoError: true,
+			})
 			if err != nil {
 				return u.Throw(err)
 			}
@@ -253,9 +262,13 @@ func (n *GhActionNode) ExecuteDocker(c core.ExecutionContext, workingDirectory s
 		return u.Throw(fmt.Errorf("RUNNER_TEMP not set"))
 	}
 
-	sysRunnerWorkspace := envs.ExecutionEnviron["RUNNER_WORKSPACE"]
-	if sysRunnerTempDir == "" {
-		return u.Throw(fmt.Errorf("RUNNER_WORKSPACE not set"))
+	sysGithubWorkspace := envs.ExecutionEnviron["GITHUB_WORKSPACE"]
+	if sysGithubWorkspace == "" {
+		return u.Throw(fmt.Errorf("GITHUB_WORKSPACE not set"))
+	}
+
+	if envs.CustomEnvs == nil {
+		envs.CustomEnvs = make(map[string]bool)
 	}
 
 	// Only allow certain environment variables to be passed to the docker container
@@ -264,8 +277,9 @@ func (n *GhActionNode) ExecuteDocker(c core.ExecutionContext, workingDirectory s
 		envName := fmt.Sprintf("GITHUB_%s", strings.ToUpper(contextName))
 		dockerEnviron[envName] = envs.ExecutionEnviron[envName]
 	}
+
 	for k, v := range envs.ExecutionEnviron {
-		if strings.HasPrefix(k, "RUNNER_") || strings.HasPrefix(k, "INPUT_") {
+		if strings.HasPrefix(k, "RUNNER_") || strings.HasPrefix(k, "INPUT_") || envs.CustomEnvs[k] {
 			dockerEnviron[k] = v
 		}
 	}
@@ -307,7 +321,7 @@ func (n *GhActionNode) ExecuteDocker(c core.ExecutionContext, workingDirectory s
 	// https://github.com/actions/runner/blob/f467e9e1255530d3bf2e33f580d041925ab01951/src/Runner.Worker/Handlers/ContainerActionHandler.cs#L193-L197
 
 	ci.MountVolumes = append(ci.MountVolumes, Volume{
-		SourceVolumePath: sysRunnerWorkspace,
+		SourceVolumePath: sysGithubWorkspace,
 		TargetVolumePath: dockerGithubWorkspace,
 		ReadOnly:         false,
 	})

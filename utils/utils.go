@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"reflect"
 	"strconv"
@@ -39,7 +40,12 @@ func LoadEnvOnce() {
 	envFileOnce.Do(func() {
 		loadEnvFile := os.Getenv("LOAD_ENV_FILE")
 		if loadEnvFile != "" {
-			_ = godotenv.Load()
+			exePath, err := os.Executable()
+			if err == nil {
+				// By default godotenv.Load() will look for a .env
+				// file from the cwd, something that we don't want
+				_ = godotenv.Load(path.Join(path.Dir(exePath), ".env"))
+			}
 		}
 	})
 }

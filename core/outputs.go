@@ -6,6 +6,10 @@ import (
 	"sync"
 )
 
+type SetOutputValueOpts struct {
+	NotExistsIsNoError bool
+}
+
 // HasOuputsInterface is a representation for all outputs of a node.
 // The node that implements this interface has outgoing connections.
 type HasOuputsInterface interface {
@@ -13,7 +17,7 @@ type HasOuputsInterface interface {
 	SetOutputDefs(outputs map[OutputId]OutputDefinition)
 
 	OutputValueById(c ExecutionContext, outputId OutputId) (value interface{}, err error)
-	SetOutputValue(c ExecutionContext, outputId OutputId, value interface{}) error
+	SetOutputValue(c ExecutionContext, outputId OutputId, value interface{}, opts SetOutputValueOpts) error
 }
 
 type Executions map[OutputId]NodeExecutionInterface
@@ -69,7 +73,7 @@ func (n *Outputs) OutputValueById(c ExecutionContext, outputId OutputId) (interf
 // SetOutputValue sets the value of an output to the node.
 // The value type must match the output type, otherwise an error
 // is returned.
-func (n *Outputs) SetOutputValue(c ExecutionContext, outputId OutputId, value interface{}) error {
+func (n *Outputs) SetOutputValue(c ExecutionContext, outputId OutputId, value interface{}, opts SetOutputValueOpts) error {
 
 	n.outputLock.Lock()
 	defer n.outputLock.Unlock()
@@ -81,11 +85,17 @@ func (n *Outputs) SetOutputValue(c ExecutionContext, outputId OutputId, value in
 		// check if it is a sub port instead
 		sb := getSubPortRegex().FindStringSubmatch(string(outputId))
 		if len(sb) < 2 {
+			if opts.NotExistsIsNoError {
+				return nil
+			}
 			return fmt.Errorf("unknown output '%v'", outputId)
 		}
 
 		output, outputExists = n.outputDefs[OutputId(sb[1])]
 		if !outputExists {
+			if opts.NotExistsIsNoError {
+				return nil
+			}
 			// If still nothing found, return an error
 			return fmt.Errorf("unknown output '%v'", outputId)
 		}
