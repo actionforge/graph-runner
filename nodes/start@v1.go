@@ -23,12 +23,12 @@ func (n *StartNode) ExecuteEntry() error {
 	defer cancel()
 	c := core.NewExecutionContext(ctx, utils.GetEnvironMap())
 
-	err := n.Outputs.SetOutputValue(c, ni.Start_v1_Output_env, os.Environ())
+	err := n.Outputs.SetOutputValue(c, ni.Start_v1_Output_env, os.Environ(), core.SetOutputValueOpts{})
 	if err != nil {
 		return err
 	}
 
-	err = n.Outputs.SetOutputValue(c, ni.Start_v1_Output_args, os.Args[1:])
+	err = n.Outputs.SetOutputValue(c, ni.Start_v1_Output_args, os.Args[1:], core.SetOutputValueOpts{})
 	if err != nil {
 		return err
 	}

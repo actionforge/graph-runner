@@ -38,7 +38,7 @@ func (n *ForNode) ExecuteImpl(c core.ExecutionContext) error {
 
 		for i := firstIndex; i <= lastIndex; i++ {
 
-			err = n.Outputs.SetOutputValue(c, ni.For_v1_Output_index, i)
+			err = n.Outputs.SetOutputValue(c, ni.For_v1_Output_index, i, core.SetOutputValueOpts{})
 			if err != nil {
 				return err
 			}

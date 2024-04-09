@@ -196,12 +196,12 @@ func (n *RunNode) ExecuteImpl(c core.ExecutionContext) error {
 	}
 	// cmdErr is processed further down below
 
-	err = n.SetOutputValue(c, ni.Run_v1_Output_output, string(output))
+	err = n.SetOutputValue(c, ni.Run_v1_Output_output, string(output), core.SetOutputValueOpts{})
 	if err != nil {
 		return err
 	}
 
-	err = n.SetOutputValue(c, ni.Run_v1_Output_exit_code, cmd.ProcessState.ExitCode())
+	err = n.SetOutputValue(c, ni.Run_v1_Output_exit_code, cmd.ProcessState.ExitCode(), core.SetOutputValueOpts{})
 	if err != nil {
 		return err
 	}

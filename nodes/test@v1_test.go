@@ -47,7 +47,7 @@ func Test_SetOutputValue_Success(t *testing.T) {
 		t.Fatal("Node does not implement HasOuputsInterface")
 	}
 
-	err = nodeOutputs.SetOutputValue(ec, ni.Test_v1_Output_output_bool, true)
+	err = nodeOutputs.SetOutputValue(ec, ni.Test_v1_Output_output_bool, true, core.SetOutputValueOpts{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -58,33 +58,33 @@ func Test_SetOutputValue_Success(t *testing.T) {
 		int64(1), uint(1), uint8(1), uint16(1), uint32(1), uint64(1), float32(1), float64(1),
 	}
 	for _, v := range allNumberTypes {
-		err = nodeOutputs.SetOutputValue(ec, ni.Test_v1_Output_output_number, v)
+		err = nodeOutputs.SetOutputValue(ec, ni.Test_v1_Output_output_number, v, core.SetOutputValueOpts{})
 		if err != nil {
 			t.Fatal("For value", v, "got error", err)
 		}
 	}
 
-	err = nodeOutputs.SetOutputValue(ec, ni.Test_v1_Output_output_string, "abc")
+	err = nodeOutputs.SetOutputValue(ec, ni.Test_v1_Output_output_string, "abc", core.SetOutputValueOpts{})
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	err = nodeOutputs.SetOutputValue(ec, ni.Test_v1_Output_output_array_string, []string{"foo", "bar", "bas"})
+	err = nodeOutputs.SetOutputValue(ec, ni.Test_v1_Output_output_array_string, []string{"foo", "bar", "bas"}, core.SetOutputValueOpts{})
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	err = nodeOutputs.SetOutputValue(ec, ni.Test_v1_Output_output_array_number, []int{1, 2, 3})
+	err = nodeOutputs.SetOutputValue(ec, ni.Test_v1_Output_output_array_number, []int{1, 2, 3}, core.SetOutputValueOpts{})
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	err = nodeOutputs.SetOutputValue(ec, ni.Test_v1_Output_output_array_bool, []bool{true, false, true})
+	err = nodeOutputs.SetOutputValue(ec, ni.Test_v1_Output_output_array_bool, []bool{true, false, true}, core.SetOutputValueOpts{})
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	err = nodeOutputs.SetOutputValue(ec, ni.Test_v1_Output_output_map_string_int32, map[string]int32{"foo": 1, "bar": 2})
+	err = nodeOutputs.SetOutputValue(ec, ni.Test_v1_Output_output_map_string_int32, map[string]int32{"foo": 1, "bar": 2}, core.SetOutputValueOpts{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -92,7 +92,7 @@ func Test_SetOutputValue_Success(t *testing.T) {
 	// ensure that any value can be set
 	arr := []interface{}{1, "foo", true, map[string]int32{"foo": 1, "bar": 2}}
 	for _, v := range arr {
-		err = nodeOutputs.SetOutputValue(ec, ni.Test_v1_Output_output_any, v)
+		err = nodeOutputs.SetOutputValue(ec, ni.Test_v1_Output_output_any, v, core.SetOutputValueOpts{})
 		if err != nil {
 			t.Fatal("For value", v, "got error", err)
 		}
@@ -116,7 +116,7 @@ func Test_SetOutputValue_Decline(t *testing.T) {
 	}
 
 	// nil is not a valid value for any type
-	err = nodeOutputs.SetOutputValue(ec, ni.Test_v1_Output_output_bool, nil)
+	err = nodeOutputs.SetOutputValue(ec, ni.Test_v1_Output_output_bool, nil, core.SetOutputValueOpts{})
 	if err != nil {
 		if err.Error() != "type mismatch: expected bool, got <nil>" {
 			t.Fatal(err)
@@ -125,7 +125,7 @@ func Test_SetOutputValue_Decline(t *testing.T) {
 		t.Fatal("Expected error")
 	}
 
-	err = nodeOutputs.SetOutputValue(ec, ni.Test_v1_Output_output_bool, "hello")
+	err = nodeOutputs.SetOutputValue(ec, ni.Test_v1_Output_output_bool, "hello", core.SetOutputValueOpts{})
 	if err != nil {
 		if err.Error() != "type mismatch: expected bool, got string" {
 			t.Fatal(err)
@@ -134,7 +134,7 @@ func Test_SetOutputValue_Decline(t *testing.T) {
 		t.Fatal("Expected error")
 	}
 
-	err = nodeOutputs.SetOutputValue(ec, ni.Test_v1_Output_output_number, "world")
+	err = nodeOutputs.SetOutputValue(ec, ni.Test_v1_Output_output_number, "world", core.SetOutputValueOpts{})
 	if err != nil {
 		if err.Error() != "type mismatch: expected number, got string" {
 			t.Fatal(err)
@@ -143,7 +143,7 @@ func Test_SetOutputValue_Decline(t *testing.T) {
 		t.Fatal("Expected error")
 	}
 
-	err = nodeOutputs.SetOutputValue(ec, ni.Test_v1_Output_output_string, true)
+	err = nodeOutputs.SetOutputValue(ec, ni.Test_v1_Output_output_string, true, core.SetOutputValueOpts{})
 	if err != nil {
 		if err.Error() != "type mismatch: expected string, got bool" {
 			t.Fatal(err)
@@ -152,7 +152,7 @@ func Test_SetOutputValue_Decline(t *testing.T) {
 		t.Fatal("Expected error")
 	}
 
-	err = nodeOutputs.SetOutputValue(ec, ni.Test_v1_Output_output_array_string, []bool{true, false, true})
+	err = nodeOutputs.SetOutputValue(ec, ni.Test_v1_Output_output_array_string, []bool{true, false, true}, core.SetOutputValueOpts{})
 	if err != nil {
 		if err.Error() != "type mismatch: expected []string, got []bool" {
 			t.Fatal(err)
@@ -161,7 +161,7 @@ func Test_SetOutputValue_Decline(t *testing.T) {
 		t.Fatal("Expected error")
 	}
 
-	err = nodeOutputs.SetOutputValue(ec, ni.Test_v1_Output_output_array_number, []string{"foo", "bar", "bas"})
+	err = nodeOutputs.SetOutputValue(ec, ni.Test_v1_Output_output_array_number, []string{"foo", "bar", "bas"}, core.SetOutputValueOpts{})
 	if err != nil {
 		if err.Error() != "type mismatch: expected []number, got []string" {
 			t.Fatal(err)
@@ -170,7 +170,7 @@ func Test_SetOutputValue_Decline(t *testing.T) {
 		t.Fatal("Expected error")
 	}
 
-	err = nodeOutputs.SetOutputValue(ec, ni.Test_v1_Output_output_array_bool, []int{1, 2, 3})
+	err = nodeOutputs.SetOutputValue(ec, ni.Test_v1_Output_output_array_bool, []int{1, 2, 3}, core.SetOutputValueOpts{})
 	if err != nil {
 		if err.Error() != "type mismatch: expected []bool, got []int" {
 			t.Fatal(err)
@@ -179,7 +179,7 @@ func Test_SetOutputValue_Decline(t *testing.T) {
 		t.Fatal("Expected error")
 	}
 
-	err = nodeOutputs.SetOutputValue(ec, ni.Test_v1_Output_output_map_string_int32, map[string]string{"foo": "bar"})
+	err = nodeOutputs.SetOutputValue(ec, ni.Test_v1_Output_output_map_string_int32, map[string]string{"foo": "bar"}, core.SetOutputValueOpts{})
 	if err != nil {
 		if err.Error() != "type mismatch: expected map[string]int32, got map[string]string" {
 			t.Fatal(err)
@@ -240,7 +240,7 @@ func Test_InputValueById_Match(t *testing.T) {
 
 	// bool
 
-	err := test1Outputs.SetOutputValue(ec, ni.Test_v1_Output_output_bool, true)
+	err := test1Outputs.SetOutputValue(ec, ni.Test_v1_Output_output_bool, true, core.SetOutputValueOpts{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -265,7 +265,7 @@ func Test_InputValueById_Match(t *testing.T) {
 
 	// number
 
-	err = test1Outputs.SetOutputValue(ec, ni.Test_v1_Output_output_number, 123)
+	err = test1Outputs.SetOutputValue(ec, ni.Test_v1_Output_output_number, 123, core.SetOutputValueOpts{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -281,7 +281,7 @@ func Test_InputValueById_Match(t *testing.T) {
 
 	// string
 
-	err = test1Outputs.SetOutputValue(ec, ni.Test_v1_Output_output_string, "abc")
+	err = test1Outputs.SetOutputValue(ec, ni.Test_v1_Output_output_string, "abc", core.SetOutputValueOpts{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -297,7 +297,7 @@ func Test_InputValueById_Match(t *testing.T) {
 
 	// array string
 
-	err = test1Outputs.SetOutputValue(ec, ni.Test_v1_Output_output_array_string, []string{"foo", "bar", "bas"})
+	err = test1Outputs.SetOutputValue(ec, ni.Test_v1_Output_output_array_string, []string{"foo", "bar", "bas"}, core.SetOutputValueOpts{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -317,7 +317,7 @@ func Test_InputValueById_Match(t *testing.T) {
 
 	// array number
 
-	err = test1Outputs.SetOutputValue(ec, ni.Test_v1_Output_output_array_number, []int{1, 2, 3})
+	err = test1Outputs.SetOutputValue(ec, ni.Test_v1_Output_output_array_number, []int{1, 2, 3}, core.SetOutputValueOpts{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -337,7 +337,7 @@ func Test_InputValueById_Match(t *testing.T) {
 
 	// array bool
 
-	err = test1Outputs.SetOutputValue(ec, ni.Test_v1_Output_output_array_bool, []bool{true, false, true})
+	err = test1Outputs.SetOutputValue(ec, ni.Test_v1_Output_output_array_bool, []bool{true, false, true}, core.SetOutputValueOpts{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -357,7 +357,7 @@ func Test_InputValueById_Match(t *testing.T) {
 
 	// map string int32
 
-	err = test1Outputs.SetOutputValue(ec, ni.Test_v1_Output_output_map_string_int32, map[string]int32{"foo": 1, "bar": 2})
+	err = test1Outputs.SetOutputValue(ec, ni.Test_v1_Output_output_map_string_int32, map[string]int32{"foo": 1, "bar": 2}, core.SetOutputValueOpts{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -377,7 +377,7 @@ func Test_InputValueById_Match(t *testing.T) {
 
 	// any
 
-	err = test1Outputs.SetOutputValue(ec, ni.Test_v1_Output_output_any, "abc")
+	err = test1Outputs.SetOutputValue(ec, ni.Test_v1_Output_output_any, "abc", core.SetOutputValueOpts{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -410,7 +410,7 @@ func Test_InputValueById_Casting(t *testing.T) {
 
 	// test bool to int32
 
-	err := test1Outputs.SetOutputValue(ec, ni.Test_v1_Output_output_bool, true)
+	err := test1Outputs.SetOutputValue(ec, ni.Test_v1_Output_output_bool, true, core.SetOutputValueOpts{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -426,7 +426,7 @@ func Test_InputValueById_Casting(t *testing.T) {
 
 	// test int8 to bool and int32
 
-	err = test1Outputs.SetOutputValue(ec, ni.Test_v1_Output_output_number, int8(42))
+	err = test1Outputs.SetOutputValue(ec, ni.Test_v1_Output_output_number, int8(42), core.SetOutputValueOpts{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -451,7 +451,7 @@ func Test_InputValueById_Casting(t *testing.T) {
 
 	// array int to array bool
 
-	err = test1Outputs.SetOutputValue(ec, ni.Test_v1_Output_output_array_number, []int{0, 1, 4})
+	err = test1Outputs.SetOutputValue(ec, ni.Test_v1_Output_output_array_number, []int{0, 1, 4}, core.SetOutputValueOpts{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -484,7 +484,7 @@ func Test_InputValueById_Casting(t *testing.T) {
 
 	// array int to array int32
 
-	err = test1Outputs.SetOutputValue(ec, ni.Test_v1_Output_output_array_bool, []bool{true, false, true})
+	err = test1Outputs.SetOutputValue(ec, ni.Test_v1_Output_output_array_bool, []bool{true, false, true}, core.SetOutputValueOpts{})
 	if err != nil {
 		t.Fatal(err)
 	}

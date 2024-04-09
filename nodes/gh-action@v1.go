@@ -169,7 +169,7 @@ func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
 	// Set the output values to empty strings. If an action didn't set an output,
 	// it will evaluate to an empty string in a subsequent action if result wasn't set.
 	for outputId := range n.OutputDefsCopy() {
-		err = n.SetOutputValue(c, outputId, "")
+		err = n.SetOutputValue(c, outputId, "", core.SetOutputValueOpts{})
 		if err != nil {
 			return u.Throw(err)
 		}
@@ -197,7 +197,11 @@ func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
 			return u.Throw(err)
 		}
 		for key, value := range outputs {
-			err = n.SetOutputValue(c, core.OutputId(key), strings.TrimRight(value, "\t\n"))
+			err = n.SetOutputValue(c, core.OutputId(key), strings.TrimRight(value, "\t\n"), core.SetOutputValueOpts{
+				// Some actions could have accidentally set an output that is not defined in the action.yml
+				// https://github.com/getsentry/action-release/blob/e769183448303de84c5a06aaaddf9da7be26d6c7/src/main.ts#L83
+				NotExistsIsNoError: true,
+			})
 			if err != nil {
 				return u.Throw(err)
 			}

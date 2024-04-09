@@ -52,7 +52,7 @@ func (n *ParallelForNode) ExecuteImpl(ti core.ExecutionContext) error {
 		for i := firstIndex; i <= lastIndex; i++ {
 
 			nti := ti.PushNewExecutionContext()
-			err = n.Outputs.SetOutputValue(nti, ni.For_v1_Output_index, i)
+			err = n.Outputs.SetOutputValue(nti, ni.For_v1_Output_index, i, core.SetOutputValueOpts{})
 			if err != nil {
 				return err
 			}
