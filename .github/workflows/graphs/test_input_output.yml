@@ -154,6 +154,8 @@ nodes:
     inputs:
       input1: ipsum
       input2: lorem
+      env:
+        - CUSTOM_ENV=lorem
     settings:
       folded: false
   - id: env-array-v1-orange-blueberry-penguin
@@ -200,13 +202,15 @@ nodes:
       input1: dolor
       input2: ipsum
       environment: "false"
+      env:
+        - CUSTOM_ENV=ipsum
     settings:
       folded: false
   - id: string-fmt-v1-lemon-kiwi-peach
     type: string-fmt@v1
     position:
-      x: 2960
-      y: 220
+      x: 3010
+      y: 250
     inputs:
       input[0]: null
       fmt: OUTPUT2=%v
