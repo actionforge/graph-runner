@@ -12,7 +12,7 @@ import (
 func main() {
 	// License info
 	// This code must not be removed or bypassed
-	fmt.Println("Actionforge Graph Runner (beta)")
+	fmt.Println("Actionforge Graph Runner for GitHub (beta)")
 
 	if core.HasFrozenGraph() {
 		err := cmd.ExecuteFrozenGraph()
