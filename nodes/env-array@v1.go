@@ -3,6 +3,7 @@ package nodes
 import (
 	"actionforge/graph-runner/core"
 	ni "actionforge/graph-runner/node_interfaces"
+	"actionforge/graph-runner/utils"
 	_ "embed"
 	"fmt"
 	"strings"
@@ -27,7 +28,7 @@ func (n *EnvArrayNode) OutputValueById(c core.ExecutionContext, outputId core.Ou
 	for _, env := range envs {
 		kv := strings.SplitN(env, "=", 2)
 		if len(kv) == 2 {
-			contextEnvironMap[kv[0]] = ReplaceContextVariables(kv[1])
+			contextEnvironMap[kv[0]] = utils.ReplaceContextVariables(kv[1])
 		}
 	}
 

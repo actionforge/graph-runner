@@ -5,6 +5,7 @@ package nodes
 import (
 	"actionforge/graph-runner/core"
 	ni "actionforge/graph-runner/node_interfaces"
+	"actionforge/graph-runner/utils"
 	_ "embed"
 	"fmt"
 )
@@ -33,7 +34,7 @@ func (n *GhSecretsNode) OutputValueById(c core.ExecutionContext, outputId core.O
 	var secretValue string
 
 	var ok bool
-	secretValue, ok = ghSecrets[secretName]
+	secretValue, ok = utils.GetSecret(secretName)
 	if !ok {
 		// return an empty string if the secret is not found
 		return "", nil

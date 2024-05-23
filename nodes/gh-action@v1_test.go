@@ -3,6 +3,7 @@
 package nodes
 
 import (
+	"actionforge/graph-runner/utils"
 	"bytes"
 	"encoding/json"
 	"os"
@@ -45,7 +46,7 @@ func TestReplaceContextVariables(t *testing.T) {
 	// Since the env variables are not coming from the parent
 	// process and were instead set manually above, the github
 	// context variables need to be initialized again.
-	err := initGhContexts()
+	err := utils.InitGhContexts()
 	if err != nil {
 		t.Errorf("Error initializing github context: %s", err)
 		return
@@ -161,7 +162,7 @@ func TestReplaceContextVariables(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			output := ReplaceContextVariables(tc.input)
+			output := utils.ReplaceContextVariables(tc.input)
 			if output != tc.expectedOutput {
 				t.Errorf("Output should match expected output, but got: %s", output)
 			}
