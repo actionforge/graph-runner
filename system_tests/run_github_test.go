@@ -3,7 +3,6 @@
 package system_tests
 
 import (
-	"actionforge/graph-runner/nodes"
 	"actionforge/graph-runner/utils"
 	"fmt"
 	"testing"
@@ -19,8 +18,8 @@ type testCase struct {
 func Test_Secret(t *testing.T) {
 	defer utils.LoggerString.Clear()
 
-	nodes.AddGhSecret("API_KEY_123", "THIS_IS_A_SECRET")
-	defer nodes.RemoveGhSecret("API_KEY_123")
+	utils.AddSecret("API_KEY_123", "THIS_IS_A_SECRET")
+	defer utils.RemoveSecret("API_KEY_123")
 
 	// Test the run node, env node, and string format node.
 	err := RunGraphFile("system_tests/test_secret.yml")

@@ -59,7 +59,7 @@ func (n *RunNode) ExecuteImpl(c core.ExecutionContext) error {
 	for _, env := range envs {
 		kv := strings.SplitN(env, "=", 2)
 		if len(kv) == 2 {
-			contextEnvironMap[kv[0]] = ReplaceContextVariables(kv[1])
+			contextEnvironMap[kv[0]] = utils.ReplaceContextVariables(kv[1])
 		}
 	}
 

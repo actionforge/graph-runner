@@ -90,7 +90,7 @@ func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
 		if err != nil {
 			return u.Throw(err)
 		}
-		v = ReplaceContextVariables(v)
+		v = utils.ReplaceContextVariables(v)
 		contextEnvironMap[fmt.Sprintf("INPUT_%v", strings.ToUpper(string(inputName)))] = v
 		withInputs += fmt.Sprintf(" %s: %s\n", inputName, v)
 	}
@@ -118,7 +118,7 @@ func (n *GhActionNode) ExecuteImpl(c core.ExecutionContext) error {
 		kv := strings.SplitN(env, "=", 2)
 		if len(kv) == 2 {
 			customEnvs[kv[0]] = true
-			contextEnvironMap[kv[0]] = ReplaceContextVariables(kv[1])
+			contextEnvironMap[kv[0]] = utils.ReplaceContextVariables(kv[1])
 		}
 	}
 
@@ -277,7 +277,6 @@ func (n *GhActionNode) ExecuteDocker(c core.ExecutionContext, workingDirectory s
 		envName := fmt.Sprintf("GITHUB_%s", strings.ToUpper(contextName))
 		dockerEnviron[envName] = envs.ExecutionEnviron[envName]
 	}
-
 	for k, v := range envs.ExecutionEnviron {
 		if strings.HasPrefix(k, "RUNNER_") || strings.HasPrefix(k, "INPUT_") || envs.CustomEnvs[k] {
 			dockerEnviron[k] = v
@@ -298,10 +297,10 @@ func (n *GhActionNode) ExecuteDocker(c core.ExecutionContext, workingDirectory s
 
 	ContainerEntryArgs := make([]string, 0)
 	for _, arg := range n.actionRuns.Args {
-		ContainerEntryArgs = append(ContainerEntryArgs, ReplaceContextVariables(arg))
+		ContainerEntryArgs = append(ContainerEntryArgs, utils.ReplaceContextVariables(arg))
 	}
 
-	ci := ContainerInfo{
+	ci := utils.ContainerInfo{
 		ContainerImage:                n.Data.Image,
 		ContainerDisplayName:          fmt.Sprintf("actionforge_%s_%s", n.Data.DockerInstanceLabel, uuid.New()),
 		ContainerWorkDirectory:        dockerGithubWorkspace,
@@ -310,7 +309,7 @@ func (n *GhActionNode) ExecuteDocker(c core.ExecutionContext, workingDirectory s
 	}
 
 	if runtime.GOOS == "linux" || runtime.GOOS == "darwin" {
-		ci.MountVolumes = append(ci.MountVolumes, Volume{
+		ci.MountVolumes = append(ci.MountVolumes, utils.Volume{
 			SourceVolumePath: "/var/run/docker.sock",
 			TargetVolumePath: "/var/run/docker.sock",
 			ReadOnly:         false,
@@ -320,31 +319,31 @@ func (n *GhActionNode) ExecuteDocker(c core.ExecutionContext, workingDirectory s
 	// All mounted volumes from the original runner are registered here:
 	// https://github.com/actions/runner/blob/f467e9e1255530d3bf2e33f580d041925ab01951/src/Runner.Worker/Handlers/ContainerActionHandler.cs#L193-L197
 
-	ci.MountVolumes = append(ci.MountVolumes, Volume{
+	ci.MountVolumes = append(ci.MountVolumes, utils.Volume{
 		SourceVolumePath: sysGithubWorkspace,
 		TargetVolumePath: dockerGithubWorkspace,
 		ReadOnly:         false,
 	})
 
-	ci.MountVolumes = append(ci.MountVolumes, Volume{
+	ci.MountVolumes = append(ci.MountVolumes, utils.Volume{
 		SourceVolumePath: filepath.Join(sysRunnerTempDir, "_github_workflow"),
 		TargetVolumePath: dockerGithubWorkflow,
 		ReadOnly:         false,
 	})
 
-	ci.MountVolumes = append(ci.MountVolumes, Volume{
+	ci.MountVolumes = append(ci.MountVolumes, utils.Volume{
 		SourceVolumePath: filepath.Join(sysRunnerTempDir, "_github_home"),
 		TargetVolumePath: dockerGithubHome,
 		ReadOnly:         false,
 	})
 
-	ci.MountVolumes = append(ci.MountVolumes, Volume{
+	ci.MountVolumes = append(ci.MountVolumes, utils.Volume{
 		SourceVolumePath: filepath.Join(sysRunnerTempDir, "_runner_file_commands"),
 		TargetVolumePath: dockerGithubFileCommands,
 		ReadOnly:         false,
 	})
 
-	exitCode, err := DockerRun(context.Background(), n.Data.DockerInstanceLabel, ci, workingDirectory, nil, nil)
+	exitCode, err := utils.DockerRun(context.Background(), n.Data.DockerInstanceLabel, ci, workingDirectory, nil, nil)
 	if err != nil {
 		return u.Throw(err)
 	}
@@ -361,7 +360,7 @@ func parseNodeTypeUri(nodeTypeUri string) (registry string, owner string, regnam
 		return "", "", "", "", fmt.Errorf("url must only contain the node path uri, not the full url")
 	}
 
-	matches := getNodeTypeUriRegex().FindStringSubmatch(nodeTypeUri)
+	matches := utils.GetNodeTypeUriRegex().FindStringSubmatch(nodeTypeUri)
 	if len(matches) == 0 {
 		return "", "", "", "", fmt.Errorf("invalid node type id")
 	}
@@ -390,7 +389,7 @@ func init() {
 		_, err = os.Stat(actionFolder)
 		if os.IsNotExist(err) {
 			// Clone the entire repo but don't check out yet since HEAD might not be the requested ref.
-			cloneUrl := fmt.Sprintf("https://%s@github.com/%s/%s", ghActionsRuntimeToken, owner, name)
+			cloneUrl := fmt.Sprintf("https://%s@github.com/%s/%s", utils.GhActionsRuntimeToken(), owner, name)
 			c := exec.Command("git", "clone", "--quiet", "--no-checkout", cloneUrl, actionFolder)
 			// c.Stdout = os.Stdout
 			c.Stderr = os.Stderr
@@ -456,7 +455,7 @@ func init() {
 				}
 
 				node.Data.Image = dockerUrl
-				exitCode, err := DockerPull(context.Background(), dockerUrl, sysWorkspaceDir)
+				exitCode, err := utils.DockerPull(context.Background(), dockerUrl, sysWorkspaceDir)
 				if err != nil {
 					return nil, err
 				}
@@ -491,7 +490,7 @@ func init() {
 					"",
 				)
 
-				exitCode, err := DockerBuild(context.Background(), actionFolder, path.Join(actionFolder, action.Runs.Image), actionFolder, imageName)
+				exitCode, err := utils.DockerBuild(context.Background(), actionFolder, path.Join(actionFolder, action.Runs.Image), actionFolder, imageName)
 				if err != nil {
 					return nil, err
 				}
