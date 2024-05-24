@@ -15,8 +15,6 @@ jobs:
         uses: actionforge/action@46eca450335b4873aa06c1d5da7ded0f7654236c # v0.9.54
         with:
           graph_file: build.yml
-        env:
-          FREEZE_TEST: true
 
       - name: Test test_input_output.yml
         if: ${{ matrix.os != 'macos-latest' }}
@@ -31,6 +29,7 @@ jobs:
         with:
           runner_path: ${{ github.workspace }}/graph-runner
           graph_file: test_env.yml
+          secrets: ${{ toJson(secrets) }}
         env:
           MY_ENV: "hello world"
 

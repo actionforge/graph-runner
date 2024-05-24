@@ -1,12 +1,6 @@
 entry: gh-start
 executions:
   - src:
-      node: penguin-coconut-gray
-      port: exec-success
-    dst:
-      node: rabbit-dolphin-raspberry
-      port: exec
-  - src:
       node: parallel-exec-v1-cranberry-blueberry-orange
       port: exec[0]
     dst:
@@ -91,12 +85,6 @@ executions:
       node: run-v1-gold-pomegranate-butterfly
       port: exec
   - src:
-      node: run-v1-lion-panda-purple
-      port: exec-success
-    dst:
-      node: parallel-exec-v1-kiwi-penguin-apple
-      port: exec
-  - src:
       node: parallel-exec-v1-kiwi-penguin-apple
       port: exec[1]
     dst:
@@ -113,6 +101,42 @@ executions:
       port: exec-success
     dst:
       node: gh-actions-upload-artifact-giraffe-giraffe-cherry
+      port: exec
+  - src:
+      node: penguin-coconut-gray
+      port: exec-success
+    dst:
+      node: gh-actions-upload-artifact-red-kiwi-blackberry
+      port: exec
+  - src:
+      node: run-v1-lion-panda-purple
+      port: exec-success
+    dst:
+      node: parallel-exec-v1-kiwi-penguin-apple
+      port: exec
+  - src:
+      node: gh-actions-upload-artifact-red-kiwi-blackberry
+      port: exec
+    dst:
+      node: wait-for-v1-pineapple-snake-brown
+      port: exec[0]
+  - src:
+      node: gh-actions-upload-artifact-giraffe-giraffe-cherry
+      port: exec
+    dst:
+      node: wait-for-v1-pineapple-snake-brown
+      port: exec[1]
+  - src:
+      node: wait-for-v1-pineapple-snake-brown
+      port: exec
+    dst:
+      node: run-v1-cranberry-strawberry-butterfly
+      port: exec
+  - src:
+      node: parallel-exec-v1-kiwi-penguin-apple
+      port: exec[2]
+    dst:
+      node: run-v1-cranberry-strawberry-butterfly
       port: exec
 connections:
   - src:
@@ -170,17 +194,6 @@ nodes:
         actionforge/graph-runner/core.Production=true -X
         actionforge/graph-runner/core.Version=$GITHUB_REF_NAME"
         -tags=github_impl -o dist-linux/graph-runner-linux-x64 .
-    settings:
-      folded: false
-  - id: rabbit-dolphin-raspberry
-    type: >-
-      github.com/actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32
-    position:
-      x: 2080
-      y: 1490
-    inputs:
-      name: graph-runner-linux-x64
-      path: dist-windows/graph-runner-linux-x64
     settings:
       folded: false
   - id: yellow-kangaroo-pineapple
@@ -256,7 +269,7 @@ nodes:
       github.com/docker/build-push-action@4a13e500e55cf31b7a5d59a38ab2040ab0f42f56
     position:
       x: 2120
-      y: 310
+      y: 180
     inputs:
       push: "true"
       context: .
@@ -365,8 +378,8 @@ nodes:
   - id: run-v1-lion-panda-purple
     type: run@v1
     position:
-      x: 2940
-      y: 2080
+      x: 2950
+      y: 2070
     inputs:
       script: >-
         zip -r graph-runner.zip ./dist-darwin
@@ -394,8 +407,8 @@ nodes:
     type: >-
       github.com/actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808
     position:
-      x: 3760
-      y: 2330
+      x: 4040
+      y: 2350
     inputs:
       name: graph-runner-darwin-x64
       path: dist-darwin/graph-runner-darwin-x64
@@ -404,19 +417,20 @@ nodes:
   - id: parallel-exec-v1-kiwi-penguin-apple
     type: parallel-exec@v1
     position:
-      x: 3460
-      y: 2200
+      x: 3450
+      y: 1990
     outputs:
       exec[0]: ""
       exec[1]: ""
+      exec[2]: ""
     settings:
       folded: false
   - id: gh-actions-upload-artifact-pomegranate-snake-cranberry
     type: >-
       github.com/actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808
     position:
-      x: 3760
-      y: 1940
+      x: 4030
+      y: 1870
     inputs:
       name: graph-runner-darwin-arm64
       path: dist-darwin/graph-runner-darwin-arm64
@@ -431,6 +445,41 @@ nodes:
     inputs:
       name: graph-runner-win32-x64
       path: dist-windows/graph-runner-win32-x64.exe
+    settings:
+      folded: false
+  - id: gh-actions-upload-artifact-red-kiwi-blackberry
+    type: >-
+      github.com/actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808
+    position:
+      x: 2110
+      y: 1400
+    inputs:
+      name: graph-runner-linux-x64
+      path: dist-linux/graph-runner-linux-x64
+    settings:
+      folded: false
+  - id: run-v1-cranberry-strawberry-butterfly
+    type: run@v1
+    position:
+      x: 3730
+      y: 1510
+    inputs:
+      script: |-
+        find dist-* -type f | while read -r file; do
+          sha256=$(shasum -a 256 "$file" | awk '{print $1}')
+          echo "$sha256  $file"
+        done
+    settings:
+      folded: false
+  - id: wait-for-v1-pineapple-snake-brown
+    type: wait-for@v1
+    position:
+      x: 2670
+      y: 1650
+    inputs:
+      after: 2
+      exec[0]: null
+      exec[1]: null
     settings:
       folded: false
 registries:
