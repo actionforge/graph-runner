@@ -1,12 +1,6 @@
 entry: start
 executions:
   - src:
-      node: start
-      port: exec
-    dst:
-      node: run-v1-apple-silver-lion
-      port: exec
-  - src:
       node: gh-actionforge-test-action-node-main-lemon-penguin-yellow
       port: exec
     dst:
@@ -29,12 +23,6 @@ executions:
       port: exec-success
     dst:
       node: run-v1-snake-squirrel-shark
-      port: exec
-  - src:
-      node: run-v1-apple-silver-lion
-      port: exec-success
-    dst:
-      node: parallel-exec-v1-blackberry-orange-coconut
       port: exec
   - src:
       node: parallel-exec-v1-blackberry-orange-coconut
@@ -60,6 +48,24 @@ executions:
     dst:
       node: run-v1-yellow-squirrel-orange
       port: exec
+  - src:
+      node: run-v1-apple-silver-lion
+      port: exec-success
+    dst:
+      node: parallel-exec-v1-blackberry-orange-coconut
+      port: exec
+  - src:
+      node: run-v1-pomegranate-squirrel-squirrel
+      port: exec-success
+    dst:
+      node: run-v1-apple-silver-lion
+      port: exec
+  - src:
+      node: start
+      port: exec
+    dst:
+      node: run-v1-pomegranate-squirrel-squirrel
+      port: exec
 connections:
   - src:
       node: start
@@ -67,12 +73,30 @@ connections:
     dst:
       node: run-v1-apple-silver-lion
       port: env
+  - src:
+      node: gh-secret-v1-tiger-gold-plum
+      port: secret
+    dst:
+      node: string-fmt-v1-mango-strawberry-rabbit
+      port: input[0]
+  - src:
+      node: string-fmt-v1-mango-strawberry-rabbit
+      port: result
+    dst:
+      node: env-array-v1-elephant-brown-raspberry
+      port: env[0]
+  - src:
+      node: env-array-v1-elephant-brown-raspberry
+      port: env
+    dst:
+      node: run-v1-pomegranate-squirrel-squirrel
+      port: env
 nodes:
   - id: start
     type: start@v1
     position:
-      x: 10
-      y: 600
+      x: -800
+      y: 690
     settings:
       folded: false
   - id: gh-actionforge-test-action-node-main-lemon-penguin-yellow
@@ -90,8 +114,8 @@ nodes:
   - id: run-v1-apple-silver-lion
     type: run@v1
     position:
-      x: 230
-      y: 480
+      x: 200
+      y: 530
     inputs:
       script: |
         input1="hello world"
@@ -138,8 +162,8 @@ nodes:
   - id: parallel-exec-v1-blackberry-orange-coconut
     type: parallel-exec@v1
     position:
-      x: 540
-      y: 440
+      x: 580
+      y: 450
     outputs:
       exec[0]: ""
       exec[1]: ""
@@ -240,6 +264,48 @@ nodes:
             echo "MY_ENV is not correctly set, got: '$MY_ENV'"
             exit 1
         fi
+    settings:
+      folded: false
+  - id: gh-secret-v1-tiger-gold-plum
+    type: gh-secret@v1
+    position:
+      x: -1160
+      y: 1000
+    inputs:
+      name: APPLE_ID_PASSWORD
+    settings:
+      folded: false
+  - id: run-v1-pomegranate-squirrel-squirrel
+    type: run@v1
+    position:
+      x: -140
+      y: 550
+    inputs:
+      script: |-
+        if [ "$SECRET1" != "$SECRET2" ]; then
+          echo "secrets are not equal"
+          exit 1
+        fi
+    settings:
+      folded: false
+  - id: env-array-v1-elephant-brown-raspberry
+    type: env-array@v1
+    position:
+      x: -390
+      y: 830
+    inputs:
+      env[0]: ""
+      env[1]: SECRET2=${{ secrets.APPLE_ID_PASSWORD }}
+    settings:
+      folded: false
+  - id: string-fmt-v1-mango-strawberry-rabbit
+    type: string-fmt@v1
+    position:
+      x: -760
+      y: 900
+    inputs:
+      input[0]: null
+      fmt: SECRET1=%v
     settings:
       folded: false
 registries:

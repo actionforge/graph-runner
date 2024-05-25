@@ -69,7 +69,7 @@ func GhActionsRuntimeToken() string {
 	return ghActionsRuntimeToken
 }
 
-func decodeJsonFromEnvValue(envValue string, prefix string) (map[string]string, error) {
+func decodeJsonFromEnvValue(envValue string) (map[string]string, error) {
 	envMap := map[string]string{}
 	if envValue != "" {
 		tmp := map[string]string{}
@@ -78,7 +78,7 @@ func decodeJsonFromEnvValue(envValue string, prefix string) (map[string]string, 
 			return nil, err
 		}
 		for k, v := range tmp {
-			envMap[fmt.Sprintf("%s.%s", prefix, k)] = v
+			envMap[k] = v
 		}
 	}
 	return envMap, nil
@@ -269,19 +269,19 @@ func ReplaceContextVariables(input string) string {
 			}
 			return ""
 		} else if strings.HasPrefix(contextVar, "secrets.") {
-			secretVal, exists := ghSecrets[contextVar]
+			secretVal, exists := ghSecrets[strings.TrimPrefix(contextVar, "secrets.")]
 			if exists {
 				return secretVal
 			}
 			return ""
 		} else if strings.HasPrefix(contextVar, "matrix.") {
-			envVar, exists := ghMatrix[contextVar]
+			envVar, exists := ghMatrix[strings.TrimPrefix(contextVar, "matrix.")]
 			if exists {
 				return envVar
 			}
 			return ""
 		} else if strings.HasPrefix(contextVar, "inputs.") {
-			envVar, exists := ghInputs[contextVar]
+			envVar, exists := ghInputs[strings.TrimPrefix(contextVar, "inputs.")]
 			if exists {
 				return envVar
 			}
@@ -331,7 +331,7 @@ func InitGhContexts() error {
 	// are functionally equivalent. See:
 	// https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
 	ghContext["github.token"] = os.Getenv("INPUT_TOKEN")
-	ghSecrets["secrets.GITHUB_TOKEN"] = os.Getenv("INPUT_TOKEN")
+	ghSecrets["GITHUB_TOKEN"] = os.Getenv("INPUT_TOKEN")
 
 	ghActionsRuntimeToken = os.Getenv("ACTIONS_RUNTIME_TOKEN")
 
@@ -347,20 +347,20 @@ func InitGhContexts() error {
 
 		if envName == "INPUT_MATRIX" {
 			var err error
-			ghMatrix, err = decodeJsonFromEnvValue(envValue, "matrix")
+			ghMatrix, err = decodeJsonFromEnvValue(envValue)
 			if err != nil {
 				return err
 			}
 			os.Unsetenv(envName)
 		} else if envName == "INPUT_INPUTS" {
 			var err error
-			ghInputs, err = decodeJsonFromEnvValue(envValue, "inputs")
+			ghInputs, err = decodeJsonFromEnvValue(envValue)
 			if err != nil {
 				return err
 			}
 			os.Unsetenv(envName)
 		} else if envName == "INPUT_SECRETS" {
-			secrets, err := decodeJsonFromEnvValue(envValue, "secrets")
+			secrets, err := decodeJsonFromEnvValue(envValue)
 			if err != nil {
 				return err
 			}
@@ -371,9 +371,9 @@ func InitGhContexts() error {
 		} else if strings.HasPrefix(envName, "SECRET_") {
 
 			/* Deprecated, replaced by INPUT_SECRETS */
-			key := strings.TrimPrefix(envName, "SECRET_")
-			if key != "" {
-				ghSecrets[fmt.Sprintf("secrets.%s", key)] = envValue
+			k := strings.TrimPrefix(envName, "SECRET_")
+			if k != "" {
+				ghSecrets[k] = envValue
 			}
 			os.Unsetenv(envName)
 		}
