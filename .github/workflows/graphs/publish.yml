@@ -25,12 +25,6 @@ executions:
       node: gh-apple-actions-import-codesign-certs-v3-gold-orange-octopus
       port: exec
   - src:
-      node: branch-v1-pink-purple-koala
-      port: exec-then
-    dst:
-      node: switch-platform-v1-blueberry-purple-purple
-      port: exec
-  - src:
       node: parallel-exec-v1-cranberry-blueberry-orange
       port: exec[1]
     dst:
@@ -53,12 +47,6 @@ executions:
       port: exec-linux
     dst:
       node: parallel-exec-v1-cranberry-blueberry-orange
-      port: exec
-  - src:
-      node: gh-start
-      port: exec-on-push
-    dst:
-      node: gh-actions-setup-go-blue-grape-penguin
       port: exec
   - src:
       node: gh-actions-setup-go-blue-grape-penguin
@@ -137,6 +125,18 @@ executions:
       port: exec[2]
     dst:
       node: run-v1-cranberry-strawberry-butterfly
+      port: exec
+  - src:
+      node: branch-v1-pink-purple-koala
+      port: exec-then
+    dst:
+      node: gh-actions-setup-go-blue-grape-penguin
+      port: exec
+  - src:
+      node: gh-start
+      port: exec-on-push
+    dst:
+      node: branch-v1-pink-purple-koala
       port: exec
 connections:
   - src:
@@ -249,7 +249,7 @@ nodes:
   - id: branch-v1-pink-purple-koala
     type: branch@v1
     position:
-      x: 480
+      x: 270
       y: 1140
     settings:
       folded: false
@@ -347,7 +347,7 @@ nodes:
   - id: gh-actions-setup-go-blue-grape-penguin
     type: github.com/actions/setup-go@cdcb36043654635271a94b9a6d1392de5bb323a7
     position:
-      x: 230
+      x: 330
       y: 700
     inputs:
       go-version: "1.22"
