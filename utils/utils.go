@@ -362,7 +362,9 @@ func GetEnvironMap() map[string]string {
 	for _, e := range env {
 		kv := strings.SplitN(e, "=", 2)
 		if len(kv) == 2 {
-			envs[kv[0]] = kv[1]
+			// in some rare environments we got 'Path' instead of 'PATH'
+			kUpper := strings.ToUpper(kv[0])
+			envs[kUpper] = kv[1]
 		}
 	}
 	return envs
