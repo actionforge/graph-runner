@@ -41,8 +41,7 @@ func (p *GhContextParser) Parse(contextEnvironMap map[string]string) (map[string
 		}
 
 		newPaths := []string{}
-
-		lines := strings.Split(string(p), "\n")
+		lines := strings.Split(strings.ReplaceAll(string(p), "\r\n", "\n"), "\n")
 		for _, line := range lines {
 			if line == "" {
 				continue
