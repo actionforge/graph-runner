@@ -1,54 +1,4 @@
 entry: gh-start
-nodes:
-  - id: gh-start
-    type: gh-start@v1
-    position:
-      x: -20
-      y: 50
-  - id: kiwi-gray-parrot
-    type: github.com/actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
-    position:
-      x: 390
-      y: 580
-  - id: gray-mango-cherry
-    type: github.com/actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
-    position:
-      x: 970
-      y: 650
-    inputs:
-      go-version: '1.22'
-  - id: run-v1-cherry-raspberry-pineapple
-    type: run@v1
-    position:
-      x: 1500
-      y: 550
-    inputs:
-      script: >-
-        go mod tidy
-
-        go vet
-
-        go test ./... -v -race -coverpkg=./... -cover -coverprofile cover.out
-        --tags=unit_tests,integration_tests,system_tests,github_impl
-
-        go tool cover -html cover.out -o cover.html
-  - id: run-v1-blackberry-green-snake
-    type: run@v1
-    position:
-      x: 1900
-      y: 450
-    inputs:
-      script: go build --tags=github_impl .
-  - id: gh-actions-upload-artifact-watermelon-brown-silver
-    type: >-
-      github.com/actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808
-    position:
-      x: 2350
-      y: 340
-    inputs:
-      name: cover
-      path: cover.html
-connections: []
 executions:
   - src:
       node: kiwi-gray-parrot
@@ -78,5 +28,82 @@ executions:
       node: run-v1-blackberry-green-snake
       port: exec-success
     dst:
+      node: switch-platform-v1-squirrel-cat-panda
+      port: exec
+  - src:
+      node: switch-platform-v1-squirrel-cat-panda
+      port: exec-linux
+    dst:
       node: gh-actions-upload-artifact-watermelon-brown-silver
       port: exec
+connections: []
+nodes:
+  - id: gh-start
+    type: gh-start@v1
+    position:
+      x: -20
+      y: 50
+    settings:
+      folded: false
+  - id: kiwi-gray-parrot
+    type: github.com/actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+    position:
+      x: 390
+      y: 580
+    settings:
+      folded: false
+  - id: gray-mango-cherry
+    type: github.com/actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
+    position:
+      x: 970
+      y: 650
+    inputs:
+      go-version: "1.22"
+    settings:
+      folded: false
+  - id: run-v1-cherry-raspberry-pineapple
+    type: run@v1
+    position:
+      x: 1500
+      y: 550
+    inputs:
+      script: >-
+        go mod tidy
+
+        go vet
+
+        go test ./... -v -race -coverpkg=./... -cover -coverprofile cover.out
+        --tags=unit_tests,integration_tests,system_tests,github_impl
+
+        go tool cover -html cover.out -o cover.html
+    settings:
+      folded: false
+  - id: run-v1-blackberry-green-snake
+    type: run@v1
+    position:
+      x: 1900
+      y: 450
+    inputs:
+      script: go build --tags=github_impl .
+    settings:
+      folded: false
+  - id: gh-actions-upload-artifact-watermelon-brown-silver
+    type: >-
+      github.com/actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808
+    position:
+      x: 2490
+      y: 330
+    inputs:
+      name: cover
+      path: cover.html
+    settings:
+      folded: false
+  - id: switch-platform-v1-squirrel-cat-panda
+    type: switch-platform@v1
+    position:
+      x: 2250
+      y: 460
+    settings:
+      folded: false
+registries: []
+description: ""
