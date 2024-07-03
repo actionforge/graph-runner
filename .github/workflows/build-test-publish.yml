@@ -12,20 +12,20 @@ jobs:
       contents: read
     steps:
       - name: Execute Action Graph
-        uses: actionforge/action@1cb7c397d2c7caa8d8071041976b6f2e4e2ead20 # v0.9.58
+        uses: actionforge/action@ed843a69387fa9cbb516527901d16c79e03eea7c # v0.9.58
         with:
           graph_file: build.yml
 
       - name: Test test_input_output.yml
         if: ${{ matrix.os != 'macos-latest' }}
-        uses: actionforge/action@1cb7c397d2c7caa8d8071041976b6f2e4e2ead20 # v0.9.58
+        uses: actionforge/action@ed843a69387fa9cbb516527901d16c79e03eea7c # v0.9.58
         with:
           runner_path: ${{ github.workspace }}/graph-runner
           graph_file: test_input_output.yml
 
       - name: Test test_env.yml
         if: ${{ matrix.os != 'macos-latest' }}
-        uses: actionforge/action@1cb7c397d2c7caa8d8071041976b6f2e4e2ead20 # v0.9.58
+        uses: actionforge/action@ed843a69387fa9cbb516527901d16c79e03eea7c # v0.9.58
         with:
           runner_path: ${{ github.workspace }}/graph-runner
           graph_file: test_env.yml
@@ -34,7 +34,7 @@ jobs:
           MY_ENV: "hello world"
 
       - name: Build and Publish
-        uses: actionforge/action@1cb7c397d2c7caa8d8071041976b6f2e4e2ead20 # v0.9.58
+        uses: actionforge/action@ed843a69387fa9cbb516527901d16c79e03eea7c # v0.9.58
         with:
           runner_path: ${{ github.workspace }}/graph-runner
           graph_file: publish.yml
